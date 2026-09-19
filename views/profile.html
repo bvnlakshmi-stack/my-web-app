@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Profile & Account Settings - MyApp</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+    body { background-color: #f8fafc; color: #0f172a; min-height: 100vh; display: flex; }
+    
+    /* UNIFIED DEEP EMERALD SIDEBAR */
+    .sidebar { width: 260px; min-width: 260px; height: 100vh; position: sticky; top: 0; background: #022c22; display: flex; flex-direction: column; padding: 24px 16px; border-right: 1px solid #064e3b; z-index: 100; }
+    .sidebar-logo { display: flex; align-items: center; gap: 12px; margin-bottom: 32px; padding: 0 8px; text-decoration: none; }
+    .logo-icon-box { width: 40px; height: 40px; border-radius: 12px; background: linear-gradient(135deg, #10b981, #059669); display: flex; align-items: center; justify-content: center; color: white; font-size: 20px; font-weight: 900; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4); }
+    .logo-text h1 { font-size: 18px; font-weight: 800; color: #ffffff; line-height: 1.2; }
+    .logo-text span { font-size: 10px; font-weight: 700; color: #6ee7b7; letter-spacing: 1px; text-transform: uppercase; }
+    .sidebar-section-label { font-size: 10px; font-weight: 800; color: #34d399; letter-spacing: 1.2px; text-transform: uppercase; margin: 16px 0 8px 12px; }
+    .sidebar-nav { display: flex; flex-direction: column; gap: 4px; flex: 1; overflow-y: auto; }
+    .nav-item { display: flex; align-items: center; gap: 12px; padding: 11px 16px; border-radius: 12px; color: #a7f3d0; text-decoration: none; font-size: 13.5px; font-weight: 600; transition: all 0.2s ease; }
+    .nav-item:hover { background: rgba(16, 185, 129, 0.12); color: #ffffff; transform: translateX(3px); }
+    .nav-item.active { background: #064e3b; color: #ffffff; font-weight: 700; border-left: 4px solid #10b981; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+    .sidebar-footer { padding-top: 16px; border-top: 1px solid rgba(16, 185, 129, 0.2); }
+    .db-badge { display: flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 700; color: #6ee7b7; background: rgba(16, 185, 129, 0.1); padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(16, 185, 129, 0.2); }
+    .pulse-dot { width: 8px; height: 8px; border-radius: 50%; background: #10b981; box-shadow: 0 0 8px #10b981; animation: pulse 2s infinite; }
+    @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
+
+    /* MAIN CONTENT */
+    .main-wrapper { flex: 1; display: flex; flex-direction: column; min-width: 0; overflow-y: auto; height: 100vh; }
+    .content-area { padding: 32px; max-width: 1200px; margin: 0 auto; width: 100%; }
+
+    /* PROFILE HEADER HERO */
+    .profile-hero { background: linear-gradient(135deg, #022c22 0%, #064e3b 60%, #047857 100%); border-radius: 24px; padding: 32px; color: white; margin-bottom: 28px; box-shadow: 0 12px 30px rgba(2, 44, 34, 0.25); display: flex; justify-content: space-between; align-items: center; position: relative; overflow: hidden; }
+    .hero-avatar { width: 90px; height: 90px; border-radius: 24px; background: linear-gradient(135deg, #3b82f6, #1d4ed8); display: flex; align-items: center; justify-content: center; font-size: 38px; font-weight: 900; color: white; box-shadow: 0 8px 20px rgba(0,0,0,0.3); border: 3px solid rgba(255,255,255,0.2); }
+    .profile-stats-row { display: flex; gap: 24px; background: rgba(255,255,255,0.08); backdrop-filter: blur(10px); padding: 14px 24px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.15); }
+
+    /* TABS */
+    .settings-nav { display: flex; gap: 10px; margin-bottom: 24px; background: #ffffff; padding: 6px; border-radius: 14px; border: 1px solid #e2e8f0; width: fit-content; }
+    .settings-tab { padding: 9px 20px; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; border: none; background: transparent; color: #64748b; transition: all 0.2s; }
+    .settings-tab.active { background: #064e3b; color: #ffffff; }
+
+    /* CARDS */
+    .profile-card { background: #ffffff; border-radius: 20px; border: 1px solid #e2e8f0; padding: 28px; box-shadow: 0 4px 16px rgba(0,0,0,0.03); }
+    .form-group { margin-bottom: 20px; }
+    .form-label { display: block; font-size: 11.5px; font-weight: 800; color: #475569; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+    .form-input { width: 100%; padding: 12px 16px; border-radius: 12px; border: 1px solid #cbd5e1; font-size: 14px; color: #0f172a; outline: none; transition: border-color 0.2s, box-shadow 0.2s; background: #f8fafc; }
+    .form-input:focus { border-color: #10b981; box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15); background: #ffffff; }
+
+    /* BUTTONS */
+    .btn-save { background: linear-gradient(135deg, #10b981, #059669); color: white; font-weight: 800; font-size: 13.5px; padding: 12px 28px; border-radius: 12px; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3); transition: all 0.2s; }
+    .btn-save:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(16, 185, 129, 0.4); }
+  </style>
+</head>
+<body>
+
+  <!-- UNIFIED SIDEBAR -->
+  <aside class="sidebar">
+    <a href="/dashboard.html" class="sidebar-logo">
+      <div class="logo-icon-box">✓</div>
+      <div class="logo-text">
+        <h1>MyApp</h1>
+        <span>USER PORTAL</span>
+      </div>
+    </a>
+    <div class="sidebar-section-label">WORKSPACE</div>
+    <nav class="sidebar-nav">
+      <a href="/dashboard.html" class="nav-item">
+        <span>🏠</span> <span>Dashboard</span>
+      </a>
+      <a href="/forecasting.html" class="nav-item">
+        <span>📈</span> <span>Forecasting</span>
+      </a>
+      <a href="/simulation.html" class="nav-item"><span>🎮</span> <span>Simulation Engine (M3)</span></a>
+
+      <a href="/income.html" class="nav-item">
+        <span>💳</span> <span>Income & Expenses</span>
+      </a>
+      <a href="/savings.html" class="nav-item">
+        <span>💰</span> <span>Savings</span>
+      </a>
+      <a href="/study.html" class="nav-item">
+        <span>📚</span> <span>Study</span>
+      </a>
+      <a href="/academics.html" class="nav-item">
+        <span>🎓</span> <span>Academics</span>
+      </a>
+      <a href="/habits.html" class="nav-item">
+        <span>🔥</span> <span>Habits</span>
+      </a>
+      <a href="/fitness.html" class="nav-item">
+        <span>🏋️</span> <span>Fitness</span>
+      </a>
+      <a href="/goals.html" class="nav-item">
+        <span>🎯</span> <span>Goals</span>
+      </a>
+      <a href="/activity.html" class="nav-item">
+        <span>📊</span> <span>Activity History</span>
+      </a>
+      <a href="/profile.html" class="nav-item active">
+        <span>👤</span> <span>Profile</span>
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="db-badge">
+        <div class="pulse-dot"></div>
+        <span>SQLite Active</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN WRAPPER -->
+  <div class="main-wrapper">
+    <main class="content-area">
+
+      <!-- Executive Profile Hero Header -->
+      <section class="profile-hero">
+        <div style="display: flex; align-items: center; gap: 24px;">
+          <div class="hero-avatar" id="avatarBox">P</div>
+          <div>
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 4px;">
+              <h1 id="heroName" style="font-size: 26px; font-weight: 900; color: #ffffff;">pandu</h1>
+              <span style="font-size: 11px; font-weight: 800; background: #dcfce7; color: #15803d; padding: 3px 10px; border-radius: 20px; display: inline-flex; align-items: center; gap: 4px;">
+                ✓ Verified Student
+              </span>
+            </div>
+            <div id="heroEmail" style="font-size: 13.5px; color: #a7f3d0; margin-bottom: 8px;">pandu@gmail.com</div>
+            <div style="font-size: 11.5px; color: #6ee7b7;">Annamacharya University • AI & Data Intelligence Track</div>
+          </div>
+        </div>
+
+        <div class="profile-stats-row">
+          <div style="text-align: center;">
+            <div style="font-size: 10px; color: #6ee7b7; font-weight: 700;">AI HEALTH INDEX</div>
+            <div style="font-size: 20px; font-weight: 900;">94<span style="font-size: 12px; color: #a7f3d0;">/100</span></div>
+          </div>
+          <div style="width: 1px; background: rgba(255,255,255,0.15);"></div>
+          <div style="text-align: center;">
+            <div style="font-size: 10px; color: #93c5fd; font-weight: 700;">ACTIVE GOALS</div>
+            <div style="font-size: 20px; font-weight: 900; color: #60a5fa;">8 Tracked</div>
+          </div>
+          <div style="width: 1px; background: rgba(255,255,255,0.15);"></div>
+          <div style="text-align: center;">
+            <div style="font-size: 10px; color: #d8b4fe; font-weight: 700;">DATABASE</div>
+            <div style="font-size: 20px; font-weight: 900; color: #c084fc;">SQLite3</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Settings Tabs -->
+      <div class="settings-nav">
+        <button id="tab1" class="settings-tab active" onclick="switchTab('profile')">👤 Personal Information</button>
+        <button id="tab2" class="settings-tab" onclick="switchTab('preferences')">⚙️ AI & Lifestyle Preferences</button>
+        <button id="tab3" class="settings-tab" onclick="switchTab('security')">🔐 Security & Database</button>
+      </div>
+
+      <!-- TAB 1: Personal Info Card -->
+      <div id="cardProfile" class="profile-card">
+        <h3 style="font-size: 17px; font-weight: 800; margin-bottom: 20px; display: flex; align-items: center; gap: 8px;">
+          <span>✏️</span> Edit Account Profile
+        </h3>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+          <div class="form-group">
+            <label class="form-label">Full Name</label>
+            <input type="text" id="inputName" class="form-input" value="pandu" placeholder="Enter your full name">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Email Address (Read Only)</label>
+            <input type="email" id="inputEmail" class="form-input" value="pandu@gmail.com" readonly style="background: #e2e8f0; color: #64748b; cursor: not-allowed;">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">College / Institution</label>
+          <input type="text" id="inputCollege" class="form-input" value="Annamacharya University" placeholder="Your College / University">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Bio & Personal Goals</label>
+          <textarea id="inputBio" class="form-input" rows="3" placeholder="Tell us about your lifestyle, career, and financial targets...">Aspiring Data Scientist & AI Developer building predictive models with Infosys mentorship.</textarea>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 24px; padding-top: 18px; border-top: 1px solid #f1f5f9;">
+          <span style="font-size: 12px; color: #64748b;">Member Since: <strong>September 2026</strong></span>
+          <button class="btn-save" onclick="saveProfileChanges()">
+            <span>💾</span> Save Changes
+          </button>
+        </div>
+      </div>
+
+      <!-- TAB 2: AI & System Preferences -->
+      <div id="cardPreferences" class="profile-card" style="display: none;">
+        <h3 style="font-size: 17px; font-weight: 800; margin-bottom: 20px;">⚙️ AI Predictive Intelligence Configuration</h3>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+          <div class="form-group">
+            <label class="form-label">Default Forecasting Horizon</label>
+            <select class="form-input">
+              <option>1-Year Compounding Model (Recommended)</option>
+              <option>6-Month Tactical Horizon</option>
+              <option>3-Year Strategic Wealth</option>
+              <option>5-Year Career Trajectory</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Risk Sensitivity Engine</label>
+            <select class="form-input">
+              <option>Balanced & Adaptive (Default)</option>
+              <option>Conservative (Strict Domino Risk Alerts)</option>
+              <option>High Growth Velocity</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="background: #f0fdf4; border: 1px solid #a7f3d0; border-radius: 14px; padding: 18px; margin-bottom: 20px;">
+          <div style="font-size: 13px; font-weight: 800; color: #065f46; margin-bottom: 4px;">📡 Autonomous Telemetry Sync</div>
+          <p style="font-size: 12px; color: #047857;">Real-time ingestion is enabled. Every log in Study, Income, or Habits is automatically evaluated by the prediction neural network.</p>
+        </div>
+
+        <button class="btn-save" onclick="alert('✅ AI Preferences Updated Successfully!')">
+          <span>💾</span> Save Preferences
+        </button>
+      </div>
+
+      <!-- TAB 3: Security & Database -->
+      <div id="cardSecurity" class="profile-card" style="display: none;">
+        <h3 style="font-size: 17px; font-weight: 800; margin-bottom: 20px;">🔐 Security & Database Connection</h3>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+          <div class="form-group">
+            <label class="form-label">New Password</label>
+            <input type="password" class="form-input" placeholder="••••••••">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Confirm New Password</label>
+            <input type="password" class="form-input" placeholder="••••••••">
+          </div>
+        </div>
+
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px; padding: 18px; margin-bottom: 20px;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <div style="font-size: 13px; font-weight: 800; color: #0f172a;">SQLite3 Database Integration</div>
+              <div style="font-size: 12px; color: #64748b; margin-top: 2px;">Connected at <code>http://localhost:3000</code></div>
+            </div>
+            <span class="db-badge">🟢 Connected & Synchronized</span>
+          </div>
+        </div>
+
+        <button class="btn-save" onclick="alert('✅ Security Settings Updated!')">
+          <span>🔐</span> Update Credentials
+        </button>
+      </div>
+
+    </main>
+  </div>
+
+  <script>
+    // Tab Controller
+    function switchTab(tab) {
+      document.getElementById('tab1').classList.remove('active');
+      document.getElementById('tab2').classList.remove('active');
+      document.getElementById('tab3').classList.remove('active');
+      
+      document.getElementById('cardProfile').style.display = 'none';
+      document.getElementById('cardPreferences').style.display = 'none';
+      document.getElementById('cardSecurity').style.display = 'none';
+
+      if (tab === 'profile') {
+        document.getElementById('tab1').classList.add('active');
+        document.getElementById('cardProfile').style.display = 'block';
+      } else if (tab === 'preferences') {
+        document.getElementById('tab2').classList.add('active');
+        document.getElementById('cardPreferences').style.display = 'block';
+      } else if (tab === 'security') {
+        document.getElementById('tab3').classList.add('active');
+        document.getElementById('cardSecurity').style.display = 'block';
+      }
+    }
+
+    // Save Profile Changes & Dynamically Update Top Hero Avatar
+    function saveProfileChanges() {
+      const name = document.getElementById('inputName').value.trim();
+      const bio = document.getElementById('inputBio').value.trim();
+      
+      if (name) {
+        document.getElementById('heroName').textContent = name;
+        document.getElementById('avatarBox').textContent = name.charAt(0).toUpperCase();
+      }
+
+      alert('🎉 Profile updated successfully!');
+    }
+  </script>
+</body>
+</html>

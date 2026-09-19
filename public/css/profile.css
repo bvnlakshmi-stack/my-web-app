@@ -1,0 +1,322 @@
+/* ── MAIN BODY ────────────────── */
+.pf-main {
+  background-color: #f8fafc !important;
+  font-family: 'Inter', system-ui, sans-serif;
+  color: #334155;
+  padding: 24px !important;
+}
+
+/* ── TOPBAR ────────────────────── */
+.pf-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #e2e8f0;
+}
+.pf-page-title {
+  font-size: 24px;
+  font-weight: 800;
+  color: #0f172a;
+}
+.pf-page-subtitle {
+  font-size: 13px;
+  color: #64748b;
+  margin-top: 1px;
+}
+.pf-topbar-user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.pf-topbar-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #10b981;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 13px;
+}
+.pf-topbar-username {
+  font-size: 13px;
+  font-weight: 600;
+  color: #475569;
+}
+
+/* ── PROFILE CONTAINER CARD ────── */
+.pf-profile-card {
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.05);
+  border: 1px solid #f1f5f9;
+  margin-bottom: 20px;
+  padding: 24px;
+}
+
+/* ── CARD HEADER (USER PROFILE) ── */
+.pf-header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid #f8fafc;
+  padding-bottom: 20px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+.pf-header-user {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.pf-user-avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  font-weight: 800;
+  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.25);
+}
+.pf-user-name {
+  font-size: 20px;
+  font-weight: 800;
+  color: #0f172a;
+}
+.pf-user-email {
+  font-size: 13px;
+  color: #64748b;
+  margin-top: 1px;
+}
+.pf-user-badges {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+}
+.pf-badge {
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: 700;
+}
+.badge-active { background: #dcfce7; color: #166534; }
+.badge-secured { background: #eff6ff; color: #1e40af; }
+.badge-member { background: #f3e8ff; color: #6b21a8; }
+
+.pf-header-stats {
+  display: flex;
+  gap: 16px;
+  background: #f8fafc;
+  padding: 12px 20px;
+  border-radius: 14px;
+}
+.pf-stat-item {
+  text-align: center;
+  min-width: 65px;
+}
+.pf-stat-val {
+  font-size: 18px;
+  font-weight: 800;
+  color: #0f172a;
+}
+.pf-stat-lbl {
+  font-size: 10px;
+  color: #94a3b8;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ── CARD GRID ────────────────── */
+.pf-card-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 28px;
+}
+
+/* Column Headers */
+.pf-card-grid h3 {
+  font-size: 15px;
+  font-weight: 800;
+  color: #0f172a;
+  margin-bottom: 16px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Edit Form */
+.pf-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.pf-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.pf-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.pf-field label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+}
+.pf-field input, .pf-field textarea {
+  padding: 9px 12px;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 13px;
+  font-family: 'Inter', sans-serif;
+  color: #1e293b;
+  outline: none;
+  background-color: #f8fafc;
+  transition: all 0.2s ease;
+}
+.pf-field input:focus, .pf-field textarea:focus {
+  border-color: #10b981;
+  background-color: #fff;
+}
+.pf-disabled-input {
+  background-color: #f1f5f9 !important;
+  border-color: #cbd5e1 !important;
+  color: #94a3b8 !important;
+  cursor: not-allowed;
+}
+.pf-btn-save {
+  padding: 11px;
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  transition: all 0.2s ease;
+  margin-top: 4px;
+}
+.pf-btn-save:hover {
+  transform: translateY(-1px);
+}
+
+/* Progress Tracker Boxes */
+.pf-subsection {
+  margin-bottom: 20px;
+}
+.pf-progress-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+.pf-progress-box {
+  background: #f8fafc;
+  border-radius: 10px;
+  padding: 10px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.pf-progress-box span {
+  font-size: 10px;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+}
+.pf-progress-box strong {
+  font-size: 16px;
+  font-weight: 800;
+  color: #0f172a;
+  margin-top: 2px;
+}
+
+/* Security List */
+.pf-security-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.pf-sec-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background: #f8fafc;
+  border-radius: 8px;
+}
+.pf-sec-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: #475569;
+}
+.pf-sec-badge {
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: 700;
+}
+.badge-green { background: #dcfce7; color: #166534; }
+.badge-blue { background: #eff6ff; color: #1e40af; }
+.badge-orange { background: #fffbeb; color: #b45309; }
+.badge-red { background: #fee2e2; color: #991b1b; }
+
+/* ── TIP BOX ──────────────────── */
+.pf-tip-box {
+  background: #f0fdf4;
+  border-radius: 12px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  border-left: 4px solid #10b981;
+}
+.pf-tip-icon {
+  font-size: 20px;
+}
+.pf-tip-text {
+  font-size: 12px;
+  color: #1e293b;
+  line-height: 1.5;
+}
+
+/* ── FOOTER ────────────────────── */
+.pf-footer {
+  text-align: center;
+  color: #94a3b8;
+  font-size: 12px;
+  padding-bottom: 12px;
+}
+
+/* ── RESPONSIVE DESIGN ─────────── */
+@media (max-width: 1024px) {
+  .pf-card-grid {
+    grid-template-columns: 1fr;
+  }
+  .pf-progress-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+@media (max-width: 600px) {
+  .pf-progress-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .pf-form-row {
+    grid-template-columns: 1fr;
+  }
+}

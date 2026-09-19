@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Academics - MyApp</title>
+  <link rel="stylesheet" href="/css/dashboard.css">
+  <link rel="stylesheet" href="/css/academics2.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+<div class="app-layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon-box">✓</div>
+      <div class="logo-text"><h2>MyApp</h2><span>USER PORTAL</span></div>
+    </div>
+    <div class="sidebar-section-label">WORKSPACE</div>
+    <a href="/dashboard.html" class="nav-item"><span class="nav-icon">🏠</span><span>Dashboard</span></a>
+      <a href="/forecasting.html" class="nav-item"><span class="nav-icon">📈</span><span>Forecasting</span></a>
+      <a href="/simulation.html" class="nav-item"><span>🎮</span> <span>Simulation Engine (M3)</span></a>
+
+      <a href="/income.html"    class="nav-item"><span class="nav-icon">▭</span><span>Income & Expenses</span></a>
+      <a href="/savings.html"   class="nav-item"><span class="nav-icon">◎</span><span>Savings</span></a>
+      <a href="/study.html"     class="nav-item"><span class="nav-icon">▤</span><span>Study</span></a>
+      <a href="/academics.html" class="nav-item active"><span class="nav-icon">◯</span><span>Academics</span></a>
+      <a href="/habits.html"    class="nav-item"><span class="nav-icon">🔥</span><span>Habits</span></a>
+      <a href="/fitness.html"   class="nav-item"><span class="nav-icon">∿</span><span>Fitness</span></a>
+      <a href="/goals.html"     class="nav-item"><span class="nav-icon">◉</span><span>Goals</span></a>
+      <a href="/activity.html"  class="nav-item"><span class="nav-icon">▦</span><span>Activity History</span></a>
+      <a href="/profile.html"   class="nav-item"><span class="nav-icon">👤</span><span>Profile</span></a>
+      <a href="#" class="nav-item logout-item" id="logoutBtn"><span class="nav-icon">🚪</span><span>Logout</span></a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="db-status">
+        <span class="status-dot"></span>
+        <div>
+          <div style="color:rgba(255,255,255,0.8);font-size:12px;font-weight:600;">Database: SQLite Active</div>
+          <div style="color:rgba(255,255,255,0.45);font-size:11px;">All systems operational</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main-content">
+
+    <!-- Hero Banner -->
+    <div class="ac-hero">
+      <div class="ac-hero-left">
+        <div class="ac-hero-label">🎓 ACADEMIC DASHBOARD</div>
+        <h1>Track. Improve. Excel.</h1>
+        <p>Monitor your academic performance across all subjects</p>
+        <div class="ac-hero-quote" id="quoteText">"Education is the passport to the future."</div>
+      </div>
+      <div class="ac-hero-right">
+        <div class="ac-hero-avatar" id="heroAvatar">U</div>
+        <div id="heroName" class="ac-hero-name">User</div>
+        <div class="ac-gpa-badge">
+          <span>CGPA</span>
+          <strong id="heroCGPA">0.0</strong>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stat Cards -->
+    <div class="ac-stats">
+      <div class="ac-stat gcard">
+        <div class="ac-stat-ring ring-blue"><span>📘</span></div>
+        <div class="ac-stat-val" id="statSubjects">0</div>
+        <div class="ac-stat-lbl">Subjects</div>
+      </div>
+      <div class="ac-stat gcard">
+        <div class="ac-stat-ring ring-green"><span>📊</span></div>
+        <div class="ac-stat-val" id="statAvg">0%</div>
+        <div class="ac-stat-lbl">Average Score</div>
+      </div>
+      <div class="ac-stat gcard">
+        <div class="ac-stat-ring ring-purple"><span>📝</span></div>
+        <div class="ac-stat-val" id="statExams">0</div>
+        <div class="ac-stat-lbl">Exams Taken</div>
+      </div>
+      <div class="ac-stat gcard">
+        <div class="ac-stat-ring ring-gold"><span>🏆</span></div>
+        <div class="ac-stat-val" id="statBest">—</div>
+        <div class="ac-stat-lbl">Best Score</div>
+      </div>
+    </div>
+
+    <!-- Form + Chart + GPA Row -->
+    <div class="ac-row2">
+
+      <!-- Add Record Form -->
+      <div class="ac-form gcard">
+        <h3>➕ Add Academic Record</h3>
+        <div id="acMsg"></div>
+        <div class="ac-f">
+          <label>Subject</label>
+          <input type="text" id="acSubject" placeholder="e.g. Mathematics, Physics...">
+        </div>
+        <div class="ac-f-row">
+          <div class="ac-f">
+            <label>Score (%)</label>
+            <input type="number" id="acScore" placeholder="85" min="0" max="100">
+          </div>
+          <div class="ac-f">
+            <label>Total Marks</label>
+            <input type="number" id="acTotal" placeholder="100">
+          </div>
+        </div>
+        <div class="ac-f-row">
+          <div class="ac-f">
+            <label>Exam Type</label>
+            <select id="acExam">
+              <option>📝 Mid Term</option>
+              <option>📋 Final Exam</option>
+              <option>📄 Quiz</option>
+              <option>📑 Assignment</option>
+              <option>🧪 Lab Exam</option>
+              <option>📊 Project</option>
+            </select>
+          </div>
+          <div class="ac-f">
+            <label>Semester</label>
+            <select id="acSem">
+              <option>Sem 1</option><option>Sem 2</option><option>Sem 3</option><option>Sem 4</option>
+              <option>Sem 5</option><option>Sem 6</option><option>Sem 7</option><option>Sem 8</option>
+            </select>
+          </div>
+        </div>
+        <button class="ac-add-btn" onclick="addRecord()">🎓 Add Record</button>
+      </div>
+
+      <!-- Performance Chart -->
+      <div class="ac-chart gcard">
+        <h3>📊 Performance by Subject</h3>
+        <canvas id="acBarChart" height="220"></canvas>
+      </div>
+
+      <!-- GPA Calculator -->
+      <div class="ac-gpa-card gcard">
+        <h3>🎯 Grade Distribution</h3>
+        <div class="ac-gpa-donut-wrap">
+          <canvas id="acDonut"></canvas>
+          <div class="ac-gpa-center">
+            <div class="ac-gpa-center-val" id="gpaVal">0.0</div>
+            <div class="ac-gpa-center-lbl">CGPA</div>
+          </div>
+        </div>
+        <div class="ac-grade-grid" id="gradeGrid">
+          <div class="ac-grade-item"><span class="ac-g-dot" style="background:#22c55e;"></span><span>A+ (90+)</span><span class="ac-g-count" id="gradeA">0</span></div>
+          <div class="ac-grade-item"><span class="ac-g-dot" style="background:#3b82f6;"></span><span>A (75-89)</span><span class="ac-g-count" id="gradeB">0</span></div>
+          <div class="ac-grade-item"><span class="ac-g-dot" style="background:#f59e0b;"></span><span>B (60-74)</span><span class="ac-g-count" id="gradeC">0</span></div>
+          <div class="ac-grade-item"><span class="ac-g-dot" style="background:#f97316;"></span><span>C (50-59)</span><span class="ac-g-count" id="gradeD">0</span></div>
+          <div class="ac-grade-item"><span class="ac-g-dot" style="background:#ef4444;"></span><span>F (&lt;50)</span><span class="ac-g-count" id="gradeF">0</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Semester Progress -->
+    <div class="ac-sem-card gcard">
+      <div class="ac-sem-header">
+        <h3>📅 Semester-wise Performance</h3>
+      </div>
+      <div class="ac-sem-bars" id="semBars">
+        <div class="ac-sem-empty">Add records to see semester breakdown</div>
+      </div>
+    </div>
+
+    <!-- Subject Cards -->
+    <div class="ac-subj-section">
+      <div class="ac-subj-header">
+        <div>📘 SUBJECT CARDS</div>
+        <div class="ac-subj-count" id="subjCount">0 subjects</div>
+      </div>
+      <div class="ac-subj-grid" id="subjGrid">
+        <div class="ac-subj-empty">No subjects yet. Add your first record above!</div>
+      </div>
+    </div>
+
+    <!-- Records Table -->
+    <div class="ac-table-card gcard">
+      <div class="ac-t-header">
+        <h3>📋 All Academic Records</h3>
+        <div class="ac-t-filters">
+          <button class="ac-t-fil ac-t-active" onclick="setFilter('all',this)">All</button>
+          <button class="ac-t-fil" onclick="setFilter('mid',this)">Mid Term</button>
+          <button class="ac-t-fil" onclick="setFilter('final',this)">Final</button>
+          <button class="ac-t-fil" onclick="setFilter('quiz',this)">Quiz</button>
+        </div>
+      </div>
+      <table class="ac-table">
+        <thead>
+          <tr><th>Subject</th><th>Exam</th><th>Semester</th><th>Score</th><th>Grade</th><th>Date</th><th>Action</th></tr>
+        </thead>
+        <tbody id="recordBody">
+          <tr><td colspan="7" class="ac-empty-td">No records yet!</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Tips -->
+    <div class="ac-tips-row">
+      <div class="ac-tip tip-blue">
+        <div class="ac-tip-num">01</div>
+        <div class="ac-tip-title">Review Weaknesses</div>
+        <div class="ac-tip-text">Focus on subjects with scores below 70%. Targeted revision improves results by 40%.</div>
+      </div>
+      <div class="ac-tip tip-green">
+        <div class="ac-tip-num">02</div>
+        <div class="ac-tip-title">Practice Past Papers</div>
+        <div class="ac-tip-text">Solving previous exam papers helps you understand patterns and manage time better.</div>
+      </div>
+      <div class="ac-tip tip-purple">
+        <div class="ac-tip-num">03</div>
+        <div class="ac-tip-title">Teach Others</div>
+        <div class="ac-tip-text">Explaining concepts to others is the best way to deepen your understanding.</div>
+      </div>
+    </div>
+
+    <div class="page-footer">© 2026 MyApp. All rights reserved.</div>
+  </main>
+</div>
+
+<script>
+  let barChart, donutChart;
+  let currentFilter = 'all';
+  const QUOTES = ['"Education is the passport to the future."','"An investment in knowledge pays the best interest."','"The roots of education are bitter, but the fruit is sweet."','"Learning never exhausts the mind."'];
+  document.getElementById('quoteText').textContent = QUOTES[Math.floor(Math.random()*QUOTES.length)];
+
+  function getData(){return JSON.parse(localStorage.getItem('academics_data')||'[]');}
+  function saveData(d){localStorage.setItem('academics_data',JSON.stringify(d));}
+  function fmtDate(d){return new Date(d).toLocaleDateString('en-US',{day:'2-digit',month:'short',year:'numeric'});}
+
+  function getGrade(s){
+    if(s>=90) return {g:'A+',cls:'grd-a',color:'#22c55e',gpa:10};
+    if(s>=75) return {g:'A',cls:'grd-b',color:'#3b82f6',gpa:8};
+    if(s>=60) return {g:'B',cls:'grd-c',color:'#f59e0b',gpa:6};
+    if(s>=50) return {g:'C',cls:'grd-d',color:'#f97316',gpa:4};
+    return {g:'F',cls:'grd-f',color:'#ef4444',gpa:0};
+  }
+
+  function addRecord(){
+    const subject=document.getElementById('acSubject').value.trim();
+    const score=parseFloat(document.getElementById('acScore').value);
+    const total=document.getElementById('acTotal').value||100;
+    const exam=document.getElementById('acExam').value;
+    const sem=document.getElementById('acSem').value;
+    const msg=document.getElementById('acMsg');
+    if(!subject||isNaN(score)){
+      msg.style.cssText='background:#fee2e2;color:#991b1b;padding:8px 12px;border-radius:8px;font-size:13px;margin-bottom:10px;';
+      msg.textContent='❌ Fill subject & score!';setTimeout(()=>msg.textContent='',2000);return;
+    }
+    const data=getData();
+    data.unshift({subject,score,total,exam,sem,date:new Date().toISOString(),id:Date.now()});
+    saveData(data);
+    document.getElementById('acSubject').value='';document.getElementById('acScore').value='';document.getElementById('acTotal').value='';
+    msg.style.cssText='background:#dcfce7;color:#166534;padding:8px 12px;border-radius:8px;font-size:13px;margin-bottom:10px;';
+    msg.textContent='✅ Record added!';setTimeout(()=>msg.textContent='',2000);
+    render();
+  }
+
+  function deleteRecord(id){saveData(getData().filter(r=>r.id!==id));render();}
+  function setFilter(f,btn){currentFilter=f;document.querySelectorAll('.ac-t-fil').forEach(b=>b.classList.remove('ac-t-active'));btn.classList.add('ac-t-active');render();}
+
+  function render(){
+    const data=getData();
+    const subjects=[...new Set(data.map(d=>d.subject))];
+    const scores=data.map(d=>parseFloat(d.score));
+    const avg=scores.length?Math.round(scores.reduce((a,b)=>a+b,0)/scores.length):0;
+    const best=scores.length?Math.max(...scores):0;
+
+    // CGPA
+    const cgpa=scores.length?(scores.map(s=>getGrade(s).gpa).reduce((a,b)=>a+b,0)/scores.length).toFixed(1):0;
+
+    document.getElementById('statSubjects').textContent=subjects.length;
+    document.getElementById('statAvg').textContent=avg+'%';
+    document.getElementById('statExams').textContent=data.length;
+    document.getElementById('statBest').textContent=best?best+'%':'—';
+    document.getElementById('heroCGPA').textContent=cgpa;
+    document.getElementById('gpaVal').textContent=cgpa;
+    document.getElementById('subjCount').textContent=subjects.length+' subjects';
+
+    // Grade counts
+    let gA=0,gB=0,gC=0,gD=0,gF=0;
+    scores.forEach(s=>{if(s>=90)gA++;else if(s>=75)gB++;else if(s>=60)gC++;else if(s>=50)gD++;else gF++;});
+    document.getElementById('gradeA').textContent=gA;
+    document.getElementById('gradeB').textContent=gB;
+    document.getElementById('gradeC').textContent=gC;
+    document.getElementById('gradeD').textContent=gD;
+    document.getElementById('gradeF').textContent=gF;
+
+    // Bar chart
+    const subjAvg={},subjCnt={};
+    data.forEach(d=>{if(!subjAvg[d.subject]){subjAvg[d.subject]=0;subjCnt[d.subject]=0;}subjAvg[d.subject]+=parseFloat(d.score);subjCnt[d.subject]++;});
+    const cLabels=Object.keys(subjAvg);
+    const cData=cLabels.map(s=>Math.round(subjAvg[s]/subjCnt[s]));
+    const cColors=cData.map(v=>v>=90?'#22c55e':v>=75?'#3b82f6':v>=60?'#f59e0b':v>=50?'#f97316':'#ef4444');
+
+    if(barChart)barChart.destroy();
+    barChart=new Chart(document.getElementById('acBarChart').getContext('2d'),{
+      type:'bar',data:{labels:cLabels.length?cLabels:['No Data'],datasets:[{data:cData.length?cData:[0],backgroundColor:cColors.length?cColors:['#e5e7eb'],borderRadius:10,maxBarThickness:45}]},
+      options:{responsive:true,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{font:{size:11,weight:600}}},y:{max:100,grid:{color:'#f0f0f0'},ticks:{font:{size:11},callback:v=>v+'%'}}}}
+    });
+
+    // Donut
+    if(donutChart)donutChart.destroy();
+    donutChart=new Chart(document.getElementById('acDonut').getContext('2d'),{
+      type:'doughnut',data:{labels:['A+','A','B','C','F'],datasets:[{data:[gA||0.1,gB||0.1,gC||0.1,gD||0.1,gF||0.1],backgroundColor:['#22c55e','#3b82f6','#f59e0b','#f97316','#ef4444'],borderWidth:3,borderColor:'#fff',hoverOffset:8}]},
+      options:{cutout:'72%',plugins:{legend:{display:false}},responsive:true,maintainAspectRatio:true}
+    });
+
+    // Semester bars
+    const semMap={};
+    data.forEach(d=>{if(!semMap[d.sem]){semMap[d.sem]={total:0,count:0};}semMap[d.sem].total+=parseFloat(d.score);semMap[d.sem].count++;});
+    const semDiv=document.getElementById('semBars');
+    const sems=Object.keys(semMap).sort();
+    if(sems.length===0){semDiv.innerHTML='<div class="ac-sem-empty">Add records to see semester breakdown</div>';}
+    else{semDiv.innerHTML=sems.map(s=>{
+      const avg2=Math.round(semMap[s].total/semMap[s].count);
+      const color=avg2>=90?'#22c55e':avg2>=75?'#3b82f6':avg2>=60?'#f59e0b':'#ef4444';
+      return`<div class="ac-sem-item"><div class="ac-sem-label"><span>${s}</span><span style="color:${color};font-weight:700;">${avg2}%</span></div><div class="ac-sem-bar-bg"><div class="ac-sem-bar-fill" style="width:${avg2}%;background:${color};"></div></div></div>`;
+    }).join('');}
+
+    // Subject cards
+    const grid=document.getElementById('subjGrid');
+    if(subjects.length===0){grid.innerHTML='<div class="ac-subj-empty">No subjects yet!</div>';}
+    else{grid.innerHTML=subjects.map((s,i)=>{
+      const recs=data.filter(d=>d.subject===s);
+      const sAvg=Math.round(recs.reduce((a,r)=>a+parseFloat(r.score),0)/recs.length);
+      const g=getGrade(sAvg);
+      const trend=recs.length>=2?(recs[0].score>=recs[1].score?'📈 Improving':'📉 Declining'):'➡️ New';
+      return`
+        <div class="subj-card">
+          <div class="subj-card-top"><span class="subj-grade-badge" style="background:${g.color}15;color:${g.color};">${g.g}</span><span class="subj-exams">${recs.length} exams</span></div>
+          <div class="subj-name">${s}</div>
+          <div class="subj-avg">${sAvg}%</div>
+          <div class="subj-bar-bg"><div class="subj-bar-fill" style="width:${sAvg}%;background:${g.color};"></div></div>
+          <div class="subj-footer"><span class="subj-trend">${trend}</span><span class="subj-best">Best: ${Math.max(...recs.map(r=>r.score))}%</span></div>
+        </div>`;
+    }).join('');}
+
+    // Table
+    let filtered=data;
+    if(currentFilter==='mid') filtered=data.filter(r=>r.exam&&r.exam.includes('Mid'));
+    if(currentFilter==='final') filtered=data.filter(r=>r.exam&&r.exam.includes('Final'));
+    if(currentFilter==='quiz') filtered=data.filter(r=>r.exam&&r.exam.includes('Quiz'));
+
+    const tbody=document.getElementById('recordBody');
+    if(filtered.length===0){tbody.innerHTML='<tr><td colspan="7" class="ac-empty-td">No records found!</td></tr>';}
+    else{tbody.innerHTML=filtered.slice(0,8).map(r=>{
+      const g=getGrade(r.score);
+      return`<tr><td class="subj-td">📘 ${r.subject}</td><td>${r.exam}</td><td>${r.sem}</td><td class="score-td">${r.score}/${r.total||100}</td><td><span class="grade-pill ${g.cls}">${g.g}</span></td><td>📅 ${fmtDate(r.date)}</td><td><button class="del-btn" onclick="deleteRecord(${r.id})">🗑</button></td></tr>`;
+    }).join('');}
+  }
+
+  async function init(){
+    try{const res=await fetch('/auth/me');const d=await res.json();
+    if(!d.success){window.location.href='/login.html';return;}
+    document.getElementById('heroAvatar').textContent=d.user.fullname.charAt(0).toUpperCase();
+    document.getElementById('heroName').textContent=d.user.fullname;
+    }catch{window.location.href='/login.html';}
+    render();
+  }
+
+  document.getElementById('logoutBtn').addEventListener('click',async function(e){e.preventDefault();await fetch('/auth/logout');window.location.href='/login.html';});
+  init();
+</script>
+</body>
+</html>

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register - MyApp</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <h1>Create Account ✨</h1>
+      <p class="subtitle">Join us today for free</p>
+
+      <div id="message"></div>
+
+      <form id="registerForm">
+        <div class="form-group">
+          <label>Full Name</label>
+          <input type="text" id="fullname" placeholder="Enter your full name" required>
+        </div>
+        <div class="form-group">
+          <label>Email Address</label>
+          <input type="email" id="email" placeholder="Enter your email" required>
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="password" placeholder="Create a password (min 6 chars)" required>
+        </div>
+        <button type="submit" class="btn">Create Account</button>
+      </form>
+
+      <p class="link">Already have an account? <a href="/login.html">Login here</a></p>
+    </div>
+  </div>
+  <script src="/js/register.js"></script>
+</body>
+</html>

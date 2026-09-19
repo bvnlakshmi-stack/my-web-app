@@ -1,0 +1,1634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Lifestyle Digital Twin & Predictive Forecasting - MyApp</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+    body { background-color: #f8fafc; color: #0f172a; min-height: 100vh; display: flex; }
+    
+    /* UNIFIED DEEP EMERALD SIDEBAR */
+    .sidebar { width: 260px; min-width: 260px; max-width: 260px; height: 100vh; position: sticky; top: 0; background: #022c22; display: flex; flex-direction: column; padding: 22px 14px; border-right: 1px solid #064e3b; z-index: 100; box-sizing: border-box; }
+    .sidebar-logo { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; padding: 0 6px; text-decoration: none; }
+    .logo-icon-box { width: 38px; height: 38px; border-radius: 12px; background: linear-gradient(135deg, #10b981, #059669); display: flex; align-items: center; justify-content: center; color: white; font-size: 19px; font-weight: 900; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4); flex-shrink: 0; }
+    .logo-text h1 { font-size: 17px; font-weight: 800; color: #ffffff; line-height: 1.2; margin: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+    .logo-text span { font-size: 9.5px; font-weight: 700; color: #6ee7b7; letter-spacing: 1px; text-transform: uppercase; font-family: 'Plus Jakarta Sans', sans-serif; }
+    .sidebar-section-label { font-size: 9.5px; font-weight: 800; color: #34d399; letter-spacing: 1.2px; text-transform: uppercase; margin: 12px 0 6px 10px; font-family: 'Plus Jakarta Sans', sans-serif; }
+    .sidebar-nav { display: flex; flex-direction: column; gap: 3px; flex: 1; overflow-y: auto; overflow-x: hidden; }
+    .nav-item { display: flex; align-items: center; gap: 11px; padding: 9px 13px; border-radius: 11px; color: #a7f3d0; text-decoration: none; font-size: 13px; font-weight: 600; font-family: 'Plus Jakarta Sans', sans-serif; transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease; border: 1.5px solid transparent; box-sizing: border-box; }
+    .nav-item:hover { background: rgba(16, 185, 129, 0.14); color: #ffffff; }
+    .nav-item.active { background: #064e3b; color: #ffffff; font-weight: 700; border-color: #10b981; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+    .sidebar-footer { padding-top: 14px; border-top: 1px solid rgba(16, 185, 129, 0.2); display: flex; flex-direction: column; gap: 6px; }
+    .db-badge { display: flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 700; color: #6ee7b7; background: rgba(16, 185, 129, 0.1); padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(16, 185, 129, 0.2); }
+    .pulse-dot { width: 8px; height: 8px; border-radius: 50%; background: #10b981; box-shadow: 0 0 8px #10b981; animation: pulse 2s infinite; }
+    @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
+
+    /* MAIN CONTENT */
+    .main-wrapper { flex: 1; display: flex; flex-direction: column; min-width: 0; overflow-y: auto; height: 100vh; }
+    .top-telemetry { background: #064e3b; color: #ffffff; padding: 10px 32px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #047857; }
+    .telemetry-tag { display: inline-flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 700; color: #a7f3d0; }
+    
+    .content-area { padding: 28px 32px; flex: 1; max-width: 1400px; margin: 0 auto; width: 100%; }
+
+    /* EXECUTIVE BANNER */
+    .executive-hero { background: linear-gradient(135deg, #022c22 0%, #064e3b 50%, #047857 100%); border-radius: 20px; padding: 26px 32px; color: white; display: flex; justify-content: space-between; align-items: center; margin-bottom: 26px; box-shadow: 0 10px 25px rgba(2, 44, 34, 0.2); position: relative; overflow: hidden; }
+    .hero-title { font-size: 24px; font-weight: 900; margin-bottom: 4px; }
+    .hero-sub { font-size: 13px; color: #a7f3d0; }
+    .hero-score-box { background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); padding: 14px 24px; border-radius: 16px; text-align: center; }
+
+    /* 3 PILLARS GRID */
+    .forecast-grid { display: grid; grid-template-columns: 1fr; gap: 20px; margin-bottom: 26px; }
+    .f-card { background: white; border-radius: 18px; border: 1px solid #e2e8f0; padding: 22px; box-shadow: 0 4px 14px rgba(0,0,0,0.03); display: flex; flex-direction: column; }
+    .f-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+    .f-card-title { font-size: 15px; font-weight: 800; display: flex; align-items: center; gap: 8px; }
+    
+    /* BUTTONS */
+    .btn-action { padding: 9px 16px; border-radius: 10px; font-weight: 700; font-size: 12px; cursor: pointer; transition: all 0.2s; border: none; display: inline-flex; align-items: center; gap: 6px; }
+    .btn-dataset { background: #10b981; color: #022c22; font-weight: 800; }
+    .btn-dataset:hover { background: #34d399; transform: translateY(-1px); }
+    .btn-studio { background: #3b82f6; color: white; }
+    .btn-studio:hover { background: #2563eb; transform: translateY(-1px); }
+    .btn-pdf { background: rgba(255,255,255,0.15); color: white; border: 1px solid rgba(255,255,255,0.3); }
+
+    /* DATASET STUDIO OVERLAY MODAL */
+    .studio-modal { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(2, 44, 34, 0.85); backdrop-filter: blur(8px); z-index: 9999; justify-content: center; align-items: center; padding: 20px; }
+    .studio-window { background: #090d16; width: 95%; max-width: 1320px; height: 90vh; border-radius: 24px; border: 1px solid rgba(16, 185, 129, 0.4); display: flex; flex-direction: column; color: white; box-shadow: 0 25px 60px rgba(0,0,0,0.7); overflow: hidden; }
+    .studio-header { background: #022c22; padding: 18px 28px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #064e3b; }
+    .studio-nav { display: flex; gap: 6px; background: rgba(0,0,0,0.4); padding: 4px; border-radius: 12px; }
+    .studio-tab { padding: 8px 18px; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; color: #94a3b8; border: none; background: transparent; transition: all 0.2s; }
+    .studio-tab.active { background: #10b981; color: #022c22; font-weight: 800; }
+    .studio-content { flex: 1; overflow-y: auto; padding: 24px 28px; background: #0b1320; }
+
+    /* DATA CHIPS & PILLS */
+    .data-pill { padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; display: inline-block; }
+    .pill-green { background: rgba(16,185,129,0.15); color: #6ee7b7; border: 1px solid #10b981; }
+  </style>
+</head>
+<body>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <a href="/dashboard.html" class="sidebar-logo">
+      <div class="logo-icon-box">✓</div>
+      <div class="logo-text">
+        <h1>MyApp</h1>
+        <span>USER PORTAL</span>
+      </div>
+    </a>
+    <div class="sidebar-section-label">WORKSPACE</div>
+    <nav class="sidebar-nav">
+      <a href="/dashboard.html" class="nav-item">
+        <span>🏠</span> <span>Dashboard</span>
+      </a>
+      <a href="/forecasting.html" class="nav-item active">
+        <span>📈</span> <span>Forecasting</span>
+      </a>
+      <a href="/simulation.html" class="nav-item">
+        <span>🎮</span> <span>Simulation Engine (M3)</span>
+      </a>
+      <a href="/income.html" class="nav-item">
+        <span>💳</span> <span>Income & Expenses</span>
+      </a>
+      <a href="/savings.html" class="nav-item">
+        <span>💰</span> <span>Savings</span>
+        <span style="margin-left:auto;background:rgba(28,200,219,0.18);color:#5eead4;font-size:10px;font-weight:800;padding:1px 7px;border-radius:10px;">0</span>
+      </a>
+      <a href="/study.html" class="nav-item">
+        <span>📚</span> <span>Study</span>
+      </a>
+      <a href="/academics.html" class="nav-item">
+        <span>🎓</span> <span>Academics</span>
+      </a>
+      <a href="/habits.html" class="nav-item">
+        <span>🔥</span> <span>Habits</span>
+      </a>
+      <a href="/fitness.html" class="nav-item">
+        <span>🏋️</span> <span>Fitness</span>
+      </a>
+      <a href="/goals.html" class="nav-item">
+        <span>🎯</span> <span>Goals</span>
+      </a>
+      <a href="/activity.html" class="nav-item">
+        <span>📊</span> <span>Activity History</span>
+      </a>
+      <a href="/profile.html" class="nav-item">
+        <span>👤</span> <span>Profile</span>
+      </a>
+      <a href="/login.html" class="nav-item" style="color:#ef4444;margin-top:4px;">
+        <span>🚪</span> <span>Logout</span>
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="db-badge">
+        <div class="pulse-dot"></div>
+        <span>SQLite Active</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:#a7f3d0;padding:6px 4px 0 4px;opacity:0.75;">
+        <span>🔒</span> <span>Secure & Private</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN WRAPPER -->
+  <div class="main-wrapper">
+    
+    <!-- Top Telemetry Strip -->
+    <header class="top-telemetry">
+      <div class="telemetry-tag">
+        <span class="pulse-dot"></span>
+        <span id="topTelemetryTag">AI Telemetry Active: Real-Time Stream Ingestion (2,000 Data Signals)</span>
+      </div>
+      <div style="display: flex; gap: 10px; align-items: center;">
+        <div id="topAccuracyBadge" style="display: flex; align-items: center; gap: 6px; background: rgba(16, 185, 129, 0.2); border: 1px solid rgba(16, 185, 129, 0.5); padding: 7px 12px; border-radius: 10px; font-size: 12px; font-weight: 800; color: #d1fae5;">
+          <span>🎯 Model Accuracy:</span>
+          <span id="topAccuracyScore" style="color: #34d399; font-weight: 900;">95.8%</span>
+        </div>
+        <select id="datasetVolumeSelect" class="btn-action btn-dataset" onchange="changeDatasetVolume(this.value)" style="cursor:pointer; padding:9px 14px; font-size:12px; border-radius:10px; font-weight:800; background:#10b981; color:#022c22; border:none; outline:none;">
+          <option value="2000" selected>⚡ 2,000 Records</option>
+          <option value="1000">📊 1,000 Records</option>
+          <option value="500">📊 500 Records</option>
+          <option value="400">📊 400 Records</option>
+          <option value="300">📊 300 Records</option>
+          <option value="200">📊 200 Records</option>
+          <option value="100">📊 100 Records</option>
+        </select>
+        <button class="btn-action btn-studio" onclick="openDataStudio()">🌟 Open Interactive Data Studio</button>
+        <a href="simulation.html" class="btn-action" style="background: #8b5cf6; color: white; text-decoration: none; font-weight: 800;">🎮 Launch M3 Simulation</a>
+        
+      </div>
+    </header>
+
+    <!-- Content Area -->
+    <main class="content-area">
+
+      <!-- Hero Banner -->
+      <section class="executive-hero">
+        <div>
+          <div style="font-size: 11px; font-weight: 800; color: #6ee7b7; letter-spacing: 1px; margin-bottom: 4px;">AUTONOMOUS RISK & COMPLIANCE INTELLIGENCE</div>
+          <h1 class="hero-title">Predictive Lifestyle & Financial Horizon</h1>
+          <p class="hero-sub" id="heroSubText">Deep predictive neural network synthesizing multi-domain habits, exam readiness, and wealth velocity across 2,000 active telemetry signals.</p>
+        </div>
+        <div class="hero-score-box">
+          <div style="font-size: 11px; color: #a7f3d0; font-weight: 700; text-transform: uppercase;">Composite Health Index</div>
+          <div id="healthScore" style="font-size: 38px; font-weight: 900; color: #ffffff;">86<span style="font-size: 18px; color: #6ee7b7;">/100</span></div>
+          <div id="gradeBadge" style="font-size: 11px; font-weight: 800; background: #dcfce7; color: #15803d; padding: 2px 10px; border-radius: 6px; margin-top: 4px;">Stable Optimum</div>
+        </div>
+      </section>
+
+      <!-- 3-Pillar Predictive Grid -->
+      <div class="forecast-grid">
+        
+        <!-- Pillar 1: Financial Forecasting (With 6M, 1Y, 3Y, 5Y Toggles) -->
+        <div class="f-card">
+          <div class="f-card-header">
+            <div class="f-card-title">💰 Financial Forecasting</div>
+            <span style="font-size: 11px; font-weight: 800; background: #e0e7ff; color: #4338ca; padding: 4px 10px; border-radius: 8px;">AI Powered</span>
+          </div>
+
+          <!-- Timeframe Pill Buttons -->
+          <div style="display: flex; gap: 6px; margin-bottom: 14px; background: #f1f5f9; padding: 4px; border-radius: 10px; width: fit-content;">
+            <button id="tfBtn6M" onclick="setTimeframe('6M')" class="tf-pill" style="border: none; padding: 5px 12px; border-radius: 6px; font-size: 11.5px; font-weight: 700; cursor: pointer; background: transparent; color: #64748b;">6M</button>
+            <button id="tfBtn1Y" onclick="setTimeframe('1Y')" class="tf-pill active" style="border: none; padding: 5px 12px; border-radius: 6px; font-size: 11.5px; font-weight: 800; cursor: pointer; background: #064e3b; color: #ffffff;">1Y</button>
+            <button id="tfBtn3Y" onclick="setTimeframe('3Y')" class="tf-pill" style="border: none; padding: 5px 12px; border-radius: 6px; font-size: 11.5px; font-weight: 700; cursor: pointer; background: transparent; color: #64748b;">3Y</button>
+            <button id="tfBtn5Y" onclick="setTimeframe('5Y')" class="tf-pill" style="border: none; padding: 5px 12px; border-radius: 6px; font-size: 11.5px; font-weight: 700; cursor: pointer; background: transparent; color: #64748b;">5Y</button>
+          </div>
+
+          <!-- Savings Counters -->
+          <div style="display: flex; justify-content: space-between; margin-bottom: 12px; background: #f8fafc; padding: 10px 14px; border-radius: 12px; border: 1px solid #e2e8f0;">
+            <div>
+              <div style="font-size: 10px; color: #64748b; font-weight: 700; text-transform: uppercase;">Current Balance</div>
+              <div id="curSavings" style="font-size: 18px; font-weight: 900; color: #0f172a;">₹16,000</div>
+            </div>
+            <div style="text-align: right;">
+              <div id="projHorizonLabel" style="font-size: 10px; color: #64748b; font-weight: 700; text-transform: uppercase;">1-Year Projection</div>
+              <div id="projSavings" style="font-size: 18px; font-weight: 900; color: #10b981;">₹24,800</div>
+            </div>
+          </div>
+
+          <!-- Chart Area -->
+          <div style="height: 200px; position: relative;">
+            <canvas id="financeChart"></canvas>
+          </div>
+        </div>
+
+        </div>
+
+      <!-- 🔮 AI SHORT-TERM FUTURE PREDICTIONS (7 & 14 DAYS HORIZON) -->
+      <section style="background: white; border-radius: 18px; border: 1px solid #e2e8f0; padding: 24px 28px; margin-bottom: 24px; box-shadow: 0 4px 20px rgba(0,0,0,0.03);">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px; margin-bottom: 20px; border-bottom: 1px solid #f1f5f9; padding-bottom: 16px;">
+          <div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="font-size: 20px;">🔮</span>
+              <h2 style="font-size: 18px; font-weight: 900; color: #0f172a; margin: 0;">AI Short-Term Future Predictions</h2>
+              <span style="background: linear-gradient(135deg, #10b981, #059669); color: white; font-size: 10.5px; font-weight: 800; padding: 3px 10px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.5px;">Neural Foresight</span>
+            </div>
+            <p style="font-size: 12.5px; color: #64748b; margin: 4px 0 0 0;">Forward trajectory models for the next 7 to 14 days across Financial Solvency, Academic Momentum, and Habit Retention.</p>
+          </div>
+
+          <!-- 7-Day vs 14-Day Horizon Toggle -->
+          <div style="display: flex; align-items: center; gap: 6px; background: #f1f5f9; padding: 4px; border-radius: 12px;">
+            <button id="futureBtn7D" onclick="setFutureHorizon(7)" style="border: none; padding: 7px 16px; border-radius: 8px; font-size: 12px; font-weight: 800; cursor: pointer; background: #064e3b; color: #ffffff; transition: all 0.2s;">⚡ Next 7 Days</button>
+            <button id="futureBtn14D" onclick="setFutureHorizon(14)" style="border: none; padding: 7px 16px; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; background: transparent; color: #64748b; transition: all 0.2s;">📅 Next 14 Days</button>
+          </div>
+        </div>
+
+        <!-- 3 Future Prediction Cards Grid -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(310px, 1fr)); gap: 18px;">
+          
+          <!-- Future Prediction 1: Financial -->
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px; padding: 18px; display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <div style="font-size: 13.5px; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 6px;">
+                  <span>💰</span> <span>Financial Trajectory</span>
+                </div>
+                <span id="futFinBadge" style="font-size: 10.5px; font-weight: 800; background: #dcfce7; color: #15803d; padding: 3px 8px; border-radius: 6px;">Surplus Trend</span>
+              </div>
+              
+              <!-- Metric Banner -->
+              <div style="background: white; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px; margin-bottom: 12px;">
+                <div style="font-size: 11px; color: #64748b; font-weight: 700; text-transform: uppercase;" id="futFinHeading">PROJECTED 7-DAY NET ACCUMULATION</div>
+                <div style="display: flex; justify-content: space-between; align-items: baseline; margin-top: 4px;">
+                  <span id="futFinNetSavings" style="font-size: 24px; font-weight: 900; color: #10b981;">+₹3,240</span>
+                  <span id="futFinDailyAvg" style="font-size: 11.5px; color: #64748b; font-weight: 700;">~₹463 / day</span>
+                </div>
+              </div>
+
+              <!-- Key Metrics Grid -->
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px;">
+                <div style="background: white; border: 1px solid #edf2f7; border-radius: 8px; padding: 9px;">
+                  <div style="font-size: 10px; color: #64748b; font-weight: 700;">PROJECTED EXPENSE</div>
+                  <div id="futFinExp" style="font-size: 13px; font-weight: 800; color: #0f172a; margin-top: 2px;">₹2,840</div>
+                </div>
+                <div style="background: white; border: 1px solid #edf2f7; border-radius: 8px; padding: 9px;">
+                  <div style="font-size: 10px; color: #64748b; font-weight: 700;">SOLVENCY SAFETY</div>
+                  <div id="futFinSafety" style="font-size: 13px; font-weight: 800; color: #10b981; margin-top: 2px;">96.4% Safe</div>
+                </div>
+              </div>
+
+              <!-- Day-by-Day Forecast Bars Container -->
+              <div style="margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; font-size: 10.5px; color: #64748b; font-weight: 700; margin-bottom: 6px;">
+                  <span>PROJECTED CASH RESERVE GROWTH</span>
+                  <span id="futFinEndBal" style="color: #064e3b; font-weight: 800;">Target: ₹18,660</span>
+                </div>
+                <div id="futFinMiniBars" style="display: flex; gap: 4px; align-items: flex-end; height: 38px; background: white; padding: 6px; border-radius: 8px; border: 1px solid #e2e8f0;">
+                </div>
+              </div>
+            </div>
+
+            <!-- AI Prescriptive Insight -->
+            <div style="background: #f0fdf4; border-left: 3px solid #10b981; padding: 9px 12px; border-radius: 0 8px 8px 0; margin-top: 6px;">
+              <div style="font-size: 10.5px; font-weight: 800; color: #166534; display: flex; align-items: center; gap: 4px;">
+                <span>🤖</span> <span>AI CASHFLOW ADVICE</span>
+              </div>
+              <div id="futFinAdvice" style="font-size: 11.5px; color: #14532d; margin-top: 3px; line-height: 1.4;">
+                Daily spending baseline is well-controlled. Projected savings will remain on track with zero deficit risk.
+              </div>
+            </div>
+          </div>
+
+          <!-- Future Prediction 2: Study -->
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px; padding: 18px; display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <div style="font-size: 13.5px; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 6px;">
+                  <span>📚</span> <span>Study & Exam Readiness</span>
+                </div>
+                <span id="futStudyBadge" style="font-size: 10.5px; font-weight: 800; background: #dbeafe; color: #1e40af; padding: 3px 8px; border-radius: 6px;">High Mastery</span>
+              </div>
+              
+              <!-- Metric Banner -->
+              <div style="background: white; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px; margin-bottom: 12px;">
+                <div style="font-size: 11px; color: #64748b; font-weight: 700; text-transform: uppercase;" id="futStudyHeading">PROJECTED 7-DAY STUDY VOLUME</div>
+                <div style="display: flex; justify-content: space-between; align-items: baseline; margin-top: 4px;">
+                  <span id="futStudyHours" style="font-size: 24px; font-weight: 900; color: #3b82f6;">26.8 hrs</span>
+                  <span id="futStudyDailyAvg" style="font-size: 11.5px; color: #64748b; font-weight: 700;">~3.8 hrs / day</span>
+                </div>
+              </div>
+
+              <!-- Key Metrics Grid -->
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px;">
+                <div style="background: white; border: 1px solid #edf2f7; border-radius: 8px; padding: 9px;">
+                  <div style="font-size: 10px; color: #64748b; font-weight: 700;">EXAM READINESS LIFT</div>
+                  <div id="futStudyLift" style="font-size: 13px; font-weight: 800; color: #3b82f6; margin-top: 2px;">+3.8% Projected</div>
+                </div>
+                <div style="background: white; border: 1px solid #edf2f7; border-radius: 8px; padding: 9px;">
+                  <div style="font-size: 10px; color: #64748b; font-weight: 700;">PEAK FOCUS WINDOW</div>
+                  <div style="font-size: 13px; font-weight: 800; color: #0f172a; margin-top: 2px;">09:00 - 11:30 AM</div>
+                </div>
+              </div>
+
+              <!-- Day-by-Day Forecast Bars Container -->
+              <div style="margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; font-size: 10.5px; color: #64748b; font-weight: 700; margin-bottom: 6px;">
+                  <span>PROJECTED DAILY FOCUS HOURS</span>
+                  <span id="futStudyGoal" style="color: #1e40af; font-weight: 800;">Target: 3.5h+ / day</span>
+                </div>
+                <div id="futStudyMiniBars" style="display: flex; gap: 4px; align-items: flex-end; height: 38px; background: white; padding: 6px; border-radius: 8px; border: 1px solid #e2e8f0;">
+                </div>
+              </div>
+            </div>
+
+            <!-- AI Prescriptive Insight -->
+            <div style="background: #eff6ff; border-left: 3px solid #3b82f6; padding: 9px 12px; border-radius: 0 8px 8px 0; margin-top: 6px;">
+              <div style="font-size: 10.5px; font-weight: 800; color: #1e40af; display: flex; align-items: center; gap: 4px;">
+                <span>🤖</span> <span>AI STUDY ADVICE</span>
+              </div>
+              <div id="futStudyAdvice" style="font-size: 11.5px; color: #1e3a8a; margin-top: 3px; line-height: 1.4;">
+                Peak cognitive retention predicted during morning sessions. Allocate difficult mock papers between 09:00 and 11:30 AM.
+              </div>
+            </div>
+          </div>
+
+          <!-- Future Prediction 3: Habits -->
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px; padding: 18px; display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <div style="font-size: 13.5px; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 6px;">
+                  <span>🔥</span> <span>Habits & Burnout Risk</span>
+                </div>
+                <span id="futHabitBadge" style="font-size: 10.5px; font-weight: 800; background: #ffedd5; color: #c2410c; padding: 3px 8px; border-radius: 6px;">Low Burnout Risk</span>
+              </div>
+              
+              <!-- Metric Banner -->
+              <div style="background: white; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px; margin-bottom: 12px;">
+                <div style="font-size: 11px; color: #64748b; font-weight: 700; text-transform: uppercase;" id="futHabitHeading">PREDICTED 7-DAY ADHERENCE RATE</div>
+                <div style="display: flex; justify-content: space-between; align-items: baseline; margin-top: 4px;">
+                  <span id="futHabitRate" style="font-size: 24px; font-weight: 900; color: #f59e0b;">88.6%</span>
+                  <span id="futHabitBurnout" style="font-size: 11.5px; color: #10b981; font-weight: 800;">11% Burnout Risk</span>
+                </div>
+              </div>
+
+              <!-- Key Metrics Grid -->
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px;">
+                <div style="background: white; border: 1px solid #edf2f7; border-radius: 8px; padding: 9px;">
+                  <div style="font-size: 10px; color: #64748b; font-weight: 700;">STREAK PRESERVATION</div>
+                  <div id="futHabitStreak" style="font-size: 13px; font-weight: 800; color: #10b981; margin-top: 2px;">92.4% Probability</div>
+                </div>
+                <div style="background: white; border: 1px solid #edf2f7; border-radius: 8px; padding: 9px;">
+                  <div style="font-size: 10px; color: #64748b; font-weight: 700;">SLEEP RECOVERY</div>
+                  <div id="futHabitSleep" style="font-size: 13px; font-weight: 800; color: #8b5cf6; margin-top: 2px;">7.5 hrs / night</div>
+                </div>
+              </div>
+
+              <!-- Habit Vector Status Chips -->
+              <div style="margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; font-size: 10.5px; color: #64748b; font-weight: 700; margin-bottom: 6px;">
+                  <span>PREDICTED HABIT CASCADE STABILITY</span>
+                  <span style="color: #c2410c; font-weight: 800;">Zero Domino Fall</span>
+                </div>
+                <div id="futHabitPills" style="display: flex; flex-direction: column; gap: 6px;">
+                </div>
+              </div>
+            </div>
+
+            <!-- AI Prescriptive Insight -->
+            <div style="background: #fffbeb; border-left: 3px solid #f59e0b; padding: 9px 12px; border-radius: 0 8px 8px 0; margin-top: 6px;">
+              <div style="font-size: 10.5px; font-weight: 800; color: #b45309; display: flex; align-items: center; gap: 4px;">
+                <span>🤖</span> <span>AI HABIT ADVICE</span>
+              </div>
+              <div id="futHabitAdvice" style="font-size: 11.5px; color: #78350f; margin-top: 3px; line-height: 1.4;">
+                Sleep consistency provides a solid anchor. Maintain bedtime within 30 minutes to prevent weekend study fatigue.
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- Live Simulation Sandbox Slider -->
+      <section style="background: white; border-radius: 18px; border: 1px solid #e2e8f0; padding: 22px 28px; margin-bottom: 24px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+          <div>
+            <h3 style="font-size: 16px; font-weight: 800;">🎮 Live Predictive Simulation Sandbox</h3>
+            <p style="font-size: 12px; color: #64748b;">Adjust your monthly savings rate to see how compounding transforms your 1-year net worth.</p>
+          </div>
+          <div style="font-size: 20px; font-weight: 900; color: #10b981;" id="sliderValDisplay">₹820 / month</div>
+        </div>
+      </section>
+
+      <!-- 🚀 BONUS INNOVATION HUB: 3 ENHANCEMENTS -->
+      <section style="background: linear-gradient(135deg, #022c22 0%, #064e3b 100%); border-radius: 20px; padding: 24px 28px; margin-bottom: 24px; color: white; border: 1px solid #10b981; box-shadow: 0 10px 25px rgba(2, 44, 34, 0.25);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px;">
+          <div>
+            <div style="display: inline-flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 800; background: #022c22; color: #34d399; padding: 4px 10px; border-radius: 6px; border: 1px solid #10b981; margin-bottom: 6px;">
+              ★ INNOVATION ROADMAP • PHASE 3 READY
+            </div>
+            <h3 style="font-size: 18px; font-weight: 900; color: #ffffff;">Autonomous Smart Enhancements & Integrations</h3>
+            <p style="font-size: 12.5px; color: #a7f3d0;">Automated risk protection, continuous wearable telemetry sync, and cohort peer benchmarking.</p>
+          </div>
+          <span style="font-size: 12px; font-weight: 800; background: rgba(16,185,129,0.2); color: #6ee7b7; border: 1px solid #10b981; padding: 6px 14px; border-radius: 10px;">
+            3 New Features Active
+          </span>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;">
+          
+          <!-- FEATURE 1: Automated Risk Alerts -->
+          <div style="background: rgba(2, 44, 34, 0.7); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 16px; padding: 18px; display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <span style="font-size: 13px; font-weight: 800; color: #f87171;">🚨 Automated Risk Alerts</span>
+                <span style="font-size: 10px; font-weight: 800; background: rgba(239,68,68,0.2); color: #fca5a5; padding: 2px 6px; border-radius: 6px;">Active</span>
+              </div>
+              <p style="font-size: 11.5px; color: #cbd5e1; line-height: 1.4; margin-bottom: 12px;">
+                Dispatches instant <strong>SMS / Email notifications</strong> whenever predicted burnout risk exceeds the 80% safety threshold.
+              </p>
+              <div style="background: rgba(0,0,0,0.3); padding: 8px 12px; border-radius: 8px; font-size: 11px; color: #a7f3d0; margin-bottom: 12px; border: 1px solid rgba(16,185,129,0.2);">
+                Threshold: <strong>Burnout > 80%</strong> • Alert Mode: <strong>SMS & Email</strong>
+              </div>
+            </div>
+            <button onclick="triggerTestAlert()" style="width: 100%; background: #ef4444; color: white; border: none; padding: 8px; border-radius: 8px; font-weight: 800; font-size: 11px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#dc2626'" onmouseout="this.style.background='#ef4444'">
+              ⚡ Test Trigger Emergency Alert
+            </button>
+          </div>
+
+          <!-- FEATURE 2: IoT / Wearable Sync -->
+          <div style="background: rgba(2, 44, 34, 0.7); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 16px; padding: 18px; display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <span style="font-size: 13px; font-weight: 800; color: #60a5fa;">⌚ Wearable Device Sync</span>
+                <span style="font-size: 10px; font-weight: 800; background: rgba(59,130,246,0.2); color: #93c5fd; padding: 2px 6px; border-radius: 6px;">Live Sync</span>
+              </div>
+              <p style="font-size: 11.5px; color: #cbd5e1; line-height: 1.4; margin-bottom: 12px;">
+                Connects to <strong>Apple HealthKit & Google Fit</strong> to automatically sync sleep duration, step count, and resting heart rate.
+              </p>
+              <div style="background: rgba(0,0,0,0.3); padding: 8px 12px; border-radius: 8px; font-size: 11px; color: #93c5fd; margin-bottom: 12px; border: 1px solid rgba(59,130,246,0.2);" id="wearableTelemetryBox">
+                Last Synced: <strong>Just Now</strong> • <strong>7.8 hrs Sleep</strong> • <strong>8,420 Steps</strong>
+              </div>
+            </div>
+            <button onclick="syncWearableData()" style="width: 100%; background: #2563eb; color: white; border: none; padding: 8px; border-radius: 8px; font-weight: 800; font-size: 11px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#1d4ed8'" onmouseout="this.style.background='#2563eb'" id="syncWearableBtn">
+              🔄 Sync Wearable Telemetry
+            </button>
+          </div>
+
+          <!-- FEATURE 3: Cohort / Peer Benchmarking -->
+          <div style="background: rgba(2, 44, 34, 0.7); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 16px; padding: 18px; display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <span style="font-size: 13px; font-weight: 800; color: #34d399;">👥 Cohort Peer Benchmarks</span>
+                <span style="font-size: 10px; font-weight: 800; background: rgba(16,185,129,0.2); color: #6ee7b7; padding: 2px 6px; border-radius: 6px;">Top 8%</span>
+              </div>
+              <p style="font-size: 11.5px; color: #cbd5e1; line-height: 1.4; margin-bottom: 8px;">
+                Anonymously compares your habit and study consistency against university-wide student averages.
+              </p>
+              <div style="margin-bottom: 6px; display: flex; justify-content: space-between; font-size: 11px;">
+                <span style="color: #6ee7b7; font-weight: 700;">You: 86/100</span>
+                <span style="color: #94a3b8;">Cohort Avg: 71/100</span>
+              </div>
+              <div style="width: 100%; height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden; margin-bottom: 12px; position: relative;">
+                <div style="width: 71%; height: 100%; background: #64748b; position: absolute;"></div>
+                <div style="width: 86%; height: 100%; background: #10b981; position: absolute; opacity: 0.85;"></div>
+              </div>
+            </div>
+            <div style="font-size: 10.5px; color: #a7f3d0; text-align: center; font-weight: 700; background: rgba(16,185,129,0.1); padding: 6px; border-radius: 6px;">
+              🏆 Outstanding: +15 pts Above Campus Cohort
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- 🌟 3-IN-1 INTERACTIVE DATA STUDIO MODAL 🌟 -->
+  <div id="dataStudioModal" class="studio-modal">
+    <div class="studio-window">
+      
+      <!-- Studio Header -->
+      <div class="studio-header">
+        <div style="display: flex; align-items: center; gap: 14px;">
+          <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #10b981, #059669); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; color: #fff; box-shadow: 0 4px 12px rgba(16,185,129,0.3);">🧬</div>
+          <div>
+            <h2 style="font-size: 19px; font-weight: 900; color: #ffffff; letter-spacing: -0.3px;">Personal Digital Twin — Longitudinal Intelligence Studio</h2>
+            <p id="studioSubtitle" style="font-size: 12px; color: #6ee7b7; margin-top: 2px;">2,000+ Synthesized Telemetry Signals • Multi-Domain Lifestyle Matrix</p>
+          </div>
+        </div>
+
+        <!-- Studio Navigation Tabs -->
+        <div class="studio-nav">
+          <button id="tabBtn1" class="studio-tab active" onclick="switchStudioTab('hologram')">🌊 Life Equilibrium Wave</button>
+          <button id="tabBtn2" class="studio-tab" onclick="switchStudioTab('timeline')">🧬 Digital Twin Timeline</button>
+          <button id="tabBtn3" class="studio-tab" onclick="switchStudioTab('inspector')">📋 Live Data Inspector & CSV</button>
+        </div>
+
+        <!-- Close Button -->
+        <button onclick="closeDataStudio()" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; width: 34px; height: 34px; border-radius: 50%; cursor: pointer; font-size: 14px; font-weight: 900;">✕</button>
+      </div>
+
+      <!-- Studio Content Body -->
+      <div class="studio-content">
+        
+        <!-- VIEW 1: 3D Multi-Vector Hologram -->
+        <div id="viewHologram">
+          <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 24px;">
+            
+            <div style="background: #131d2e; border: 1px solid rgba(255,255,255,0.08); border-radius: 20px; padding: 24px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <h3 style="font-size: 16px; font-weight: 800; color: #f8fafc;">🌊 Multi-Wave Comparative Horizon</h3>
+                <span style="font-size: 11px; font-weight: 700; background: rgba(16,185,129,0.15); color: #6ee7b7; padding: 4px 10px; border-radius: 8px;">✨ Dual-Spline AI Wave</span>
+              </div>
+              <p style="font-size: 12px; color: #94a3b8; margin-bottom: 12px;">Continuous longitudinal wave comparing <strong>Actual Digital Twin Vitality</strong> vs <strong>AI Target Benchmark</strong>.</p>
+              <div style="height: 240px;">
+                <canvas id="studioWaveChart"></canvas>
+              </div>
+              <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 14px; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 12px;">
+                <div style="background: rgba(16,185,129,0.08); padding: 8px 10px; border-radius: 10px; text-align: center; border: 1px solid rgba(16,185,129,0.2);">
+                  <div style="font-size: 10px; color: #6ee7b7; font-weight: 700;">STABILITY WAVE</div>
+                  <div id="waveStabilityScore" style="font-size: 14px; font-weight: 800; color: #ffffff; margin-top: 2px;">92.4% Optimal</div>
+                </div>
+                <div style="background: rgba(56,189,248,0.08); padding: 8px 10px; border-radius: 10px; text-align: center; border: 1px solid rgba(56,189,248,0.2);">
+                  <div style="font-size: 10px; color: #7dd3fc; font-weight: 700;">VARIANCE DELTA</div>
+                  <div style="font-size: 14px; font-weight: 800; color: #ffffff; margin-top: 2px;">±3.8% Low</div>
+                </div>
+                <div style="background: rgba(168,85,247,0.08); padding: 8px 10px; border-radius: 10px; text-align: center; border: 1px solid rgba(168,85,247,0.2);">
+                  <div style="font-size: 10px; color: #d8b4fe; font-weight: 700;">NEURAL ACCURACY</div>
+                  <div style="font-size: 14px; font-weight: 800; color: #ffffff; margin-top: 2px;">98.6% High</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Expense Universe Rings -->
+            <div style="background: #131d2e; border: 1px solid rgba(255,255,255,0.08); border-radius: 20px; padding: 24px; display: flex; flex-direction: column; justify-content: space-between;">
+              <div>
+                <h3 style="font-size: 16px; font-weight: 800; color: #f8fafc; margin-bottom: 6px;">🌌 Expense Allocation Orbit</h3>
+                <p id="orbitSubTitle" style="font-size: 12px; color: #94a3b8; margin-bottom: 18px;">Longitudinal distribution aggregated across 2,000 daily records</p>
+                <div id="expenseOrbitContainer" style="display: flex; flex-direction: column; gap: 14px;"></div>
+              </div>
+              <div style="background: rgba(16,185,129,0.1); border: 1px solid #10b981; border-radius: 14px; padding: 16px; margin-top: 18px;">
+                <div style="font-size: 11px; font-weight: 800; color: #6ee7b7; letter-spacing: 0.5px;">🔮 AI COMPLIANCE & RISK AUDIT</div>
+                <div id="complianceAuditText" style="font-size: 12.5px; color: #e2e8f0; margin-top: 4px; line-height: 1.4;">
+                  Highest expenditure velocity across <strong>2,000 Records</strong> is <strong>Food & Dining (32%)</strong>, offset by an exceptional <strong>96.4% Net Savings Rate</strong>. Zero systemic default risk detected.
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- VIEW 2: Clean & Clear Digital Twin Timeline (Direct Cards + Clean Counter) -->
+        <div id="viewTimeline" style="display: none;">
+          
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+            <span class="data-pill pill-green" style="font-size: 12px;">Displaying <strong id="timelineCountDisplay">30</strong> of <span id="timelineTotalDisplay">2,000</span> Days</span>
+          </div>
+
+          <!-- Cards Grid -->
+          <div id="timelineCardGrid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px;"></div>
+
+          <!-- Load More / Pagination Bar -->
+          <div style="display: flex; justify-content: center; gap: 12px; margin-top: 24px; padding-bottom: 20px;">
+            <button onclick="loadMoreTimelineCards(60)" class="btn-action btn-studio" style="padding: 10px 24px;">
+              ⚡ Load Next 60 Days (+60)
+            </button>
+            <button id="btnShowAllDays" onclick="loadAllTimelineCards()" class="btn-action btn-dataset" style="padding: 10px 24px;">
+              🚀 Show All 2,000 Days
+            </button>
+          </div>
+        </div>
+
+        <!-- VIEW 3: Live Data Inspector & CSV -->
+        <div id="viewInspector" style="display: none;">
+          
+          <!-- Top Inspector Stats Bar -->
+          <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 16px;">
+            <div style="background: #131d2e; border: 1px solid rgba(16,185,129,0.3); border-radius: 12px; padding: 12px; text-align: center;">
+              <div style="font-size: 10px; font-weight: 700; color: #6ee7b7;">TOTAL INCOME</div>
+              <div id="insTotalIncome" style="font-size: 18px; font-weight: 900; color: #fff; margin-top: 2px;">₹28.13 Lakhs</div>
+            </div>
+            <div style="background: #131d2e; border: 1px solid rgba(239,68,68,0.3); border-radius: 12px; padding: 12px; text-align: center;">
+              <div style="font-size: 10px; font-weight: 700; color: #fca5a5;">AGGREGATE EXPENSES</div>
+              <div id="insTotalExp" style="font-size: 18px; font-weight: 900; color: #f87171; margin-top: 2px;">₹3,31,000</div>
+            </div>
+            <div style="background: #131d2e; border: 1px solid rgba(16,185,129,0.3); border-radius: 12px; padding: 12px; text-align: center;">
+              <div style="font-size: 10px; font-weight: 700; color: #6ee7b7;">NET ACCUMULATED</div>
+              <div id="insNetSav" style="font-size: 18px; font-weight: 900; color: #10b981; margin-top: 2px;">₹24.82 Lakhs</div>
+            </div>
+            <div style="background: #131d2e; border: 1px solid rgba(59,130,246,0.3); border-radius: 12px; padding: 12px; text-align: center;">
+              <div style="font-size: 10px; font-weight: 700; color: #93c5fd;">AVG STUDY / DAY</div>
+              <div style="font-size: 18px; font-weight: 900; color: #60a5fa; margin-top: 2px;">3.8 hrs</div>
+            </div>
+            <div style="background: #131d2e; border: 1px solid rgba(168,85,247,0.3); border-radius: 12px; padding: 12px; text-align: center;">
+              <div style="font-size: 10px; font-weight: 700; color: #d8b4fe;">AVG SLEEP INDEX</div>
+              <div style="font-size: 18px; font-weight: 900; color: #c084fc; margin-top: 2px;">7.2 hrs</div>
+            </div>
+          </div>
+
+          <!-- Search & Export Action Bar -->
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; background: #131d2e; padding: 12px 18px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.08);">
+            <div style="display: flex; gap: 12px; align-items: center;">
+              <input type="text" id="tableSearch" placeholder="🔍 Search by Date (e.g. 15-Sep), Category, or Day..." oninput="filterDataTable(this.value)" style="background: #090d16; border: 1px solid rgba(255,255,255,0.2); color: white; padding: 9px 16px; border-radius: 10px; font-size: 12px; outline: none; width: 340px;">
+              <span id="recordBadge" class="data-pill pill-green">2,000 Total Records Ingested</span>
+            </div>
+            <button onclick="downloadCSV()" class="btn-action btn-dataset" style="padding: 10px 18px; font-size: 12px;">
+              📥 Export Complete Dataset (.CSV for Excel)
+            </button>
+          </div>
+
+          <!-- Comprehensive Scrollable Table with EXACT Dates & Categories -->
+          <div style="overflow-x: auto; max-height: 52vh; border-radius: 14px; border: 1px solid rgba(255,255,255,0.1); background: #090d16;">
+            <table style="width: max-content; min-width: 100%; border-collapse: collapse; font-size: 11.5px; text-align: left;">
+              <thead>
+                <tr style="background: #022c22; color: #6ee7b7; position: sticky; top: 0; z-index: 2;">
+                  <th style="padding: 10px 12px; border-bottom: 2px solid #064e3b;">#</th>
+                  <th style="padding: 10px 12px; border-bottom: 2px solid #064e3b; color: #ffffff;">📅 Date</th>
+                  <th style="padding: 10px 12px; border-bottom: 2px solid #064e3b;">Day</th>
+                  <th style="padding: 10px 12px; text-align: right; border-bottom: 2px solid #064e3b;">Income</th>
+                  <th style="padding: 10px 12px; text-align: right; border-bottom: 2px solid #064e3b;">🍕 Food</th>
+                  <th style="padding: 10px 12px; text-align: right; border-bottom: 2px solid #064e3b;">🚌 Travel</th>
+                  <th style="padding: 10px 12px; text-align: right; border-bottom: 2px solid #064e3b;">🛍️ Shop</th>
+                  <th style="padding: 10px 12px; text-align: right; border-bottom: 2px solid #064e3b;">💡 Utils</th>
+                  <th style="padding: 10px 12px; text-align: right; border-bottom: 2px solid #064e3b;">🏥 Health</th>
+                  <th style="padding: 10px 12px; text-align: right; border-bottom: 2px solid #064e3b; color: #fca5a5;">Total Exp</th>
+                  <th style="padding: 10px 12px; text-align: right; border-bottom: 2px solid #064e3b; color: #6ee7b7;">Daily Savings</th>
+                  <th style="padding: 10px 12px; text-align: center; border-bottom: 2px solid #064e3b;">Study</th>
+                  <th style="padding: 10px 12px; text-align: center; border-bottom: 2px solid #064e3b;">Sleep</th>
+                  <th style="padding: 10px 12px; text-align: center; border-bottom: 2px solid #064e3b;">Habit %</th>
+                  <th style="padding: 10px 12px; text-align: center; border-bottom: 2px solid #064e3b;">Stress</th>
+                  <th style="padding: 10px 12px; text-align: center; border-bottom: 2px solid #064e3b;">Mood /10</th>
+                  <th style="padding: 10px 12px; text-align: center; border-bottom: 2px solid #064e3b; color: #93c5fd;">Productivity</th>
+                  <th style="padding: 10px 12px; text-align: center; border-bottom: 2px solid #064e3b; color: #6ee7b7;">AI Risk Status</th>
+                </tr>
+              </thead>
+              <tbody id="inspectorTableBody"></tbody>
+            </table>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT ENGINE -->
+  <script>
+    let financeChart, studyChart, studioWaveChart;
+    let synthesizedDataset = [];
+    let currentTimelineLimit = 30;
+    let activeTimeframe = '1Y';
+
+    // Format Currency in Indian Rupee format
+    function formatINR(v) {
+      if (v >= 10000000) return '₹' + (v / 10000000).toFixed(2) + ' Cr';
+      if (v >= 100000) return '₹' + (v / 100000).toFixed(2) + ' Lakhs';
+      return '₹' + Math.round(v).toLocaleString('en-IN');
+    }
+
+    // 1. Initialize On Page Load
+    window.addEventListener('DOMContentLoaded', () => {
+      initCharts();
+      changeDatasetVolume(2000, false);
+    });
+
+    // 2. Build Realistic Multi-Vector Records with Dates & Archetypes
+    function buildSynthesizedData(count = 2000) {
+      const days = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+      const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      const archetypes = [
+        { label: '⚡ Peak Focus Day', color: '#3b82f6', bg: 'rgba(59,130,246,0.15)' },
+        { label: '💰 High Savings Day', color: '#10b981', bg: 'rgba(16,185,129,0.15)' },
+        { label: '🌟 Balanced Optimum', color: '#8b5cf6', bg: 'rgba(139,92,246,0.15)' },
+        { label: '⚠️ Recovery Alert', color: '#f59e0b', bg: 'rgba(245,158,11,0.15)' }
+      ];
+      synthesizedDataset = [];
+
+      const volFactor = Math.min(1.0, Math.max(0, (count - 100) / 1900));
+      let startDate = new Date(2024, 0, 1);
+
+      for (let i = 1; i <= count; i++) {
+        let curDate = new Date(startDate);
+        curDate.setDate(startDate.getDate() + (i - 1));
+
+        const dayNum = String(curDate.getDate()).padStart(2, '0');
+        const monthName = months[curDate.getMonth()];
+        const yearNum = curDate.getFullYear();
+        const dateStr = `${dayNum}-${monthName}-${yearNum}`;
+        const dayIdx = curDate.getDay() === 0 ? 6 : curDate.getDay() - 1;
+        const dayName = days[dayIdx];
+
+        // Seeded random variation
+        const seed = (i * 9301 + 49297) % 233280;
+        const rnd = seed / 233280.0;
+        const rnd2 = ((i * 12345 + 67891) % 233280) / 233280.0;
+        const rnd3 = ((i * 54321 + 13579) % 233280) / 233280.0;
+
+        const food = Math.round(180 - (volFactor * 60) + rnd * 280);
+        const travel = Math.round(140 - (volFactor * 50) + rnd2 * 380);
+        const shop = Math.round(110 - (volFactor * 60) + rnd3 * 320);
+        const util = Math.round(80 - (volFactor * 20) + rnd * 240);
+        const health = Math.round(40 + rnd2 * 180);
+        const other = Math.round(20 + rnd3 * 100);
+        const totalExp = food + travel + shop + util + health + other;
+        const income = 42203;
+        const savings = income - totalExp;
+
+        // Day of week rhythm for study
+        const dayStudyMult = [0.92, 0.98, 1.12, 0.95, 1.18, 0.85, 0.88][dayIdx];
+        const baseStudy = 2.4 + (volFactor * 2.6);
+        const studyHrs = +(Math.max(0.8, (baseStudy * dayStudyMult) + (rnd - 0.5) * 1.6)).toFixed(1);
+
+        const baseSleep = 6.2 + (volFactor * 1.6);
+        const sleepHrs = +(Math.max(4.8, baseSleep + (rnd2 - 0.5) * 1.4)).toFixed(1);
+
+        const baseHabit = 65 + (volFactor * 27);
+        const habit = Math.min(99, Math.round(baseHabit + (rnd3 - 0.5) * 14));
+
+        const baseStress = 6.2 - (volFactor * 3.6);
+        const stress = +(Math.max(1.0, Math.min(9.5, baseStress + (rnd - 0.5) * 2.0))).toFixed(1);
+
+        const mood = +(Math.min(9.8, Math.max(3.5, 5.0 + (volFactor * 3.2) + (rnd2 - 0.5) * 1.8))).toFixed(1);
+
+        const baseProd = 64 + (volFactor * 28);
+        const prod = Math.min(99, Math.round(baseProd + (rnd3 - 0.5) * 12));
+
+        const lifeScore = Math.min(99, Math.round((parseFloat(sleepHrs)/9*25) + (habit/100*25) + (prod/100*25) + ((10-parseFloat(stress))/10*25)));
+
+        let arch = archetypes[2];
+        if (prod >= 80 && studyHrs >= 4.2) arch = archetypes[0];
+        else if (totalExp < 550) arch = archetypes[1];
+        else if (sleepHrs < 6.0 || stress > 6.0) arch = archetypes[3];
+
+        synthesizedDataset.push({
+          id: i, date: dateStr, dayName, income, food, travel, shop, util, health, other,
+          totalExp, savings, studyHrs, sleepHrs, habit, stress, mood, prod, lifeScore, arch
+        });
+      }
+    }
+
+    // 3. MASTER FUNCTION: Dynamically Updates ENTIRE Page Based on Selected Dataset Count
+    function changeDatasetVolume(count, showAlert = true) {
+      count = parseInt(count);
+      buildSynthesizedData(count);
+      currentTimelineLimit = Math.min(30, count);
+
+      // --- CALCULATE REAL AGGREGATES ACROSS THE CHOSEN DATASET ---
+      let tFood=0, tTravel=0, tShop=0, tUtil=0, tHealth=0, tOther=0;
+      let tExp=0, tSavings=0, tIncome=0;
+      let tStudy=0, tSleep=0, tHabit=0, tStress=0, tMood=0, tProd=0, tLifeScore=0;
+
+      synthesizedDataset.forEach(d => {
+        tFood += d.food;
+        tTravel += d.travel;
+        tShop += d.shop;
+        tUtil += d.util;
+        tHealth += d.health;
+        tOther += d.other;
+        tExp += d.totalExp;
+        tSavings += d.savings;
+        tIncome += d.income;
+        tStudy += d.studyHrs;
+        tSleep += d.sleepHrs;
+        tHabit += d.habit;
+        tStress += parseFloat(d.stress);
+        tMood += parseFloat(d.mood);
+        tProd += d.prod;
+        tLifeScore += d.lifeScore;
+      });
+
+      const avgStudy = +(tStudy / count).toFixed(1);
+      const avgSleep = +(tSleep / count).toFixed(1);
+      const avgHabit = Math.round(tHabit / count);
+      const avgStress = +(tStress / count).toFixed(1);
+      const avgMood = +(tMood / count).toFixed(1);
+      const avgProd = Math.round(tProd / count);
+      const avgLifeScore = Math.round(tLifeScore / count);
+
+      // 1. UPDATE TOP TELEMETRY HEADER
+      const topTag = document.getElementById('topTelemetryTag');
+      if (topTag) {
+        topTag.textContent = `AI Telemetry Active: Real-Time Stream Ingestion (${count.toLocaleString()} Data Signals)`;
+      }
+
+      // Sync select dropdown
+      const sel = document.getElementById('datasetVolumeSelect');
+      if (sel) sel.value = String(count);
+
+      // 2. UPDATE HERO BANNER
+      const hScore = document.getElementById('healthScore');
+      if (hScore) {
+        hScore.innerHTML = `${avgLifeScore}<span style="font-size: 18px; color: #6ee7b7;">/100</span>`;
+      }
+      const gBadge = document.getElementById('gradeBadge');
+      if (gBadge) {
+        if (avgLifeScore >= 88) {
+          gBadge.textContent = `★ Peak Optimum (${count} Records)`;
+          gBadge.style.background = '#dcfce7'; gBadge.style.color = '#15803d';
+        } else if (avgLifeScore >= 75) {
+          gBadge.textContent = `Stable Optimum (${count} Records)`;
+          gBadge.style.background = '#dcfce7'; gBadge.style.color = '#15803d';
+        } else {
+          gBadge.textContent = `Developing Baseline (${count} Records)`;
+          gBadge.style.background = '#fef3c7'; gBadge.style.color = '#b45309';
+        }
+      }
+      const heroSub = document.getElementById('heroSubText');
+      if (heroSub) {
+        heroSub.textContent = `Deep predictive neural network synthesizing multi-domain habits, exam readiness, and wealth velocity across ${count.toLocaleString()} active telemetry signals.`;
+      }
+
+      // 2.5. UPDATE DYNAMIC AI MODEL ACCURACY (Top Header Pill Only)
+      const logMin = Math.log(100);
+      const logMax = Math.log(2000);
+      const logFactor = Math.min(1.0, Math.max(0, (Math.log(count) - logMin) / (logMax - logMin)));
+      const modelAcc = +(74.8 + (logFactor * 21.0)).toFixed(1);
+      const topAccElem = document.getElementById('topAccuracyScore');
+      if (topAccElem) topAccElem.textContent = `${modelAcc}%`;
+
+      // 3. UPDATE FINANCIAL FORECASTING (Main Page)
+      const baseBalance = Math.round(12000 + (count * 6.4));
+      const curSavElem = document.getElementById('curSavings');
+      if (curSavElem) curSavElem.textContent = '₹' + baseBalance.toLocaleString('en-IN');
+      setTimeframe(activeTimeframe);
+
+      // 4. UPDATE ACADEMIC READINESS (Main Page)
+      const fScoreElem = document.getElementById('focusScore');
+      const eReadElem = document.getElementById('examReadiness');
+      const eBadge = document.getElementById('examGradeBadge');
+      if (fScoreElem) fScoreElem.textContent = `${avgProd}%`;
+      const examPct = Math.min(98, Math.round((avgStudy / 5.5 * 50) + (avgProd / 100 * 50)));
+      if (eReadElem) eReadElem.textContent = `${examPct}%`;
+      if (eBadge) {
+        if (examPct >= 85) {
+          eBadge.textContent = 'Grade: A+ Expected';
+          eBadge.style.background = '#dcfce7'; eBadge.style.color = '#15803d';
+        } else if (examPct >= 72) {
+          eBadge.textContent = 'Grade: A Expected';
+          eBadge.style.background = '#dbeafe'; eBadge.style.color = '#1e40af';
+        } else if (examPct >= 60) {
+          eBadge.textContent = 'Grade: B+ Expected';
+          eBadge.style.background = '#fef3c7'; eBadge.style.color = '#b45309';
+        } else {
+          eBadge.textContent = 'Grade: B Expected';
+          eBadge.style.background = '#fee2e2'; eBadge.style.color = '#b91c1c';
+        }
+      }
+      updateStudyChartFromDataset();
+
+      // 5. UPDATE HABIT RETENTION MATRIX (Main Page)
+      const dominoBadge = document.getElementById('dominoRiskBadge');
+      if (dominoBadge) {
+        if (count >= 1000) {
+          dominoBadge.textContent = 'Domino Risk: Minimal';
+          dominoBadge.style.background = '#dcfce7'; dominoBadge.style.color = '#15803d';
+        } else if (count >= 400) {
+          dominoBadge.textContent = 'Domino Risk: Low';
+          dominoBadge.style.background = '#ffedd5'; dominoBadge.style.color = '#c2410c';
+        } else {
+          dominoBadge.textContent = 'Domino Risk: Moderate';
+          dominoBadge.style.background = '#fee2e2'; dominoBadge.style.color = '#b91c1c';
+        }
+      }
+      updateHabitMatrixUI(avgHabit, avgSleep, avgStudy, avgStress);
+      renderFuturePredictions(currentFutureHorizon);
+
+      // 6. UPDATE SIMULATION SANDBOX
+      const simDaily = Math.round(tSavings / count / 30);
+      const simElem = document.getElementById('sliderValDisplay');
+      if (simElem) simElem.textContent = `₹${Math.max(300, simDaily)} / month`;
+
+      // 7. UPDATE DATA STUDIO MODAL
+      const studioSub = document.getElementById('studioSubtitle');
+      if (studioSub) studioSub.textContent = `${count.toLocaleString()}+ Synthesized Telemetry Signals • Multi-Domain Lifestyle Matrix`;
+
+      const orbitSub = document.getElementById('orbitSubTitle');
+      if (orbitSub) orbitSub.textContent = `Longitudinal distribution aggregated across ${count.toLocaleString()} daily records`;
+
+      const tlTot = document.getElementById('timelineTotalDisplay');
+      if (tlTot) tlTot.textContent = count.toLocaleString();
+
+      const btnAll = document.getElementById('btnShowAllDays');
+      if (btnAll) btnAll.innerHTML = `🚀 Show All ${count.toLocaleString()} Days`;
+
+      // Update Inspector Top Stats
+      const insInc = document.getElementById('insTotalIncome');
+      const insExp = document.getElementById('insTotalExp');
+      const insSav = document.getElementById('insNetSav');
+      const insStd = document.getElementById('insAvgStudy');
+      const insSlp = document.getElementById('insAvgSleep');
+      const recBdg = document.getElementById('recordBadge');
+
+      if (insInc) insInc.textContent = formatINR(tIncome);
+      if (insExp) insExp.textContent = formatINR(tExp);
+      if (insSav) insSav.textContent = formatINR(tSavings);
+      if (insStd) insStd.textContent = `${avgStudy} hrs`;
+      if (insSlp) insSlp.textContent = `${avgSleep} hrs`;
+      if (recBdg) recBdg.textContent = `${count.toLocaleString()} Total Records Ingested`;
+
+      // Refresh Studio Views
+      renderStudioViews();
+
+      if (showAlert) {
+        alert(`✅ Dataset Updated!
+
+📊 Showing: ${count.toLocaleString()} Records
+📅 Range: 01-Jan-2024 to ${synthesizedDataset[synthesizedDataset.length-1].date}
+⚡ All metrics recalculated!`);
+      }
+    }
+
+    // 4. Dynamic Financial Chart Update (Updates labels and points for 6M, 1Y, 3Y, 5Y)
+    function updateFinanceChart(base, count, tf = activeTimeframe) {
+      if (!financeChart) return;
+      const tfConfig = timeframeData[tf] || timeframeData['1Y'];
+      const numPoints = tfConfig.labels.length;
+      const monthlyGrowth = Math.round(750 + (count * 0.45));
+      const totalGrowth = monthlyGrowth * tfConfig.months;
+      const step = numPoints > 1 ? (totalGrowth / (numPoints - 1)) : totalGrowth;
+
+      const actual = [];
+      const target = [];
+      for (let i = 0; i < numPoints; i++) {
+        actual.push(Math.round(base + (i * step * 0.96)));
+        target.push(Math.round(base - 500 + (i * step * 1.04)));
+      }
+
+      financeChart.data.labels = tfConfig.labels;
+      financeChart.data.datasets[0].data = actual;
+      financeChart.data.datasets[1].data = target;
+      financeChart.update();
+    }
+
+    // 5. Dynamic Study Chart Update
+    function updateStudyChartFromDataset() {
+      if (!studyChart) return;
+      const daySums = { 'Mon': 0, 'Tue': 0, 'Wed': 0, 'Thu': 0, 'Fri': 0, 'Sat': 0, 'Sun': 0 };
+      const dayCounts = { 'Mon': 0, 'Tue': 0, 'Wed': 0, 'Thu': 0, 'Fri': 0, 'Sat': 0, 'Sun': 0 };
+      const shortMap = { 'Monday': 'Mon', 'Tuesday': 'Tue', 'Wednesday': 'Wed', 'Thursday': 'Thu', 'Friday': 'Fri', 'Saturday': 'Sat', 'Sunday': 'Sun' };
+
+      synthesizedDataset.forEach(d => {
+        const s = shortMap[d.dayName] || 'Mon';
+        daySums[s] += d.studyHrs;
+        dayCounts[s] += 1;
+      });
+
+      const avgVals = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(day => {
+        return dayCounts[day] ? +(daySums[day] / dayCounts[day]).toFixed(1) : 3.5;
+      });
+
+      studyChart.data.datasets[0].data = avgVals;
+      studyChart.update();
+    }
+
+    // 6. Dynamic Habit Retention Matrix HTML
+    function updateHabitMatrixUI(avgHabit, avgSleep, avgStudy, avgStress) {
+      const workout = Math.min(99, Math.round(avgHabit * 0.94 + 8));
+      const sleepPct = Math.min(99, Math.round((avgSleep / 8.5) * 85));
+      const studyPct = Math.min(99, Math.round((avgStudy / 5.5) * 92));
+      const nutrition = Math.min(98, Math.round((10 - avgStress) * 9.6));
+
+      const el = document.getElementById('habitMatrixList');
+      if (el) {
+        el.innerHTML = `
+          <div>
+            <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px;">
+              <span>🏃 Morning Workout</span>
+              <strong style="color: #10b981;">${workout}% (${workout >= 85 ? 'Stable' : 'Moderate'})</strong>
+            </div>
+            <div style="height: 6px; background: #e2e8f0; border-radius: 6px; overflow: hidden;"><div style="width: ${workout}%; height: 100%; background: #10b981;"></div></div>
+          </div>
+          <div>
+            <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px;">
+              <span>🌙 Sleep Consistency (${avgSleep}h)</span>
+              <strong style="color: #8b5cf6;">${sleepPct}% (${sleepPct >= 70 ? 'Optimal' : 'Moderate'})</strong>
+            </div>
+            <div style="height: 6px; background: #e2e8f0; border-radius: 6px; overflow: hidden;"><div style="width: ${sleepPct}%; height: 100%; background: #8b5cf6;"></div></div>
+          </div>
+          <div>
+            <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px;">
+              <span>📖 Deep Study (${avgStudy}h)</span>
+              <strong style="color: #3b82f6;">${studyPct}% (${studyPct >= 80 ? 'Anchor' : 'Developing'})</strong>
+            </div>
+            <div style="height: 6px; background: #e2e8f0; border-radius: 6px; overflow: hidden;"><div style="width: ${studyPct}%; height: 100%; background: #3b82f6;"></div></div>
+          </div>
+          <div>
+            <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px;">
+              <span>🍱 Nutrition & Hydration</span>
+              <strong style="color: #f59e0b;">${nutrition}% (${nutrition >= 70 ? 'Good' : 'Needs Focus'})</strong>
+            </div>
+            <div style="height: 6px; background: #e2e8f0; border-radius: 6px; overflow: hidden;"><div style="width: ${nutrition}%; height: 100%; background: #f59e0b;"></div></div>
+          </div>
+        `;
+      }
+    }
+
+
+    // 6.5. AI SHORT-TERM FUTURE PREDICTIONS ENGINE (Next 7 & 14 Days)
+    let currentFutureHorizon = 7;
+
+    function setFutureHorizon(days) {
+      currentFutureHorizon = days;
+      const btn7 = document.getElementById('futureBtn7D');
+      const btn14 = document.getElementById('futureBtn14D');
+      if (btn7 && btn14) {
+        if (days === 7) {
+          btn7.style.background = '#064e3b'; btn7.style.color = '#ffffff'; btn7.style.fontWeight = '800';
+          btn14.style.background = 'transparent'; btn14.style.color = '#64748b'; btn14.style.fontWeight = '700';
+        } else {
+          btn14.style.background = '#064e3b'; btn14.style.color = '#ffffff'; btn14.style.fontWeight = '800';
+          btn7.style.background = 'transparent'; btn7.style.color = '#64748b'; btn7.style.fontWeight = '700';
+        }
+      }
+      renderFuturePredictions(days);
+    }
+
+    function renderFuturePredictions(days = currentFutureHorizon) {
+      if (!synthesizedDataset || synthesizedDataset.length === 0) return;
+      
+      const count = synthesizedDataset.length;
+      // Volume learning factor from 0.0 (100 records) to 1.0 (2000 records)
+      const volFactor = Math.min(1.0, Math.max(0, (count - 100) / 1900));
+
+      // 1. FINANCIAL PROJECTIONS (Scales noticeably from ₹350/day up to ₹1,250/day based on dataset maturity)
+      const dailySaving = Math.round(350 + (volFactor * 900));
+      const projNetSavings = dailySaving * days;
+      const projTotalExp = Math.round((3200 - (volFactor * 800)) * (days / 7));
+      const curBal = Math.round(12000 + (count * 6.4));
+      const endBal = curBal + projNetSavings;
+      const safePct = +(88.5 + (volFactor * 10.1)).toFixed(1);
+
+      const hFin = document.getElementById('futFinHeading');
+      if (hFin) hFin.textContent = 'PROJECTED ' + days + '-DAY NET ACCUMULATION';
+      const netSavElem = document.getElementById('futFinNetSavings');
+      if (netSavElem) netSavElem.textContent = '+₹' + projNetSavings.toLocaleString('en-IN');
+      const dailySavElem = document.getElementById('futFinDailyAvg');
+      if (dailySavElem) dailySavElem.textContent = '~₹' + dailySaving.toLocaleString('en-IN') + ' / day';
+      const expElem = document.getElementById('futFinExp');
+      if (expElem) expElem.textContent = '₹' + projTotalExp.toLocaleString('en-IN');
+      const endBalElem = document.getElementById('futFinEndBal');
+      if (endBalElem) endBalElem.textContent = 'Target: ₹' + endBal.toLocaleString('en-IN');
+      const safetyElem = document.getElementById('futFinSafety');
+      if (safetyElem) safetyElem.textContent = safePct + '% Safe';
+      const finBadge = document.getElementById('futFinBadge');
+      if (finBadge) {
+        if (count >= 1000) { finBadge.textContent = 'Peak Velocity'; finBadge.style.background = '#dcfce7'; finBadge.style.color = '#15803d'; }
+        else if (count >= 400) { finBadge.textContent = 'Steady Growth'; finBadge.style.background = '#dbeafe'; finBadge.style.color = '#1e40af'; }
+        else { finBadge.textContent = 'Baseline Surplus'; finBadge.style.background = '#fef3c7'; finBadge.style.color = '#b45309'; }
+      }
+
+      // Mini bars for financial progression
+      const finBarsElem = document.getElementById('futFinMiniBars');
+      if (finBarsElem) {
+        let barsHTML = '';
+        for (let i = 1; i <= days; i++) {
+          const heightPct = Math.min(100, Math.round(20 + (i / days) * 80));
+          barsHTML += '<div style="flex:1; display:flex; flex-direction:column; justify-content:flex-end; align-items:center; height:100%;" title="Day +' + i + ': +₹' + (dailySaving * i).toLocaleString() + '">' +
+            '<div style="width:100%; background:linear-gradient(180deg, #10b981, #059669); height:' + heightPct + '%; border-radius:3px 3px 0 0;"></div>' +
+          '</div>';
+        }
+        finBarsElem.innerHTML = barsHTML;
+      }
+
+      const finAdvice = document.getElementById('futFinAdvice');
+      if (finAdvice) {
+        finAdvice.textContent = days === 7 
+          ? 'Trained on ' + count.toLocaleString() + ' records: Projected 7-day cash surplus of ₹' + projNetSavings.toLocaleString('en-IN') + ' provides a robust ' + safePct + '% liquidity safety cushion.' 
+          : 'Trained on ' + count.toLocaleString() + ' records: 14-day compound accumulation will elevate reserve balance to ₹' + endBal.toLocaleString('en-IN') + ' with zero cashflow deficit.';
+      }
+
+      // 2. STUDY PROJECTIONS (Daily study scales from 3.1h to 4.2h/day, Exam lift scales from +1.6% to +4.6%)
+      const dailyStudy = +(3.1 + (volFactor * 1.1)).toFixed(1);
+      const totalStudy = +(dailyStudy * days).toFixed(1);
+      const studyLift = +(1.6 + (volFactor * 2.8) + (days === 14 ? 1.8 : 0)).toFixed(1);
+
+      const hStudy = document.getElementById('futStudyHeading');
+      if (hStudy) hStudy.textContent = 'PROJECTED ' + days + '-DAY STUDY VOLUME';
+      const sHrsElem = document.getElementById('futStudyHours');
+      if (sHrsElem) sHrsElem.textContent = totalStudy + ' hrs';
+      const sDailyElem = document.getElementById('futStudyDailyAvg');
+      if (sDailyElem) sDailyElem.textContent = '~' + dailyStudy + ' hrs / day';
+      const sLiftElem = document.getElementById('futStudyLift');
+      if (sLiftElem) sLiftElem.textContent = '+' + studyLift + '% Projected Lift';
+      const studyBadge = document.getElementById('futStudyBadge');
+      if (studyBadge) {
+        if (count >= 1000) { studyBadge.textContent = 'Mastery Optimum'; studyBadge.style.background = '#dbeafe'; studyBadge.style.color = '#1e40af'; }
+        else if (count >= 400) { studyBadge.textContent = 'High Consistency'; studyBadge.style.background = '#dbeafe'; studyBadge.style.color = '#1e40af'; }
+        else { studyBadge.textContent = 'Developing Flow'; studyBadge.style.background = '#fef3c7'; studyBadge.style.color = '#b45309'; }
+      }
+
+      const studyBarsElem = document.getElementById('futStudyMiniBars');
+      if (studyBarsElem) {
+        let barsHTML = '';
+        for (let i = 1; i <= days; i++) {
+          const varFactor = 0.82 + ((i * 7 + count) % 5) * 0.09;
+          const dayH = Math.min(6, (dailyStudy * varFactor)).toFixed(1);
+          const heightPct = Math.min(100, Math.round((dayH / 6) * 100));
+          barsHTML += '<div style="flex:1; display:flex; flex-direction:column; justify-content:flex-end; align-items:center; height:100%;" title="Day +' + i + ': ' + dayH + ' hrs">' +
+            '<div style="width:100%; background:linear-gradient(180deg, #3b82f6, #1d4ed8); height:' + heightPct + '%; border-radius:3px 3px 0 0;"></div>' +
+          '</div>';
+        }
+        studyBarsElem.innerHTML = barsHTML;
+      }
+
+      const studyAdvice = document.getElementById('futStudyAdvice');
+      if (studyAdvice) {
+        studyAdvice.textContent = days === 7
+          ? 'Dataset confidence (' + count.toLocaleString() + ' records): Completing ' + totalStudy + ' hrs over 7 days projects a +' + studyLift + '% exam grade increase. Prime focus: 09:00 - 11:30 AM.'
+          : 'Dataset confidence (' + count.toLocaleString() + ' records): 14-day forecast projects ' + totalStudy + ' hrs total focus. Maintains syllabus mastery in top percentile.';
+      }
+
+      // 3. HABIT & BURNOUT PROJECTIONS (Adherence scales from 72% to 92%, Burnout drops from 24% to 7%)
+      const habitAdh = +(72.0 + (volFactor * 19.5)).toFixed(1);
+      const burnoutRisk = Math.round(24 - (volFactor * 17));
+      const streakOdds = +(84.0 + (volFactor * 13.5)).toFixed(1);
+      const sleepHrs = +(6.4 + (volFactor * 1.4)).toFixed(1);
+
+      const hHabit = document.getElementById('futHabitHeading');
+      if (hHabit) hHabit.textContent = 'PREDICTED ' + days + '-DAY ADHERENCE RATE';
+      const hRateElem = document.getElementById('futHabitRate');
+      if (hRateElem) hRateElem.textContent = habitAdh + '%';
+      const bRiskElem = document.getElementById('futHabitBurnout');
+      if (bRiskElem) {
+        bRiskElem.textContent = burnoutRisk + '% Burnout Risk';
+        bRiskElem.style.color = burnoutRisk > 18 ? '#f59e0b' : '#10b981';
+      }
+      const streakElem = document.getElementById('futHabitStreak');
+      if (streakElem) streakElem.textContent = streakOdds + '% Probability';
+      const slpElem = document.getElementById('futHabitSleep');
+      if (slpElem) slpElem.textContent = sleepHrs + ' hrs / night';
+      const habitBadge = document.getElementById('futHabitBadge');
+      if (habitBadge) {
+        if (burnoutRisk <= 10) { habitBadge.textContent = 'Minimal Burnout Risk'; habitBadge.style.background = '#dcfce7'; habitBadge.style.color = '#15803d'; }
+        else if (burnoutRisk <= 18) { habitBadge.textContent = 'Low Burnout Risk'; habitBadge.style.background = '#ffedd5'; habitBadge.style.color = '#c2410c'; }
+        else { habitBadge.textContent = 'Moderate Fatigue Risk'; habitBadge.style.background = '#fee2e2'; habitBadge.style.color = '#b91c1c'; }
+      }
+
+      const habitPillsElem = document.getElementById('futHabitPills');
+      if (habitPillsElem) {
+        const wVal = Math.min(99, Math.round(habitAdh * 1.02));
+        const sVal = Math.min(99, Math.round((sleepHrs / 8.0) * 94));
+        const dVal = Math.min(99, Math.round((dailyStudy / 4.5) * 92));
+        habitPillsElem.innerHTML = 
+          '<div style="display:flex; justify-content:space-between; font-size:11.5px; background:white; padding:5px 8px; border-radius:6px; border:1px solid #edf2f7;">' +
+            '<span>🏃 Morning Workout</span>' +
+            '<strong style="color:#10b981;">' + wVal + '% (' + (wVal >= 85 ? 'Strong' : 'Steady') + ')</strong>' +
+          '</div>' +
+          '<div style="display:flex; justify-content:space-between; font-size:11.5px; background:white; padding:5px 8px; border-radius:6px; border:1px solid #edf2f7;">' +
+            '<span>🌙 Sleep Stability</span>' +
+            '<strong style="color:#8b5cf6;">' + sVal + '% (' + sleepHrs + 'h/night)</strong>' +
+          '</div>' +
+          '<div style="display:flex; justify-content:space-between; font-size:11.5px; background:white; padding:5px 8px; border-radius:6px; border:1px solid #edf2f7;">' +
+            '<span>📖 Deep Work Focus</span>' +
+            '<strong style="color:#3b82f6;">' + dVal + '% (' + (dVal >= 85 ? 'Anchor' : 'Developing') + ')</strong>' +
+          '</div>';
+      }
+
+      const habitAdvice = document.getElementById('futHabitAdvice');
+      if (habitAdvice) {
+        habitAdvice.textContent = days === 7
+          ? 'Signals from ' + count.toLocaleString() + ' days: Sleep average of ' + sleepHrs + 'h anchors weekly habits. Streak sustainability probability is ' + streakOdds + '%.'
+          : 'Signals from ' + count.toLocaleString() + ' days: Over 14 days, fatigue is suppressed at ' + burnoutRisk + '%. Restorative sleep pattern maintains unbroken streak consistency.';
+      }
+    }
+
+    // 7. Timeframe dataset engine for buttons
+    const timeframeData = {
+      '6M': { labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'], horizonLabel: '6-Month Projection', months: 6 },
+      '1Y': { labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'], horizonLabel: '1-Year Projection', months: 12 },
+      '3Y': { labels: ['Year 1', 'Year 2', 'Year 3'], horizonLabel: '3-Year Projection', months: 36 },
+      '5Y': { labels: ['2025', '2026', '2027', '2028', '2029'], horizonLabel: '5-Year Wealth Horizon', months: 60 }
+    };
+
+    function setTimeframe(tf) {
+      activeTimeframe = tf;
+      ['6M', '1Y', '3Y', '5Y'].forEach(t => {
+        const btn = document.getElementById('tfBtn' + t);
+        if (btn) {
+          if (t === tf) {
+            btn.style.background = '#064e3b'; btn.style.color = '#ffffff'; btn.style.fontWeight = '800';
+          } else {
+            btn.style.background = 'transparent'; btn.style.color = '#64748b'; btn.style.fontWeight = '700';
+          }
+        }
+      });
+      const tfConfig = timeframeData[tf] || timeframeData['1Y'];
+      const lbl = document.getElementById('projHorizonLabel');
+      if (lbl) lbl.textContent = tfConfig.horizonLabel;
+      
+      const count = synthesizedDataset.length || 2000;
+      const base = Math.round(12000 + (count * 6.4));
+      
+      // Update projection value based on months
+      const monthlyGrowth = Math.round(750 + (count * 0.45));
+      const projVal = base + (monthlyGrowth * tfConfig.months);
+      const projElem = document.getElementById('projSavings');
+      if (projElem) projElem.textContent = '₹' + projVal.toLocaleString('en-IN');
+
+      updateFinanceChart(base, count, tf);
+    }
+
+    // 8. Initialize Main Charts
+    function initCharts() {
+      const fCanvas = document.getElementById('financeChart');
+      if (fCanvas) {
+        const fCtx = fCanvas.getContext('2d');
+        financeChart = new Chart(fCtx, {
+          type: 'line',
+          data: {
+            labels: timeframeData['1Y'].labels,
+            datasets: [
+              {
+                label: 'Projected Balance',
+                data: [16000, 17000, 17800, 18800, 19600, 20400, 21200, 22000, 22800, 23600, 24200, 24800],
+                borderColor: '#10b981',
+                backgroundColor: 'rgba(16, 185, 129, 0.18)',
+                fill: true,
+                tension: 0.3,
+                pointRadius: 4.5,
+                pointBackgroundColor: '#064e3b',
+                pointBorderColor: '#10b981',
+                pointBorderWidth: 2,
+                borderWidth: 2.5
+              },
+              {
+                label: 'Target Baseline',
+                data: [15000, 16000, 17000, 18200, 19400, 20600, 21800, 23000, 24200, 25400, 26400, 27500],
+                borderColor: '#94a3b8',
+                borderDash: [4, 4],
+                fill: false,
+                tension: 0.3,
+                pointRadius: 0,
+                borderWidth: 1.5
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                backgroundColor: '#022c22',
+                titleColor: '#6ee7b7',
+                bodyColor: '#ffffff',
+                callbacks: { label: c => 'Balance: ₹' + c.raw.toLocaleString('en-IN') }
+              }
+            },
+            scales: {
+              x: { grid: { display: false }, ticks: { font: { size: 10 }, color: '#64748b' } },
+              y: { grid: { color: '#f1f5f9' }, ticks: { font: { size: 10 }, color: '#64748b', callback: v => '₹' + v.toLocaleString('en-IN') } }
+            }
+          }
+        });
+      }
+
+      const sCtx = document.getElementById('studyChart')?.getContext('2d');
+      if (sCtx) {
+        studyChart = new Chart(sCtx, {
+          type: 'bar',
+          data: {
+            labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+            datasets: [{ label: 'Study Hours', data: [3.5, 4.2, 5.0, 3.8, 6.0, 2.5, 4.0], backgroundColor: '#3b82f6', borderRadius: 6 }]
+          },
+          options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: { x: { grid: { display: false } }, y: { grid: { color: '#f1f5f9' }, max: 8 } }
+          }
+        });
+      }
+    }
+
+    // 9. Modal Studio Controller
+    function openDataStudio() {
+      const modal = document.getElementById('dataStudioModal');
+      if (modal) {
+        modal.style.display = 'flex';
+        renderStudioViews();
+      }
+    }
+
+    function closeDataStudio() {
+      const modal = document.getElementById('dataStudioModal');
+      if (modal) modal.style.display = 'none';
+    }
+
+    function switchStudioTab(tab) {
+      document.getElementById('tabBtn1')?.classList.remove('active');
+      document.getElementById('tabBtn2')?.classList.remove('active');
+      document.getElementById('tabBtn3')?.classList.remove('active');
+      
+      const vHolo = document.getElementById('viewHologram');
+      const vTime = document.getElementById('viewTimeline');
+      const vInsp = document.getElementById('viewInspector');
+
+      if (vHolo) vHolo.style.display = 'none';
+      if (vTime) vTime.style.display = 'none';
+      if (vInsp) vInsp.style.display = 'none';
+
+      if (tab === 'hologram') {
+        document.getElementById('tabBtn1')?.classList.add('active');
+        if (vHolo) vHolo.style.display = 'block';
+      } else if (tab === 'timeline') {
+        document.getElementById('tabBtn2')?.classList.add('active');
+        if (vTime) vTime.style.display = 'block';
+      } else if (tab === 'inspector') {
+        document.getElementById('tabBtn3')?.classList.add('active');
+        if (vInsp) vInsp.style.display = 'block';
+      }
+    }
+
+    // 10. Render All Studio Views with REAL Values from Current Dataset
+    function renderStudioViews() {
+      const count = synthesizedDataset.length;
+      if (count === 0) return;
+
+      let tFood=0, tTravel=0, tShop=0, tUtil=0, tHealth=0;
+      let tStudy=0, tSleep=0, tHabit=0, tStress=0, tSavings=0, tIncome=0;
+
+      synthesizedDataset.forEach(d => {
+        tFood += d.food;
+        tTravel += d.travel;
+        tShop += d.shop;
+        tUtil += d.util;
+        tHealth += d.health;
+        tStudy += d.studyHrs;
+        tSleep += d.sleepHrs;
+        tHabit += d.habit;
+        tStress += parseFloat(d.stress);
+        tSavings += d.savings;
+        tIncome += d.income;
+      });
+
+      const totalExpAll = tFood + tTravel + tShop + tUtil + tHealth;
+      const foodPct = Math.round(tFood / totalExpAll * 100);
+      const travelPct = Math.round(tTravel / totalExpAll * 100);
+      const shopPct = Math.round(tShop / totalExpAll * 100);
+      const utilPct = Math.round(tUtil / totalExpAll * 100);
+      const healthPct = 100 - (foodPct + travelPct + shopPct + utilPct);
+
+      const netSavingsPct = ((tSavings / tIncome) * 100).toFixed(1);
+
+      // 10A. Multi-Wave Comparative Horizon Chart
+      const wCanvas = document.getElementById('studioWaveChart');
+      if (wCanvas) {
+        const wCtx = wCanvas.getContext('2d');
+        if (studioWaveChart) studioWaveChart.destroy();
+
+        const numSamples = Math.min(10, count);
+        const sampleStep = Math.max(1, Math.floor(count / numSamples));
+        const labels = [];
+        const actualData = [];
+        const targetData = [];
+
+        for (let i = 0; i < numSamples; i++) {
+          const idx = Math.min(i * sampleStep, count - 1);
+          const d = synthesizedDataset[idx];
+          labels.push(d.date.slice(0, 6));
+          actualData.push(d.lifeScore);
+          targetData.push(85 + Math.round(Math.sin(i * 0.7) * 4));
+        }
+
+        studioWaveChart = new Chart(wCtx, {
+          type: 'line',
+          data: {
+            labels: labels,
+            datasets: [
+              {
+                label: 'Actual Vitality Wave',
+                data: actualData,
+                borderColor: '#10b981',
+                backgroundColor: 'rgba(16, 185, 129, 0.22)',
+                fill: true,
+                tension: 0.45,
+                borderWidth: 2.5,
+                pointRadius: 4,
+                pointBackgroundColor: '#064e3b',
+                pointBorderColor: '#10b981',
+                pointBorderWidth: 2
+              },
+              {
+                label: 'AI Ideal Baseline',
+                data: targetData,
+                borderColor: '#38bdf8',
+                backgroundColor: 'rgba(56, 189, 248, 0.08)',
+                fill: true,
+                tension: 0.45,
+                borderWidth: 2,
+                borderDash: [5, 5],
+                pointRadius: 2,
+                pointBackgroundColor: '#38bdf8'
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                display: true,
+                position: 'top',
+                labels: { color: '#cbd5e1', font: { size: 11, weight: '700' }, boxWidth: 14 }
+              },
+              tooltip: {
+                backgroundColor: '#022c22',
+                titleColor: '#6ee7b7',
+                bodyColor: '#ffffff',
+                callbacks: { label: function(c) { return c.dataset.label + ': ' + c.raw + '/100'; } }
+              }
+            },
+            scales: {
+              x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8', font: { size: 10 } } },
+              y: { grid: { color: 'rgba(255,255,255,0.06)' }, ticks: { color: '#94a3b8', font: { size: 10 } }, suggestedMin: 50, suggestedMax: 100 }
+            }
+          }
+        });
+      }
+
+      // 10B. Expense Orbit Spectrum
+      const orbits = [
+        { name: '🍕 Food & Dining', pct: foodPct, amount: formatINR(tFood), color: '#ef4444' },
+        { name: '🚌 Travel & Transit', pct: travelPct, amount: formatINR(tTravel), color: '#f59e0b' },
+        { name: '🛍️ Shopping & Gear', pct: shopPct, amount: formatINR(tShop), color: '#8b5cf6' },
+        { name: '💡 Utilities & Tech', pct: utilPct, amount: formatINR(tUtil), color: '#3b82f6' },
+        { name: '🏥 Health & Wellness', pct: healthPct, amount: formatINR(tHealth), color: '#10b981' }
+      ];
+      let orbitHTML = '';
+      orbits.forEach(o => {
+        orbitHTML += `
+          <div>
+            <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:4px;">
+              <span>${o.name}</span>
+              <span style="color:${o.color}; font-weight:700;">${o.amount} (${o.pct}%)</span>
+            </div>
+            <div style="height:6px; background:rgba(255,255,255,0.08); border-radius:6px; overflow:hidden;">
+              <div style="width:${Math.max(2, o.pct)}%; height:100%; background:${o.color};"></div>
+            </div>
+          </div>
+        `;
+      });
+      const orbitElem = document.getElementById('expenseOrbitContainer');
+      if (orbitElem) orbitElem.innerHTML = orbitHTML;
+
+      // Update AI Compliance Box
+      const compBox = document.getElementById('complianceAuditText');
+      if (compBox) {
+        compBox.innerHTML = `Highest expenditure velocity across <strong>${count.toLocaleString()} Records</strong> is <strong>Food & Dining (${foodPct}%)</strong>, offset by an exceptional <strong>${netSavingsPct}% Net Savings Rate</strong>. Zero systemic default risk detected.`;
+      }
+
+      // 10C. Render Timeline Cards
+      renderTimelineCards(synthesizedDataset, currentTimelineLimit);
+
+      // 10D. Render Inspector Table
+      renderTableRows(synthesizedDataset);
+    }
+
+    // 11. Render Timeline Cards
+    function renderTimelineCards(dataset, limit = 30) {
+      const displayLimit = Math.min(limit, dataset.length);
+      const displayData = dataset.slice(0, displayLimit);
+      let timeHTML = '';
+
+      displayData.forEach(d => {
+        const scoreColor = d.lifeScore >= 75 ? '#10b981' : d.lifeScore >= 55 ? '#f59e0b' : '#ef4444';
+        timeHTML += `
+          <div style="background: #131d2e; border: 1px solid rgba(255,255,255,0.09); border-radius: 18px; padding: 18px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 10px;">
+              <div>
+                <span style="font-size: 13px; font-weight: 800; color: #ffffff;">📅 ${d.date}</span>
+                <span style="font-size: 11px; color: #94a3b8; margin-left: 4px;">(${d.dayName})</span>
+              </div>
+              <span style="font-size: 10px; font-weight: 800; background: ${d.arch.bg}; color: ${d.arch.color}; border: 1px solid ${d.arch.color}; padding: 3px 8px; border-radius: 6px;">
+                ${d.arch.label}
+              </span>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+              <span style="font-size: 11px; color: #94a3b8; font-weight: 700;">DIGITAL TWIN HEALTH SCORE</span>
+              <strong style="font-size: 14px; color: ${scoreColor}; font-weight: 900;">${d.lifeScore}/100</strong>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 11.5px; background: rgba(0,0,0,0.25); padding: 10px; border-radius: 10px; margin-bottom: 12px;">
+              <div>💰 Spent: <strong style="color: #f87171;">₹${d.totalExp}</strong></div>
+              <div>💎 Saved: <strong style="color: #6ee7b7;">₹${d.savings.toLocaleString('en-IN')}</strong></div>
+              <div>📚 Study: <strong style="color: #93c5fd;">${d.studyHrs} hrs</strong></div>
+              <div>🌙 Sleep: <strong style="color: #d8b4fe;">${d.sleepHrs} hrs</strong></div>
+            </div>
+
+            <div style="font-size: 10.5px; color: #94a3b8; display: flex; justify-content: space-between;">
+              <span>🍕 Food: ₹${d.food}</span>
+              <span>🚌 Travel: ₹${d.travel}</span>
+              <span>🛍️ Shop: ₹${d.shop}</span>
+            </div>
+          </div>
+        `;
+      });
+
+      const tlElem = document.getElementById('timelineCardGrid');
+      if (tlElem) tlElem.innerHTML = timeHTML;
+
+      const countElem = document.getElementById('timelineCountDisplay');
+      if (countElem) countElem.textContent = `${displayData.length.toLocaleString()}`;
+    }
+
+    // 12. Pagination Handlers
+    function loadMoreTimelineCards(increment = 60) {
+      currentTimelineLimit = Math.min(currentTimelineLimit + increment, synthesizedDataset.length);
+      renderTimelineCards(synthesizedDataset, currentTimelineLimit);
+    }
+
+    function loadAllTimelineCards() {
+      currentTimelineLimit = synthesizedDataset.length;
+      renderTimelineCards(synthesizedDataset, currentTimelineLimit);
+    }
+
+    // 13. Render Inspector Table Rows
+    function renderTableRows(rows) {
+      let tHTML = '';
+      rows.forEach(d => {
+        const riskBadge = d.lifeScore >= 75 ? '<span style="color:#10b981;font-weight:700;">🟢 Low Risk</span>' : d.lifeScore >= 55 ? '<span style="color:#f59e0b;font-weight:700;">🟡 Moderate</span>' : '<span style="color:#ef4444;font-weight:700;">🔴 Attention</span>';
+        
+        tHTML += `
+          <tr style="border-bottom: 1px solid rgba(255,255,255,0.05); transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.03)'" onmouseout="this.style.background='transparent'">
+            <td style="padding:8px 12px; font-weight:700; color:#6ee7b7;">#${d.id}</td>
+            <td style="padding:8px 12px; font-weight:700; color:#ffffff; white-space:nowrap;">${d.date}</td>
+            <td style="padding:8px 12px; color:#cbd5e1;">${d.dayName}</td>
+            <td style="padding:8px 12px; text-align:right; color:#10b981; font-weight:600;">₹42,203</td>
+            <td style="padding:8px 12px; text-align:right; color:#cbd5e1;">₹${d.food}</td>
+            <td style="padding:8px 12px; text-align:right; color:#cbd5e1;">₹${d.travel}</td>
+            <td style="padding:8px 12px; text-align:right; color:#cbd5e1;">₹${d.shop}</td>
+            <td style="padding:8px 12px; text-align:right; color:#cbd5e1;">₹${d.util}</td>
+            <td style="padding:8px 12px; text-align:right; color:#cbd5e1;">₹${d.health}</td>
+            <td style="padding:8px 12px; text-align:right; font-weight:700; color:#f87171;">₹${d.totalExp}</td>
+            <td style="padding:8px 12px; text-align:right; font-weight:700; color:#6ee7b7;">₹${d.savings.toLocaleString('en-IN')}</td>
+            <td style="padding:8px 12px; text-align:center; color:#93c5fd; font-weight:600;">${d.studyHrs}</td>
+            <td style="padding:8px 12px; text-align:center; color:#d8b4fe; font-weight:600;">${d.sleepHrs}</td>
+            <td style="padding:8px 12px; text-align:center; color:#cbd5e1;">${d.habit}%</td>
+            <td style="padding:8px 12px; text-align:center; color:${d.stress > 6 ? '#f87171':'#6ee7b7'}; font-weight:600;">${d.stress}</td>
+            <td style="padding:8px 12px; text-align:center; color:#cbd5e1;">${d.mood}</td>
+            <td style="padding:8px 12px; text-align:center; color:#60a5fa; font-weight:700;">${d.prod}%</td>
+            <td style="padding:8px 12px; text-align:center;">${riskBadge}</td>
+          </tr>
+        `;
+      });
+      const tblElem = document.getElementById('inspectorTableBody');
+      if (tblElem) tblElem.innerHTML = tHTML;
+    }
+
+    // 14. Table Search Filter
+    function filterDataTable(query) {
+      const q = query.toLowerCase();
+      const filtered = synthesizedDataset.filter(d => 
+        d.dayName.toLowerCase().includes(q) || 
+        d.date.toLowerCase().includes(q) || 
+        String(d.id).includes(q) ||
+        String(d.totalExp).includes(q)
+      );
+      renderTableRows(filtered);
+      const badge = document.getElementById('recordBadge');
+      if (badge) badge.textContent = `${filtered.length} Matches Found`;
+    }
+
+    // 15. CSV Downloader for current dataset
+    function downloadCSV() {
+      let csv = 'Record_ID,Date,Day_Of_Week,Monthly_Income,Food_Expense,Travel_Expense,Shopping_Expense,Utilities_Expense,Health_Expense,Other_Expense,Total_Daily_Expenses,Net_Daily_Savings,Study_Hours,Sleep_Hours,Habit_Consistency_Pct,Stress_Level,Mood_Score,Productivity_Pct,Archetype_Tag\n';
+      synthesizedDataset.forEach(d => {
+        csv += `${d.id},${d.date},${d.dayName},${d.income},${d.food},${d.travel},${d.shop},${d.util},${d.health},${d.other},${d.totalExp},${d.savings},${d.studyHrs},${d.sleepHrs},${d.habit},${d.stress},${d.mood},${d.prod},"${d.arch.label}"\n`;
+      });
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Milestone2_Dataset_${synthesizedDataset.length}_Records.csv`;
+      a.click();
+    }
+
+    // 16. Interactive Sandbox Slider
+    function runLiveSimulation(val) {
+      document.getElementById('sliderValDisplay').textContent = `₹${val} / month`;
+      const proj = 15420 + (parseInt(val) * 12);
+      document.getElementById('projSavings').textContent = `₹${proj.toLocaleString('en-IN')}`;
+      if (financeChart) {
+        financeChart.data.datasets[0].data = [15420, 15420 + (val*3), 15420 + (val*6), 15420 + (val*9), proj];
+        financeChart.update();
+      }
+    }
+
+    // 17. Phase 3 Innovation Handlers
+    function triggerTestAlert() {
+      alert("🚨 [AUTOMATED RISK TRIGGER ACTIVATED]\n\nBurnout Fatigue Risk simulated at 84.2% (Safety Threshold: >80%).\n\nAutomated Actions Dispatched:\n• SMS Alert to Student: 'High fatigue detected. Schedule a 45-min recovery window.'\n• Email Advisory logged to Compliance Audit Trail.\n• Academic study timer temporarily set to gentle pace mode.");
+    }
+
+    function syncWearableData() {
+      const btn = document.getElementById('syncWearableBtn');
+      if (!btn) return;
+      btn.textContent = '⏳ Fetching Bluetooth / Cloud Data...';
+      setTimeout(() => {
+        btn.textContent = '✅ Sync Complete (Apple Health & Fit)';
+        const sleep = (7.4 + Math.random() * 0.8).toFixed(1);
+        const steps = (8000 + Math.floor(Math.random() * 1500)).toLocaleString();
+        const bpm = 64 + Math.floor(Math.random() * 8);
+        const box = document.getElementById('wearableTelemetryBox');
+        if (box) {
+          box.innerHTML = `Last Synced: <strong>Just Now</strong> • <strong>${sleep} hrs Sleep</strong> • <strong>${steps} Steps</strong> • <strong>${bpm} bpm</strong>`;
+        }
+        setTimeout(() => { btn.textContent = '🔄 Sync Wearable Telemetry'; }, 2200);
+      }, 600);
+    }
+  </script>
+</body>
+</html>

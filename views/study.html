@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Study - MyApp</title>
+  <link rel="stylesheet" href="/css/dashboard.css">
+  <link rel="stylesheet" href="/css/study.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+<div class="app-layout">
+  <aside class="sidebar">
+    <div class="sidebar-logo"><div class="logo-icon-box">✓</div><div class="logo-text"><h2>MyApp</h2><span>USER PORTAL</span></div></div>
+    <div class="sidebar-section-label">WORKSPACE</div>
+    <a href="/dashboard.html" class="nav-item"><span class="nav-icon">🏠</span><span>Dashboard</span></a>
+      <a href="/forecasting.html" class="nav-item"><span class="nav-icon">📈</span><span>Forecasting</span></a>
+      <a href="/simulation.html" class="nav-item"><span>🎮</span> <span>Simulation Engine (M3)</span></a>
+
+      <a href="/income.html" class="nav-item"><span class="nav-icon">▭</span><span>Income & Expenses</span></a>
+      <a href="/savings.html" class="nav-item"><span class="nav-icon">◎</span><span>Savings</span></a>
+      <a href="/study.html" class="nav-item active"><span class="nav-icon">▤</span><span>Study</span></a>
+      <a href="/academics.html" class="nav-item"><span class="nav-icon">◯</span><span>Academics</span></a>
+      <a href="/habits.html" class="nav-item"><span class="nav-icon">🔥</span><span>Habits</span></a>
+      <a href="/fitness.html" class="nav-item"><span class="nav-icon">∿</span><span>Fitness</span></a>
+      <a href="/goals.html" class="nav-item"><span class="nav-icon">◉</span><span>Goals</span></a>
+      <a href="/activity.html" class="nav-item"><span class="nav-icon">▦</span><span>Activity History</span></a>
+      <a href="/profile.html" class="nav-item"><span class="nav-icon">👤</span><span>Profile</span></a>
+      <a href="#" class="nav-item logout-item" id="logoutBtn"><span class="nav-icon">🚪</span><span>Logout</span></a>
+    </nav>
+    <div class="sidebar-footer"><div class="db-status"><span class="status-dot"></span><div><div style="color:rgba(255,255,255,0.8);font-size:12px;font-weight:600;">Database: SQLite Active</div><div style="color:rgba(255,255,255,0.45);font-size:11px;">All systems operational</div></div></div></div>
+  </aside>
+
+  <main class="main-content">
+
+    <!-- Header -->
+    <div class="s-header">
+      <div class="s-header-left">
+        <div class="s-breadcrumb">WORKSPACE · STUDY</div>
+        <h1 class="s-title">Study Tracker</h1>
+      </div>
+      <div class="s-header-right">
+        <div class="s-today-pill" id="sTodayPill">📖 0h studied today</div>
+        <div class="s-avatar" id="sAvatar">U</div>
+      </div>
+    </div>
+
+    <!-- Stats Strip -->
+    <div class="s-stats-strip">
+      <div class="s-stat-chip">
+        <span class="s-chip-icon">📚</span>
+        <span class="s-chip-val" id="ss1">0</span>
+        <span class="s-chip-lbl">Sessions</span>
+      </div>
+      <div class="s-stat-chip">
+        <span class="s-chip-icon">⏱</span>
+        <span class="s-chip-val" id="ss2">0h</span>
+        <span class="s-chip-lbl">Total Time</span>
+      </div>
+      <div class="s-stat-chip">
+        <span class="s-chip-icon">📝</span>
+        <span class="s-chip-val" id="ss3">0</span>
+        <span class="s-chip-lbl">Topics</span>
+      </div>
+      <div class="s-stat-chip">
+        <span class="s-chip-icon">🔥</span>
+        <span class="s-chip-val" id="ss4">0</span>
+        <span class="s-chip-lbl">Day Streak</span>
+      </div>
+      <div class="s-stat-chip s-chip-timer">
+        <span class="s-chip-icon">🍅</span>
+        <span class="s-chip-val" id="ss5">0</span>
+        <span class="s-chip-lbl">Pomodoros</span>
+      </div>
+    </div>
+
+    <!-- Main Grid -->
+    <div class="s-grid">
+
+      <!-- Log Form Card -->
+      <div class="s-card s-form-card">
+        <div class="s-card-header indigo">
+          <span>📓 Log Session</span>
+        </div>
+        <div class="s-card-body">
+          <div id="sMsg"></div>
+          <div class="s-field">
+            <label>Subject / Topic</label>
+            <input type="text" id="sSubject" placeholder="e.g. Mathematics, React.js...">
+          </div>
+          <div class="s-row2">
+            <div class="s-field">
+              <label>Duration (min)</label>
+              <input type="number" id="sDuration" placeholder="60">
+            </div>
+            <div class="s-field">
+              <label>Difficulty</label>
+              <select id="sDiff">
+                <option>🟢 Easy</option>
+                <option>🟡 Medium</option>
+                <option>🔴 Hard</option>
+              </select>
+            </div>
+          </div>
+          <div class="s-field">
+            <label>Mood</label>
+            <select id="sMood">
+              <option>😤 Focused</option>
+              <option>💪 Motivated</option>
+              <option>😴 Tired</option>
+              <option>😵 Distracted</option>
+            </select>
+          </div>
+          <div class="s-field">
+            <label>Notes</label>
+            <textarea id="sNotes" rows="3" placeholder="Key takeaways from today's session..."></textarea>
+          </div>
+          <button class="s-btn" onclick="addSession()">+ Log Session</button>
+        </div>
+      </div>
+
+      <!-- Pomodoro Timer -->
+      <div class="s-card s-pomo-card">
+        <div class="s-card-header violet">
+          <span>🍅 Focus Timer</span>
+        </div>
+        <div class="s-card-body s-pomo-body">
+          <div class="s-pomo-display" id="pDisplay">25:00</div>
+          <div class="s-pomo-label" id="pLabel">Ready to Focus</div>
+          <div class="s-pomo-tabs">
+            <button class="s-ptab active" onclick="pSetMode(25,this)">Pomodoro</button>
+            <button class="s-ptab" onclick="pSetMode(5,this)">Short Break</button>
+            <button class="s-ptab" onclick="pSetMode(15,this)">Long Break</button>
+          </div>
+          <div class="s-pomo-actions">
+            <button class="s-pbtn-start" id="pBtn" onclick="pToggle()">▶ Start</button>
+            <button class="s-pbtn-reset" onclick="pReset()">↺ Reset</button>
+          </div>
+          <div class="s-pomo-done">🍅 <span id="pCount">0</span> sessions completed</div>
+        </div>
+      </div>
+
+      <!-- Chart -->
+      <div class="s-card s-chart-card">
+        <div class="s-card-header slate">
+          <span>📈 Weekly Progress</span>
+          <span class="s-chart-badge" id="sWeekTotal">0h</span>
+        </div>
+        <div class="s-card-body">
+          <canvas id="sChart" height="160"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sessions Timeline -->
+    <div class="s-timeline-section">
+      <div class="s-tl-header">
+        <h3>Study Sessions</h3>
+        <div class="s-tl-filters">
+          <button class="s-tf s-tf-on" onclick="setF('all',this)">All</button>
+          <button class="s-tf" onclick="setF('Easy',this)">🟢 Easy</button>
+          <button class="s-tf" onclick="setF('Medium',this)">🟡 Medium</button>
+          <button class="s-tf" onclick="setF('Hard',this)">🔴 Hard</button>
+        </div>
+      </div>
+      <div id="sTL" class="s-tl-list">
+        <div class="s-tl-empty">No sessions yet. Start learning! 📖</div>
+      </div>
+    </div>
+
+    <div class="page-footer">© 2026 MyApp. All rights reserved.</div>
+  </main>
+</div>
+
+<script>
+  let sChart, pInterval, pRunning=false, pTotal=25*60, pLeft=25*60;
+  let pSess=parseInt(localStorage.getItem('ps')||'0'), sFilter='all';
+  const COLORS=['#6366f1','#22c55e','#f59e0b','#ef4444','#ec4899','#14b8a6','#f97316','#8b5cf6'];
+
+  document.getElementById('pCount').textContent=pSess;
+
+  function getData(){return JSON.parse(localStorage.getItem('study_data')||'[]');}
+  function saveData(d){localStorage.setItem('study_data',JSON.stringify(d));}
+  function fmtT(m){const h=Math.floor(m/60),mi=m%60;return h>0?`${h}h ${mi>0?mi+'m':''}`:`${mi}m`;}
+  function fmtD(d){return new Date(d).toLocaleDateString('en-US',{day:'2-digit',month:'short',year:'numeric'});}
+
+  function pSetMode(m,btn){pReset();pTotal=m*60;pLeft=m*60;document.getElementById('pDisplay').textContent=`${String(m).padStart(2,'0')}:00`;document.querySelectorAll('.s-ptab').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
+  function pToggle(){if(pRunning){clearInterval(pInterval);pRunning=false;document.getElementById('pBtn').textContent='▶ Start';document.getElementById('pLabel').textContent='Paused';}else{pRunning=true;document.getElementById('pBtn').textContent='⏸ Pause';document.getElementById('pLabel').textContent='🔴 Focusing...';pInterval=setInterval(()=>{pLeft--;if(pLeft<=0){clearInterval(pInterval);pRunning=false;pLeft=pTotal;pSess++;localStorage.setItem('ps',pSess);document.getElementById('pCount').textContent=pSess;document.getElementById('pLabel').textContent='✅ Done! Take a break.';document.getElementById('pBtn').textContent='▶ Start';document.getElementById('pDisplay').textContent=`${String(Math.floor(pTotal/60)).padStart(2,'0')}:00`;return;}const mn=Math.floor(pLeft/60),sc=pLeft%60;document.getElementById('pDisplay').textContent=`${String(mn).padStart(2,'0')}:${String(sc).padStart(2,'0')}`;},1000);}}
+  function pReset(){clearInterval(pInterval);pRunning=false;pLeft=pTotal;document.getElementById('pDisplay').textContent=`${String(Math.floor(pTotal/60)).padStart(2,'0')}:00`;document.getElementById('pBtn').textContent='▶ Start';document.getElementById('pLabel').textContent='Ready to Focus';}
+
+  function addSession(){
+    const subject=document.getElementById('sSubject').value.trim();
+    const duration=parseInt(document.getElementById('sDuration').value);
+    const diff=document.getElementById('sDiff').value;
+    const mood=document.getElementById('sMood').value;
+    const notes=document.getElementById('sNotes').value.trim();
+    const msg=document.getElementById('sMsg');
+    if(!subject||!duration){msg.style.cssText='background:#fef2f2;color:#dc2626;padding:8px;border-radius:8px;font-size:13px;margin-bottom:10px;';msg.textContent='❌ Fill subject & duration!';setTimeout(()=>msg.textContent='',2000);return;}
+    const data=getData();data.unshift({subject,duration,diff,mood,notes,date:new Date().toISOString(),id:Date.now()});saveData(data);
+    document.getElementById('sSubject').value='';document.getElementById('sDuration').value='';document.getElementById('sNotes').value='';
+    msg.style.cssText='background:#f0fdf4;color:#16a34a;padding:8px;border-radius:8px;font-size:13px;margin-bottom:10px;';msg.textContent='✅ Session logged!';setTimeout(()=>msg.textContent='',2000);render();
+  }
+
+  function deleteSession(id){saveData(getData().filter(s=>s.id!==id));render();}
+  function setF(f,btn){sFilter=f;document.querySelectorAll('.s-tf').forEach(b=>b.classList.remove('s-tf-on'));btn.classList.add('s-tf-on');render();}
+
+  function render(){
+    const data=getData();
+    const totalMins=data.reduce((s,d)=>s+parseInt(d.duration),0);
+    const topics=[...new Set(data.map(d=>d.subject))];
+    document.getElementById('ss1').textContent=data.length;
+    document.getElementById('ss2').textContent=fmtT(totalMins);
+    document.getElementById('ss3').textContent=topics.length;
+    document.getElementById('ss4').textContent=Math.min(data.length,30);
+    document.getElementById('ss5').textContent=pSess;
+    const todayStr=new Date().toISOString().split('T')[0];
+    const todayMins=data.filter(d=>d.date.startsWith(todayStr)).reduce((s,d)=>s+parseInt(d.duration),0);
+    document.getElementById('sTodayPill').textContent=`📖 ${fmtT(todayMins)} studied today`;
+
+    // Chart
+    const days=[],labels=[];for(let i=6;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);days.push(d.toISOString().split('T')[0]);labels.push(d.toLocaleDateString('en',{weekday:'short'}));}
+    const dm={};days.forEach(d=>dm[d]=0);data.forEach(s=>{const d=s.date.split('T')[0];if(dm[d]!==undefined)dm[d]+=parseInt(s.duration);});
+    const cd=days.map(d=>+(dm[d]/60).toFixed(1));
+    document.getElementById('sWeekTotal').textContent=cd.reduce((a,b)=>a+b,0).toFixed(1)+'h';
+    if(sChart)sChart.destroy();
+    sChart=new Chart(document.getElementById('sChart').getContext('2d'),{type:'bar',data:{labels,datasets:[{label:'Hours',data:cd,backgroundColor:cd.map(v=>v>0?'rgba(99,102,241,0.8)':'rgba(99,102,241,0.15)'),borderRadius:8,maxBarThickness:40}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{font:{size:12,weight:600}}},y:{grid:{color:'#f5f5f5'},ticks:{font:{size:11},callback:v=>v+'h'}}}}});
+
+    // Timeline
+    let filtered=data;
+    if(sFilter!=='all')filtered=data.filter(s=>s.diff&&s.diff.includes(sFilter));
+    const topicMap={};data.forEach(d=>{if(!topicMap[d.subject])topicMap[d.subject]=0;topicMap[d.subject]++;});
+    const div=document.getElementById('sTL');
+    if(filtered.length===0){div.innerHTML='<div class="s-tl-empty">No sessions found!</div>';return;}
+    div.innerHTML=filtered.map((s,i)=>{
+      const colorIdx=Object.keys(topicMap).indexOf(s.subject);const color=COLORS[colorIdx%COLORS.length];
+      const diffColor=s.diff&&s.diff.includes('Hard')?'#ef4444':s.diff&&s.diff.includes('Medium')?'#f59e0b':'#22c55e';
+      return`<div class="s-tl-item" style="animation-delay:${i*0.04}s">
+        <div class="s-tl-dot" style="background:${color};"></div>
+        <div class="s-tl-content">
+          <div class="s-tl-top">
+            <span class="s-tl-subject" style="color:${color};">${s.subject}</span>
+            <div class="s-tl-tags">
+              <span class="s-diff-tag" style="background:${diffColor}20;color:${diffColor};">${s.diff||'Easy'}</span>
+              <span class="s-mood-tag">${s.mood||'😤 Focused'}</span>
+              <span class="s-dur-tag">⏱ ${s.duration}min</span>
+              <button class="s-del" onclick="deleteSession(${s.id})">🗑</button>
+            </div>
+          </div>
+          <div class="s-tl-notes">${s.notes||'—'}</div>
+          <div class="s-tl-date">📅 ${fmtD(s.date)}</div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  async function init(){
+    try{const res=await fetch('/auth/me');const d=await res.json();if(!d.success){window.location.href='/login.html';return;}document.getElementById('sAvatar').textContent=d.user.fullname.charAt(0).toUpperCase();}catch{window.location.href='/login.html';}
+    render();
+  }
+  document.getElementById('logoutBtn').addEventListener('click',async function(e){e.preventDefault();await fetch('/auth/logout');window.location.href='/login.html';});
+  init();
+</script>
+</body>
+</html>

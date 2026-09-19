@@ -1,0 +1,392 @@
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Income & Expenses - MyApp</title>
+  <link rel="stylesheet" href="/css/dashboard.css">
+  <link rel="stylesheet" href="/css/income.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+<div class="app-layout">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon-box">✓</div>
+      <div class="logo-text"><h2>MyApp</h2><span>USER PORTAL</span></div>
+    </div>
+    <div class="sidebar-section-label">WORKSPACE</div>
+    <a href="/dashboard.html" class="nav-item"><span class="nav-icon">🏠</span><span>Dashboard</span></a>
+      <a href="/forecasting.html" class="nav-item"><span class="nav-icon">📈</span><span>Forecasting</span></a>
+      <a href="/simulation.html" class="nav-item"><span>🎮</span> <span>Simulation Engine (M3)</span></a>
+
+      <a href="/income.html"    class="nav-item active"><span class="nav-icon">▭</span><span>Income & Expenses</span></a>
+      <a href="/savings.html"   class="nav-item"><span class="nav-icon">◎</span><span>Savings</span><span class="nav-badge">0</span></a>
+      <a href="/study.html"     class="nav-item"><span class="nav-icon">▤</span><span>Study</span></a>
+      <a href="/academics.html" class="nav-item"><span class="nav-icon">◯</span><span>Academics</span></a>
+      <a href="/habits.html"    class="nav-item"><span class="nav-icon">🔥</span><span>Habits</span></a>
+      <a href="/fitness.html"   class="nav-item"><span class="nav-icon">∿</span><span>Fitness</span></a>
+      <a href="/goals.html"     class="nav-item"><span class="nav-icon">◉</span><span>Goals</span></a>
+      <a href="/activity.html"  class="nav-item"><span class="nav-icon">▦</span><span>Activity History</span></a>
+      <a href="/profile.html"   class="nav-item"><span class="nav-icon">👤</span><span>Profile</span></a>
+      <a href="#" class="nav-item logout-item" id="logoutBtn"><span class="nav-icon">🚪</span><span>Logout</span></a>
+    </nav>
+    <div class="sidebar-secure">
+      <div class="secure-icon">🔒</div>
+      <div>
+        <div class="secure-title">Secure & Private</div>
+        <div class="secure-sub">Your data is safe and encrypted</div>
+      </div>
+    </div>
+    <div class="sidebar-footer">
+      <div class="db-status">
+        <span class="status-dot"></span>
+        <div>
+          <div style="color:rgba(255,255,255,0.8);font-size:12px;font-weight:600;">Database: SQLite Active</div>
+          <div style="color:rgba(255,255,255,0.45);font-size:11px;">All systems operational</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+  <!-- MAIN CONTENT -->
+  <main class="main-content">
+    <!-- Top bar -->
+    <div class="income-topbar">
+      <div class="topbar-left">
+        <span class="menu-icon">☰</span>
+        <span class="topbar-title">Income & Expenses</span>
+      </div>
+      <div class="topbar-right">
+        <span class="topbar-date" id="topbarDate">📅 Loading...</span>
+        <div class="user-avatar" id="userAvatar">V</div>
+        <span class="user-name" id="userName">User ▾</span>
+      </div>
+    </div>
+    <!-- Page header -->
+    <div class="page-hero">
+      <div>
+        <h1>Track Your Money</h1>
+        <p>Add your income and expenses to track your finances</p>
+      </div>
+      <div class="hero-date" id="heroDate">📅 Friday, 29 August 2026</div>
+    </div>
+    <!-- Stat Cards -->
+    <div class="stat-cards-row">
+      <div class="icard icard-balance">
+        <div class="icard-icon">💼</div>
+        <div class="icard-info">
+          <div class="icard-label">Total Balance</div>
+          <div class="icard-amount" id="totalBalance">₹0.00</div>
+          <div class="icard-sub">All time balance</div>
+        </div>
+      </div>
+      <div class="icard icard-income">
+        <div class="icard-icon">📈</div>
+        <div class="icard-info">
+          <div class="icard-label" style="color:#16a34a;">Total Income</div>
+          <div class="icard-amount" id="totalIncome">₹0.00</div>
+          <div class="icard-sub">This month</div>
+        </div>
+      </div>
+      <div class="icard icard-expense">
+        <div class="icard-icon">📉</div>
+        <div class="icard-info">
+          <div class="icard-label" style="color:#dc2626;">Total Expenses</div>
+          <div class="icard-amount" id="totalExpenses">₹0.00</div>
+          <div class="icard-sub">This month</div>
+        </div>
+      </div>
+      <div class="icard icard-savings">
+        <div class="icard-icon">🏦</div>
+        <div class="icard-info">
+          <div class="icard-label" style="color:#2563eb;">Total Savings</div>
+          <div class="icard-amount" id="totalSavings">₹0.00</div>
+          <div class="icard-sub">This month</div>
+        </div>
+      </div>
+    </div>
+    <!-- Chart + Form Row -->
+    <div class="chart-form-row">
+      <!-- Chart -->
+      <div class="chart-card">
+        <div class="chart-header">
+          <h3>Income vs Expense Overview</h3>
+          <span class="chart-badge">This Month</span>
+        </div>
+        <canvas id="incomeChart" height="160"></canvas>
+        <div class="chart-summary">
+          <div class="chart-sum-item">
+            <div class="chart-sum-label" style="color:#16a34a;">Total Income</div>
+            <div class="chart-sum-value" id="chartIncome">₹0.00</div>
+          </div>
+          <div class="chart-sum-item">
+            <div class="chart-sum-label" style="color:#dc2626;">Total Expenses</div>
+            <div class="chart-sum-value" id="chartExpenses">₹0.00</div>
+          </div>
+          <div class="chart-sum-item">
+            <div class="chart-sum-label" style="color:#2563eb;">Balance</div>
+            <div class="chart-sum-value" id="chartBalance">₹0.00</div>
+          </div>
+        </div>
+      </div>
+      <!-- Add Entry Form -->
+      <div class="add-entry-card">
+        <h3>➕ Add New Entry</h3>
+        <div id="entryMessage"></div>
+        <div class="entry-form">
+          <div class="entry-field">
+            <label>Description</label>
+            <input type="text" id="entryDesc" placeholder="e.g. Salary, Rent, Shopping...">
+          </div>
+          <div class="entry-field">
+            <label>Amount (₹)</label>
+            <input type="number" id="entryAmount" placeholder="0.00">
+          </div>
+          <div class="entry-row">
+            <div class="entry-field">
+              <label>Type</label>
+              <select id="entryType">
+                <option value="income">🟢 Income</option>
+                <option value="expense">🔴 Expense</option>
+              </select>
+            </div>
+            <div class="entry-field">
+              <label>Date</label>
+              <input type="date" id="entryDate">
+            </div>
+          </div>
+          <div class="entry-field">
+            <label>Category</label>
+            <select id="entryCategory">
+              <option>Salary</option>
+              <option>Food</option>
+              <option>Housing</option>
+              <option>Work</option>
+              <option>Entertainment</option>
+              <option>Transport</option>
+              <option>Healthcare</option>
+              <option>Shopping</option>
+              <option>Education</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <button class="add-entry-btn" onclick="addEntry()">➕ Add Entry</button>
+        </div>
+      </div>
+    </div>
+    <!-- Recent Transactions -->
+    <div class="transactions-card">
+      <div class="transactions-header">
+        <h3>📋 Recent Transactions</h3>
+        <button class="view-all-btn" onclick="toggleAll()">View All →</button>
+      </div>
+      <table class="transactions-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Description</th>
+            <th>Type</th>
+            <th>Category</th>
+            <th>Amount</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="transactionBody">
+          <tr>
+            <td colspan="6" class="empty-row">No transactions yet. Add your first entry!</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="page-footer">© 2026 MyApp. All rights reserved.</div>
+  </main>
+</div>
+<script>
+  // Init date
+  document.getElementById('entryDate').valueAsDate = new Date();
+  document.getElementById('heroDate').textContent = '📅 ' + new Date().toLocaleDateString('en-US', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+  document.getElementById('topbarDate').textContent = '📅 ' + new Date().toLocaleDateString('en-US', { day:'numeric', month:'long', year:'numeric' });
+  let showAll = false;
+  let chart;
+  // Load data
+  function getData() {
+    return JSON.parse(localStorage.getItem('income_data') || '[]');
+  }
+  function saveData(data) {
+    localStorage.setItem('income_data', JSON.stringify(data));
+  }
+  // Format currency
+  function fmt(n) {
+    return '₹' + parseFloat(n).toLocaleString('en-IN', { minimumFractionDigits: 2 });
+  }
+  // Format date
+  function fmtDate(d) {
+    return new Date(d).toLocaleDateString('en-IN', { day:'2-digit', month:'2-digit', year:'numeric' });
+  }
+  // Add entry
+  function addEntry() {
+    const desc     = document.getElementById('entryDesc').value.trim();
+    const amount   = parseFloat(document.getElementById('entryAmount').value);
+    const type     = document.getElementById('entryType').value;
+    const date     = document.getElementById('entryDate').value;
+    const category = document.getElementById('entryCategory').value;
+    const msg      = document.getElementById('entryMessage');
+    if (!desc || !amount || !date) {
+      msg.style.cssText = 'background:#fee2e2;color:#991b1b;padding:8px 14px;border-radius:8px;font-size:13px;margin-bottom:12px;';
+      msg.textContent = '❌ Please fill all fields!';
+      setTimeout(() => msg.textContent = '', 2000);
+      return;
+    }
+    const data = getData();
+    data.unshift({ desc, amount, type, date, category, id: Date.now() });
+    saveData(data);
+    document.getElementById('entryDesc').value   = '';
+    document.getElementById('entryAmount').value = '';
+    msg.style.cssText = 'background:#dcfce7;color:#166534;padding:8px 14px;border-radius:8px;font-size:13px;margin-bottom:12px;';
+    msg.textContent = '✅ Entry added successfully!';
+    setTimeout(() => msg.textContent = '', 2000);
+    render();
+  }
+  // Toggle show all
+  function toggleAll() {
+    showAll = !showAll;
+    render();
+  }
+  // Delete entry
+  function deleteEntry(id) {
+    const data = getData().filter(item => item.id !== id);
+    saveData(data);
+    render();
+  }
+  // Render everything
+  function render() {
+    const data = getData();
+    // Calculate totals
+    let totalInc = 0, totalExp = 0;
+    data.forEach(item => {
+      if (item.type === 'income')  totalInc += parseFloat(item.amount);
+      if (item.type === 'expense') totalExp += parseFloat(item.amount);
+    });
+    const balance = totalInc - totalExp;
+    // Update stat cards
+    document.getElementById('totalBalance').textContent  = fmt(balance);
+    document.getElementById('totalIncome').textContent   = fmt(totalInc);
+    document.getElementById('totalExpenses').textContent = fmt(totalExp);
+    document.getElementById('totalSavings').textContent  = fmt(balance > 0 ? balance : 0);
+    document.getElementById('chartIncome').textContent   = fmt(totalInc);
+    document.getElementById('chartExpenses').textContent = fmt(totalExp);
+    document.getElementById('chartBalance').textContent  = fmt(balance);
+    // Render table
+    const display = showAll ? data : data.slice(0, 5);
+    const tbody = document.getElementById('transactionBody');
+    if (data.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="6" class="empty-row">No transactions yet. Add your first entry!</td></tr>';
+    } else {
+      tbody.innerHTML = display.map(item => `
+        <tr>
+          <td>${fmtDate(item.date)}</td>
+          <td class="desc-cell">
+            <span class="desc-icon">${item.type === 'income' ? '💼' : '🛒'}</span>
+            ${item.desc}
+          </td>
+          <td><span class="type-badge ${item.type === 'income' ? 'type-income' : 'type-expense'}">${item.type === 'income' ? 'Income' : 'Expense'}</span></td>
+          <td>${item.category || 'Other'}</td>
+          <td class="${item.type === 'income' ? 'amount-income' : 'amount-expense'}">${item.type === 'income' ? '+' : '-'}${fmt(item.amount)}</td>
+          <td class="actions-cell">
+            <button class="action-delete" onclick="deleteEntry(${item.id})">🗑</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+    // Render chart
+    renderChart(data);
+  }
+  // Render chart
+  function renderChart(data) {
+    const days = [];
+    const today = new Date();
+    for (let i = 29; i >= 0; i--) {
+      const d = new Date(today);
+      d.setDate(today.getDate() - i);
+      days.push(d.toISOString().split('T')[0]);
+    }
+    const incomeByDay  = {};
+    const expenseByDay = {};
+    days.forEach(d => { incomeByDay[d] = 0; expenseByDay[d] = 0; });
+    data.forEach(item => {
+      const d = item.date;
+      if (incomeByDay[d]  !== undefined && item.type === 'income')  incomeByDay[d]  += parseFloat(item.amount);
+      if (expenseByDay[d] !== undefined && item.type === 'expense') expenseByDay[d] += parseFloat(item.amount);
+    });
+    const labels   = days.map(d => { const dt = new Date(d); return dt.getDate() + ' ' + dt.toLocaleString('en',{month:'short'}); });
+    const incData  = days.map(d => incomeByDay[d]);
+    const expData  = days.map(d => expenseByDay[d]);
+    if (chart) chart.destroy();
+    const ctx = document.getElementById('incomeChart').getContext('2d');
+    chart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [
+          {
+            label: 'Income',
+            data: incData,
+            borderColor: '#16a34a',
+            backgroundColor: 'rgba(22,163,74,0.08)',
+            borderWidth: 2,
+            fill: true,
+            tension: 0.4,
+            pointRadius: 0,
+          },
+          {
+            label: 'Expenses',
+            data: expData,
+            borderColor: '#dc2626',
+            backgroundColor: 'rgba(220,38,38,0.06)',
+            borderWidth: 2,
+            fill: true,
+            tension: 0.4,
+            pointRadius: 0,
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { position: 'top', labels: { usePointStyle: true, pointStyle: 'circle', font: { size: 12 } } }
+        },
+        scales: {
+          x: { grid: { display: false }, ticks: { font: { size: 11 }, maxTicksLimit: 8 } },
+          y: { grid: { color: '#f0f0f0' }, ticks: { font: { size: 11 } } }
+        }
+      }
+    });
+  }
+  // Init page
+  async function init() {
+    try {
+      const res  = await fetch('/auth/me');
+      const data = await res.json();
+      if (!data.success) { window.location.href = '/login.html'; return; }
+      const name = data.user.fullname;
+      document.getElementById('userAvatar').textContent = name.charAt(0).toUpperCase();
+      document.getElementById('userName').textContent   = name + ' ▾';
+    } catch {
+      window.location.href = '/login.html';
+    }
+    render();
+  }
+  // Logout
+  document.getElementById('logoutBtn').addEventListener('click', async function(e) {
+    e.preventDefault();
+    await fetch('/auth/logout');
+    window.location.href = '/login.html';
+  });
+  init();
+</script>
+</body>
+</html>

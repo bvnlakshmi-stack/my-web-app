@@ -1,0 +1,389 @@
+/* ── MAIN WORKSPACE ────────────── */
+.go-main {
+  background-color: #f8fafc !important;
+  font-family: 'Inter', system-ui, sans-serif;
+  color: #334155;
+  padding: 24px !important;
+}
+
+/* ── HEADER ────────────────────── */
+.go-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 16px;
+}
+.go-title {
+  font-size: 26px;
+  font-weight: 800;
+  color: #0f172a;
+}
+.go-subtitle {
+  font-size: 13px;
+  color: #64748b;
+  margin-top: 2px;
+}
+.go-btn-add {
+  padding: 10px 20px;
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+  transition: all 0.2s ease;
+}
+.go-btn-add:hover {
+  transform: translateY(-1px);
+}
+
+/* ── QUICK STATS ───────────────── */
+.go-stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.go-stat-card {
+  background: white;
+  border-radius: 16px;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.01), 0 2px 4px -2px rgba(0, 0, 0, 0.01);
+  border: 1px solid #f1f5f9;
+}
+.go-stat-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
+.go-stat-val {
+  font-size: 20px;
+  font-weight: 800;
+  color: #0f172a;
+}
+.go-stat-lbl {
+  font-size: 11px;
+  color: #94a3b8;
+  font-weight: 600;
+  text-transform: uppercase;
+  margin-top: 1px;
+}
+
+/* ── TOOLBAR ──────────────────── */
+.go-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.go-tabs {
+  display: flex;
+  gap: 6px;
+}
+.go-tab {
+  padding: 8px 18px;
+  background: white;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  color: #64748b;
+  transition: all 0.2s;
+}
+.go-tab:hover {
+  border-color: #10b981;
+  color: #10b981;
+}
+.go-tab.active {
+  background: #0f172a !important;
+  border-color: #0f172a !important;
+  color: white !important;
+}
+.go-search-wrap input {
+  padding: 8px 14px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 20px;
+  font-size: 13px;
+  outline: none;
+  width: 200px;
+}
+.go-search-wrap input:focus {
+  border-color: #10b981;
+}
+
+/* ── CARDS GRID ────────────────── */
+.go-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  margin-bottom: 24px;
+}
+.go-grid-empty {
+  grid-column: 1/-1;
+  text-align: center;
+  color: #94a3b8;
+  font-size: 14px;
+  padding: 60px 0;
+}
+
+/* Goals Card */
+.go-card {
+  background: white;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+  border: 1px solid #f1f5f9;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.go-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+}
+.card-done {
+  background-color: #fafdfb !important;
+}
+
+.go-card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+.go-card-cat {
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: 700;
+}
+.go-card-pri {
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.go-card-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 6px;
+}
+.title-done {
+  text-decoration: line-through;
+  color: #94a3b8 !important;
+}
+.go-card-desc {
+  font-size: 12px;
+  color: #64748b;
+  line-height: 1.5;
+  margin-bottom: 12px;
+  flex-grow: 1;
+}
+.go-card-time {
+  font-size: 11px;
+  font-weight: 600;
+  color: #94a3b8;
+  margin-bottom: 14px;
+}
+
+/* Progress Slider Section */
+.go-card-progress {
+  margin-bottom: 14px;
+}
+.go-prog-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  font-weight: 700;
+  color: #64748b;
+  margin-bottom: 6px;
+}
+.go-prog-bar-wrap {
+  width: 100%;
+  height: 6px;
+  background: #f1f5f9;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+.go-prog-bar-fill {
+  height: 100%;
+  border-radius: 10px;
+  transition: width 0.2s ease;
+}
+.go-card-progress input[type="range"] {
+  width: 100%;
+  cursor: pointer;
+}
+
+/* Actions */
+.go-card-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid #f8fafc;
+  padding-top: 12px;
+}
+.go-btn-done {
+  padding: 6px 14px;
+  border: 1.5px solid #cbd5e1;
+  background: white;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  color: #64748b;
+  transition: all 0.2s;
+}
+.go-btn-done:hover {
+  border-color: var(--tc, #10b981);
+  color: var(--tc, #10b981);
+}
+.btn-done-active {
+  background: #dcfce7 !important;
+  border-color: #22c55e !important;
+  color: #166534 !important;
+}
+.go-btn-del {
+  border: none;
+  background: none;
+  color: #94a3b8;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.go-btn-del:hover {
+  color: #ef4444;
+}
+
+/* ── CREATION MODAL ───────────── */
+.go-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(4px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+.modal-open {
+  display: flex !important;
+}
+.go-modal {
+  background: white;
+  border-radius: 18px;
+  width: 480px;
+  max-width: 90%;
+  padding: 24px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+.go-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #f1f5f9;
+  padding-bottom: 12px;
+  margin-bottom: 16px;
+}
+.go-modal-header h3 {
+  font-size: 16px;
+  font-weight: 800;
+}
+.go-modal-close {
+  background: none;
+  border: none;
+  color: #94a3b8;
+  font-size: 16px;
+  cursor: pointer;
+}
+.go-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.go-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.go-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.go-field label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+}
+.go-field input, .go-field select, .go-field textarea {
+  padding: 8px 12px;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 13px;
+  font-family: inherit;
+  outline: none;
+}
+.go-field input:focus, .go-field select:focus, .go-field textarea:focus {
+  border-color: #10b981;
+}
+.go-btn-save {
+  padding: 11px;
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  margin-top: 8px;
+}
+
+/* Tip Box & Footer */
+.go-tip-box {
+  background: #f0fdf4;
+  border-radius: 12px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 20px;
+  border-left: 4px solid #10b981;
+}
+.go-tip-icon { font-size: 20px; }
+.go-tip-text { font-size: 12px; color: #1e293b; line-height: 1.5; }
+.go-footer {
+  text-align: center;
+  color: #94a3b8;
+  font-size: 12px;
+  padding: 16px 0;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .go-grid { grid-template-columns: repeat(2, 1fr); }
+  .go-stats-row { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 600px) {
+  .go-grid { grid-template-columns: 1fr; }
+  .go-stats-row { grid-template-columns: 1fr; }
+  .go-toolbar { flex-direction: column; align-items: flex-start; gap: 12px; }
+}

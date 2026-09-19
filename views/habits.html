@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Habits - MyApp</title>
+  <link rel="stylesheet" href="/css/dashboard.css">
+  <link rel="stylesheet" href="/css/habits.css">
+</head>
+<body>
+<div class="app-layout">
+  <aside class="sidebar">
+    <div class="sidebar-logo"><div class="logo-icon-box">✓</div><div class="logo-text"><h2>MyApp</h2><span>USER PORTAL</span></div></div>
+    <div class="sidebar-section-label">WORKSPACE</div>
+    <a href="/dashboard.html" class="nav-item"><span class="nav-icon">🏠</span><span>Dashboard</span></a>
+      <a href="/forecasting.html" class="nav-item"><span class="nav-icon">📈</span><span>Forecasting</span></a>
+      <a href="/simulation.html" class="nav-item"><span>🎮</span> <span>Simulation Engine (M3)</span></a>
+
+      <a href="/income.html" class="nav-item"><span class="nav-icon">▭</span><span>Income & Expenses</span></a>
+      <a href="/savings.html" class="nav-item"><span class="nav-icon">◎</span><span>Savings</span></a>
+      <a href="/study.html" class="nav-item"><span class="nav-icon">▤</span><span>Study</span></a>
+      <a href="/academics.html" class="nav-item"><span class="nav-icon">◯</span><span>Academics</span></a>
+      <a href="/habits.html" class="nav-item active"><span class="nav-icon">🔥</span><span>Habits</span></a>
+      <a href="/fitness.html" class="nav-item"><span class="nav-icon">∿</span><span>Fitness</span></a>
+      <a href="/goals.html" class="nav-item"><span class="nav-icon">◉</span><span>Goals</span></a>
+      <a href="/activity.html" class="nav-item"><span class="nav-icon">▦</span><span>Activity History</span></a>
+      <a href="/profile.html" class="nav-item"><span class="nav-icon">👤</span><span>Profile</span></a>
+      <a href="#" class="nav-item logout-item" id="logoutBtn"><span class="nav-icon">🚪</span><span>Logout</span></a>
+    </nav>
+    <div class="sidebar-footer"><div class="db-status"><span class="status-dot"></span><div><div style="color:rgba(255,255,255,0.8);font-size:12px;font-weight:600;">Database: SQLite Active</div><div style="color:rgba(255,255,255,0.45);font-size:11px;">All systems operational</div></div></div></div>
+  </aside>
+
+  <main class="main-content hb-main">
+
+    <!-- Top Row -->
+    <div class="hb-toprow">
+      <div class="hb-toprow-left">
+        <div class="hb-greeting" id="hbGreeting">Good Morning 🌅</div>
+        <h1 class="hb-title">Daily Routine</h1>
+        <div class="hb-date" id="hbDate">Today</div>
+      </div>
+      <div class="hb-toprow-right">
+        <div class="hb-ring-wrap">
+          <svg viewBox="0 0 100 100" class="hb-ring-svg">
+            <circle cx="50" cy="50" r="40" fill="none" stroke="#f1f5f9" stroke-width="8"/>
+            <circle cx="50" cy="50" r="40" fill="none" stroke="url(#hbGrad)" stroke-width="8"
+              stroke-linecap="round" stroke-dasharray="251" id="hbRingArc"
+              stroke-dashoffset="251" transform="rotate(-90 50 50)" style="transition:stroke-dashoffset 0.8s ease;"/>
+            <defs><linearGradient id="hbGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#f97316"/><stop offset="100%" style="stop-color:#eab308"/></linearGradient></defs>
+          </svg>
+          <div class="hb-ring-info"><div class="hb-ring-pct" id="hbRingPct">0%</div><div class="hb-ring-lbl">Done</div></div>
+        </div>
+        <div class="hb-ring-stats">
+          <div class="hb-rs"><div class="hb-rs-v" id="hrsDone">0</div><div class="hb-rs-l">Completed</div></div>
+          <div class="hb-rs"><div class="hb-rs-v" id="hrsLeft">0</div><div class="hb-rs-l">Remaining</div></div>
+          <div class="hb-rs"><div class="hb-rs-v" id="hrsBest">0</div><div class="hb-rs-l">Best Streak</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add Habit Bar -->
+    <div class="hb-add-bar">
+      <input type="text" id="hbName" placeholder="✍️ Add a new habit..." class="hb-add-input">
+      <select id="hbTime" class="hb-add-sel">
+        <option value="Morning">🌅 Morning</option>
+        <option value="Afternoon">☀️ Afternoon</option>
+        <option value="Evening">🌙 Evening</option>
+        <option value="Anytime">🕐 Anytime</option>
+      </select>
+      <select id="hbCat" class="hb-add-sel">
+        <option>🏃 Health</option><option>📚 Learning</option>
+        <option>🧘 Mind</option><option>💰 Finance</option>
+        <option>💼 Work</option><option>🎨 Creative</option><option>😴 Sleep</option>
+      </select>
+      <button class="hb-add-btn" onclick="addHabit()">+ Add</button>
+    </div>
+    <div id="hbMsg" style="margin-bottom:12px;font-size:13px;"></div>
+
+    <!-- Time-based Sections -->
+    <div class="hb-sections">
+
+      <div class="hb-section">
+        <div class="hb-sec-head morning-head">
+          <span class="hb-sec-icon">🌅</span>
+          <span class="hb-sec-title">Morning Routine</span>
+          <span class="hb-sec-count" id="cntMorning">0 habits</span>
+        </div>
+        <div class="hb-sec-body" id="secMorning">
+          <div class="hb-sec-empty">No morning habits yet</div>
+        </div>
+      </div>
+
+      <div class="hb-section">
+        <div class="hb-sec-head afternoon-head">
+          <span class="hb-sec-icon">☀️</span>
+          <span class="hb-sec-title">Afternoon Routine</span>
+          <span class="hb-sec-count" id="cntAfternoon">0 habits</span>
+        </div>
+        <div class="hb-sec-body" id="secAfternoon">
+          <div class="hb-sec-empty">No afternoon habits yet</div>
+        </div>
+      </div>
+
+      <div class="hb-section">
+        <div class="hb-sec-head evening-head">
+          <span class="hb-sec-icon">🌙</span>
+          <span class="hb-sec-title">Evening Routine</span>
+          <span class="hb-sec-count" id="cntEvening">0 habits</span>
+        </div>
+        <div class="hb-sec-body" id="secEvening">
+          <div class="hb-sec-empty">No evening habits yet</div>
+        </div>
+      </div>
+
+      <div class="hb-section">
+        <div class="hb-sec-head anytime-head">
+          <span class="hb-sec-icon">🕐</span>
+          <span class="hb-sec-title">Anytime</span>
+          <span class="hb-sec-count" id="cntAnytime">0 habits</span>
+        </div>
+        <div class="hb-sec-body" id="secAnytime">
+          <div class="hb-sec-empty">No flexible habits yet</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 7-Day History -->
+    <div class="hb-week-card">
+      <h3>📅 This Week's Completion</h3>
+      <div class="hb-week-grid" id="hbWeekGrid"></div>
+    </div>
+
+    <div class="page-footer">© 2026 MyApp. All rights reserved.</div>
+  </main>
+</div>
+
+<script>
+  const CAT_COLORS={'🏃 Health':'#ef4444','📚 Learning':'#3b82f6','🧘 Mind':'#a855f7','💰 Finance':'#22c55e','💼 Work':'#f59e0b','🎨 Creative':'#ec4899','😴 Sleep':'#6366f1'};
+
+  const hr=new Date().getHours();
+  document.getElementById('hbGreeting').textContent=hr<12?'Good Morning 🌅':hr<17?'Good Afternoon ☀️':'Good Evening 🌙';
+  document.getElementById('hbDate').textContent=new Date().toLocaleDateString('en-US',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+
+  function getData(){return JSON.parse(localStorage.getItem('habits_data')||'[]');}
+  function saveData(d){localStorage.setItem('habits_data',JSON.stringify(d));}
+
+  function addHabit(){
+    const name=document.getElementById('hbName').value.trim();
+    const time=document.getElementById('hbTime').value;
+    const cat=document.getElementById('hbCat').value;
+    const msg=document.getElementById('hbMsg');
+    if(!name){msg.style.cssText='color:#dc2626;';msg.textContent='❌ Enter habit name!';setTimeout(()=>msg.textContent='',2000);return;}
+    const data=getData();
+    data.unshift({name,time,category:cat,streak:0,doneToday:false,totalDone:0,id:Date.now()});
+    saveData(data);document.getElementById('hbName').value='';
+    msg.style.cssText='color:#16a34a;';msg.textContent='✅ Habit added!';setTimeout(()=>msg.textContent='',2000);
+    render();
+  }
+
+  function markDone(id){const data=getData();const h=data.find(x=>x.id===id);if(h&&!h.doneToday){h.doneToday=true;h.streak++;h.totalDone++;}saveData(data);render();}
+  function undoDone(id){const data=getData();const h=data.find(x=>x.id===id);if(h&&h.doneToday){h.doneToday=false;h.streak=Math.max(0,h.streak-1);h.totalDone=Math.max(0,h.totalDone-1);}saveData(data);render();}
+  function deleteHabit(id){saveData(getData().filter(x=>x.id!==id));render();}
+
+  function buildHabitRow(h){
+    const color=CAT_COLORS[h.category]||'#6b7280';
+    return`<div class="hb-row ${h.doneToday?'hb-row-done':''}">
+      <button class="hb-tick ${h.doneToday?'hb-ticked':''}" onclick="${h.doneToday?`undoDone(${h.id})`:`markDone(${h.id})`}">
+        <span>${h.doneToday?'✓':''}</span>
+      </button>
+      <div class="hb-row-info">
+        <div class="hb-row-name ${h.doneToday?'hb-name-done':''}">${h.name}</div>
+        <div class="hb-row-meta">
+          <span class="hb-row-cat" style="color:${color};background:${color}15;">${h.category}</span>
+          ${h.streak>0?`<span class="hb-streak">🔥 ${h.streak} day streak</span>`:''}
+        </div>
+      </div>
+      <div class="hb-row-right">
+        <div class="hb-row-total">${h.totalDone}x done</div>
+        <button class="hb-del" onclick="deleteHabit(${h.id})">🗑</button>
+      </div>
+    </div>`;
+  }
+
+  function renderSection(id,habits,cntId){
+    const div=document.getElementById(id);
+    document.getElementById(cntId).textContent=`${habits.length} habit${habits.length!==1?'s':''}`;
+    div.innerHTML=habits.length===0?`<div class="hb-sec-empty">No habits here yet</div>`:habits.map(buildHabitRow).join('');
+  }
+
+  function render(){
+    const data=getData();
+    const done=data.filter(h=>h.doneToday).length;
+    const total=data.length;
+    const pct=total?Math.round((done/total)*100):0;
+    const best=total?Math.max(...data.map(h=>h.streak)):0;
+    const circ=2*Math.PI*40;
+    document.getElementById('hbRingArc').style.strokeDashoffset=circ-(pct/100*circ);
+    document.getElementById('hbRingPct').textContent=pct+'%';
+    document.getElementById('hrsDone').textContent=done;
+    document.getElementById('hrsLeft').textContent=total-done;
+    document.getElementById('hrsBest').textContent=best;
+
+    renderSection('secMorning',data.filter(h=>h.time==='Morning'),'cntMorning');
+    renderSection('secAfternoon',data.filter(h=>h.time==='Afternoon'),'cntAfternoon');
+    renderSection('secEvening',data.filter(h=>h.time==='Evening'),'cntEvening');
+    renderSection('secAnytime',data.filter(h=>h.time==='Anytime'),'cntAnytime');
+
+    // Week grid
+    const grid=document.getElementById('hbWeekGrid');
+    const days=[];
+    for(let i=6;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);days.push(d);}
+    const isToday=(d)=>d.toISOString().split('T')[0]===new Date().toISOString().split('T')[0];
+    grid.innerHTML=days.map(d=>{
+      const lbl=d.toLocaleDateString('en',{weekday:'short'});
+      const dt=d.getDate();
+      const today=isToday(d);
+      return`<div class="hb-week-day ${today?'hb-week-today':''}">
+        <div class="hb-week-lbl">${lbl}</div>
+        <div class="hb-week-num">${dt}</div>
+        <div class="hb-week-pct">${today?pct+'%':'—'}</div>
+        ${today?`<div class="hb-week-prog"><div style="width:${pct}%;height:100%;background:linear-gradient(90deg,#f97316,#eab308);border-radius:10px;transition:width 0.5s;"></div></div>`:'<div class="hb-week-prog"><div style="width:0%;height:100%;background:#e2e8f0;border-radius:10px;"></div></div>'}
+      </div>`;
+    }).join('');
+  }
+
+  async function init(){
+    try{const res=await fetch('/auth/me');const d=await res.json();if(!d.success){window.location.href='/login.html';return;}}catch{window.location.href='/login.html';}
+    render();
+  }
+  document.getElementById('logoutBtn').addEventListener('click',async function(e){e.preventDefault();await fetch('/auth/logout');window.location.href='/login.html';});
+  init();
+</script>
+</body>
+</html>

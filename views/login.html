@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - MyApp</title>
+  <style>
+    /* ── BASE & BACKGROUND ────────── */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: linear-gradient(135deg, #fff1f2 0%, #ffe4e6 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* ── CSS TWINKLING STARS ──────── */
+    .star {
+      position: absolute;
+      color: #fbbf24; /* Soft warm gold star */
+      font-size: 24px;
+      opacity: 0.6;
+      pointer-events: none;
+      text-shadow: 0 0 6px rgba(251, 191, 36, 0.4);
+      animation: twinkle 3s infinite ease-in-out;
+      user-select: none;
+    }
+    
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.3; transform: scale(0.8) rotate(0deg); }
+      50% { opacity: 0.8; transform: scale(1.15) rotate(15deg); }
+    }
+
+    /* ── LOGIN CARD ───────────────── */
+    .login-container {
+      background: white;
+      border-radius: 24px;
+      padding: 40px 32px;
+      width: 400px;
+      max-width: 90%;
+      box-shadow: 0 20px 40px rgba(225, 29, 72, 0.06);
+      border: 1px solid rgba(225, 29, 72, 0.08);
+      z-index: 10;
+      animation: cardSlideUp 0.4s ease-out;
+    }
+
+    @keyframes cardSlideUp {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Title & Greeting */
+    .brand-header {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+    .brand-title {
+      font-size: 24px;
+      font-weight: 800;
+      color: #0f172a;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .brand-subtitle {
+      font-size: 13px;
+      color: #64748b;
+    }
+
+    /* Message Alert Block (for errors and success loading) */
+    #message {
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      margin-bottom: 18px;
+      display: none;
+      font-weight: 500;
+    }
+    #message.success {
+      background: #dcfce7;
+      border-left: 3.5px solid #22c55e;
+      color: #1565c0; /* Uses server colors */
+      color: #14532d;
+      display: block;
+    }
+    #message.error {
+      background: #fef2f2;
+      border-left: 3.5px solid #ef4444;
+      color: #991b1b;
+      display: block;
+    }
+
+    /* Inputs */
+    .form-group {
+      margin-bottom: 18px;
+    }
+    .form-group label {
+      display: block;
+      color: #475569;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+    }
+    .form-group input {
+      width: 100%;
+      padding: 11px 14px;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 10px;
+      font-size: 13px;
+      color: #0f172a;
+      outline: none;
+      background-color: #f8fafc;
+      transition: all 0.25s ease;
+      font-family: inherit;
+    }
+    .form-group input::placeholder {
+      color: #94a3b8;
+    }
+    .form-group input:focus {
+      border-color: #f43f5e; /* Rose pink border on focus */
+      background-color: white;
+      box-shadow: 0 0 0 3px rgba(244, 63, 94, 0.08);
+    }
+
+    /* Gradient Login Button */
+    .btn {
+      width: 100%;
+      padding: 12px;
+      background: linear-gradient(135deg, #f43f5e, #e11d48); /* Soft rose-pink gradient */
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(244, 63, 94, 0.2);
+      transition: all 0.2s ease;
+      font-family: inherit;
+      margin-top: 8px;
+    }
+    .btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 18px rgba(244, 63, 94, 0.3);
+    }
+    .btn:disabled {
+      background: #fda4af;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    /* Bottom Register Link */
+    .register-link {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 13px;
+      color: #64748b;
+    }
+    .register-link a {
+      color: #f43f5e;
+      text-decoration: none;
+      font-weight: 700;
+      transition: color 0.2s;
+    }
+    .register-link a:hover {
+      color: #be123c;
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Floating Star Elements around the page -->
+  <div class="star" style="top: 15%; left: 10%; animation-delay: 0s;">★</div>
+  <div class="star" style="top: 25%; left: 80%; animation-delay: 0.5s; font-size: 16px;">★</div>
+  <div class="star" style="top: 75%; left: 15%; animation-delay: 1s; font-size: 24px;">★</div>
+  <div class="star" style="top: 85%; left: 75%; animation-delay: 1.5s;">★</div>
+  <div class="star" style="top: 45%; left: 85%; animation-delay: 0.2s; font-size: 14px;">★</div>
+  <div class="star" style="top: 55%; left: 8%; animation-delay: 0.8s; font-size: 18px;">★</div>
+  <div class="star" style="top: 10%; left: 52%; animation-delay: 1.2s; font-size: 16px;">★</div>
+  <div class="star" style="top: 90%; left: 45%; animation-delay: 0.4s; font-size: 22px;">★</div>
+
+  <!-- Login Card container -->
+  <div class="login-container">
+    <div class="brand-header">
+      <h2 class="brand-title">Welcome Back 👋</h2>
+      <p class="brand-subtitle">Login to your workspace account</p>
+    </div>
+
+    <!-- Message Alert Block (for errors and success messages) -->
+    <div id="message"></div>
+
+    <!-- Login Form (POST action removed so JS can intercept it) -->
+    <form id="loginForm">
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <input type="email" id="email" required placeholder="Enter your email">
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" required placeholder="Enter your password">
+      </div>
+      <button type="submit" class="btn">🚀 Sign In</button>
+    </form>
+
+    <div class="register-link">
+      Don't have an account? <a href="/register.html">Register here</a>
+    </div>
+  </div>
+
+  <!-- RESTORED: Links the JavaScript controller that handles the redirect -->
+  <script src="/js/login.js"></script>
+</body>
+</html>

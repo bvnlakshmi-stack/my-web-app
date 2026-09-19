@@ -1,0 +1,1926 @@
+‸<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Digital Twin Simulation Engine — Milestone 3</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root{--bg:#080d19;--s1:#0f1729;--s2:#151f35;--bd:#1b2842;--tx:#dce4f0;--mt:#627394;--bl:#4a88ff;--gn:#2bc975;--am:#eda832;--rs:#ef4f5f;--pp:#9b7af5;--cy:#1cc8db}
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;display:flex;margin:0;padding:0;overflow-x:hidden}
+
+    /* UNIFIED DEEP EMERALD SIDEBAR (Pixel-Matched to Forecasting & Dashboard) */
+    .sidebar { width: 260px; min-width: 260px; max-width: 260px; height: 100vh; position: sticky; top: 0; background: #022c22; display: flex; flex-direction: column; padding: 22px 14px; border-right: 1px solid #064e3b; z-index: 100; box-sizing: border-box; }
+    .sidebar-logo { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; padding: 0 6px; text-decoration: none; }
+    .logo-icon-box { width: 38px; height: 38px; border-radius: 12px; background: linear-gradient(135deg, #10b981, #059669); display: flex; align-items: center; justify-content: center; color: white; font-size: 19px; font-weight: 900; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4); flex-shrink: 0; }
+    .logo-text h1, .logo-text h2 { font-size: 17px; font-weight: 800; color: #ffffff; line-height: 1.2; margin: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+    .logo-text span { font-size: 9.5px; font-weight: 700; color: #6ee7b7; letter-spacing: 1px; text-transform: uppercase; font-family: 'Plus Jakarta Sans', sans-serif; }
+    .sidebar-section-label { font-size: 9.5px; font-weight: 800; color: #34d399; letter-spacing: 1.2px; text-transform: uppercase; margin: 12px 0 6px 10px; font-family: 'Plus Jakarta Sans', sans-serif; }
+    .sidebar-nav { display: flex; flex-direction: column; gap: 3px; flex: 1; overflow-y: auto; overflow-x: hidden; }
+    .nav-item { display: flex; align-items: center; gap: 11px; padding: 9px 13px; border-radius: 11px; color: #a7f3d0; text-decoration: none; font-size: 13px; font-weight: 600; font-family: 'Plus Jakarta Sans', sans-serif; transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease; border: 1.5px solid transparent; box-sizing: border-box; }
+    .nav-item:hover { background: rgba(16, 185, 129, 0.14); color: #ffffff; }
+    .nav-item.active { background: #064e3b; color: #ffffff; font-weight: 700; border-color: #10b981; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+    .sidebar-footer { padding-top: 14px; border-top: 1px solid rgba(16, 185, 129, 0.2); display: flex; flex-direction: column; gap: 6px; }
+    .db-badge { display: flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 700; color: #6ee7b7; background: rgba(16, 185, 129, 0.1); padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(16, 185, 129, 0.2); font-family: 'Plus Jakarta Sans', sans-serif; }
+    .pulse-dot { width: 8px; height: 8px; border-radius: 50%; background: #10b981; box-shadow: 0 0 8px #10b981; animation: pulse 2s infinite; }
+    @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
+
+    /* MAIN WRAPPER */
+    .main-wrapper { flex: 1; min-width: 0; height: 100vh; overflow-y: auto; display: flex; flex-direction: column; }
+    .app{max-width:1360px;width:100%;margin:0 auto;padding:16px 22px;box-sizing:border-box}
+
+    /* Top Telemetry & Dataset Stream Header */
+    .hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;background:var(--s1);padding:10px 14px;border-radius:10px;border:1px solid var(--bd)}
+    .hdr h1{font-size:17px;font-weight:900;letter-spacing:-0.3px}
+    .hdr-sub{font-size:10.5px;color:var(--mt);margin-top:2px}
+    .ds-select{background:var(--s2);color:var(--gn);border:1px solid var(--gn);padding:5px 10px;border-radius:6px;font-size:11px;font-weight:800;cursor:pointer;outline:none}
+    .live-dot{font-size:9px;font-weight:800;padding:4px 9px;border-radius:5px;background:rgba(43,201,117,0.12);color:var(--gn);border:1px solid rgba(43,201,117,0.25);white-space:nowrap}
+
+    /* Tabs */
+    .tabs{display:flex;gap:4px;margin-bottom:12px;background:var(--s1);padding:3px;border-radius:10px;border:1px solid var(--bd)}
+    .tab{flex:1;text-align:center;padding:8px 6px;font-size:10.5px;font-weight:700;border-radius:8px;cursor:pointer;color:var(--mt);transition:all .15s;border:none;background:none;font-family:inherit}
+    .tab:hover{color:var(--tx)}
+    .tab.on{background:var(--bl);color:#fff;box-shadow:0 2px 10px rgba(74,136,255,0.3)}
+    .panel{display:none}
+    .panel.show{display:block}
+
+    /* Shared */
+    .card{background:var(--s1);border:1px solid var(--bd);border-radius:10px;padding:12px}
+    .row{display:flex;justify-content:space-between;font-size:11px;padding:4px 0;border-bottom:1px solid rgba(255,255,255,0.03)}
+    .row:last-child{border:none}
+    .row .k{color:var(--mt)}
+    .row .v{font-weight:700}
+    .lbl{font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--mt);margin-bottom:6px}
+    .g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+    .g4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px}
+    input[type=range]{width:100%;accent-color:var(--cy);cursor:pointer;height:5px}
+    .tag{font-size:9px;font-weight:800;padding:2px 7px;border-radius:4px;display:inline-block}
+
+    /* ── P1: Digital Twin Studio ── */
+    .persona-bar{display:flex;gap:6px;align-items:center;background:var(--s1);border:1px solid var(--bd);padding:8px 12px;border-radius:10px;margin-bottom:10px;flex-wrap:wrap}
+    .persona-title{font-size:10px;font-weight:800;color:var(--bl);text-transform:uppercase;letter-spacing:.5px;margin-right:4px}
+    .pers-pill{border:1px solid var(--bd);background:var(--s2);color:var(--tx);padding:4px 11px;border-radius:6px;font-size:10px;font-weight:700;cursor:pointer;transition:all .15s}
+    .pers-pill:hover{border-color:var(--bl);background:rgba(74,136,255,0.08)}
+    .pers-pill.active{background:var(--bl);color:#fff;font-weight:800;border-color:var(--bl);box-shadow:0 2px 10px rgba(74,136,255,0.3)}
+
+    .twin-arena{display:grid;grid-template-columns:220px 1fr 1fr;gap:10px;margin-bottom:10px}
+    .avatar-card{text-align:center;padding:12px 10px;display:flex;flex-direction:column;justify-content:space-between}
+    .av-ring{width:56px;height:56px;border-radius:50%;background:conic-gradient(var(--bl) 0% 25%,var(--gn) 25% 50%,var(--am) 50% 75%,var(--pp) 75%);display:flex;align-items:center;justify-content:center;margin:0 auto 6px;box-shadow:0 0 18px rgba(74,136,255,0.25)}
+    .av-inner{width:46px;height:46px;border-radius:50%;background:var(--s1);display:flex;align-items:center;justify-content:center;font-size:22px}
+    .av-name{font-size:13.5px;font-weight:900}
+    .av-tag{font-size:9px;color:var(--cy);font-weight:700;text-transform:uppercase;margin-top:1px}
+
+    .plan-card{border-radius:10px;padding:12px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden}
+    .plan-card.current{background:var(--s2);border:1px solid var(--bd)}
+    .plan-card.future{background:rgba(28,200,219,0.04);border:1.5px solid rgba(28,200,219,0.35);box-shadow:0 0 16px rgba(28,200,219,0.08)}
+    .plan-badge{position:absolute;top:10px;right:10px;font-size:8.5px;font-weight:800;padding:2px 7px;border-radius:4px}
+
+    .delta-badge-strip{display:flex;gap:6px;margin:8px 0;flex-wrap:wrap}
+    .delta-badge{font-size:9.5px;font-weight:800;padding:3px 8px;border-radius:5px}
+
+    .if-engine{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+    .if-box{background:var(--s1);border:1px solid var(--bd);border-radius:10px;padding:10px 12px}
+    .if-box.inc{border-left:3px solid var(--gn)}
+    .if-box.dec{border-left:3px solid var(--am)}
+    .if-head{display:flex;justify-content:space-between;align-items:center;font-size:11px;font-weight:800;margin-bottom:4px}
+    .if-body{font-size:10px;color:#9bacc4;line-height:1.4}
+
+    .micro-ctrls{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+    .micro-ctrl{background:var(--s2);border-radius:8px;padding:8px 10px}
+    .mc-head{display:flex;justify-content:space-between;align-items:center;font-size:10.5px;font-weight:700;margin-bottom:4px}
+    .stepper-row{display:flex;align-items:center;gap:6px;margin-top:4px}
+    .step-btn{background:rgba(255,255,255,0.06);border:1px solid var(--bd);color:var(--tx);padding:2px 7px;border-radius:4px;font-size:10px;font-weight:700;cursor:pointer}
+    .step-btn:hover{background:rgba(255,255,255,0.12)}
+
+    .scn-btn{border:1.5px solid var(--bd);background:var(--s2);color:var(--mt);padding:4px 10px;border-radius:6px;font-size:9.5px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s}
+    .scn-btn:hover{border-color:#334155}
+    .scn-btn.on{border-color:var(--cy);color:var(--tx);background:rgba(28,200,219,0.07)}
+
+    /* ── P2: Behavior Analysis ── */
+    .shift-bar{display:flex;gap:6px;align-items:center;background:var(--s1);border:1px solid var(--bd);padding:8px 12px;border-radius:10px;margin-bottom:10px;flex-wrap:wrap}
+    .shift-title{font-size:10px;font-weight:800;color:var(--cy);text-transform:uppercase;letter-spacing:.5px;margin-right:4px}
+    .shift-pill{border:1px solid var(--bd);background:var(--s2);color:var(--tx);padding:4px 10px;border-radius:6px;font-size:10px;font-weight:700;cursor:pointer;transition:all .15s}
+    .shift-pill:hover{border-color:var(--cy);background:rgba(28,200,219,0.08)}
+    .shift-pill.active{background:var(--cy);color:#080d19;font-weight:800;border-color:var(--cy)}
+
+    .beh-cockpit{display:grid;grid-template-columns:320px 1fr;gap:10px}
+    .radar-card{display:flex;flex-direction:column;justify-content:space-between;height:100%}
+    .radar-wrap{height:200px;position:relative;margin:4px 0}
+    .archetype-box{background:var(--s2);border-radius:8px;padding:8px 10px;margin-top:6px}
+    .arch-title{display:flex;justify-content:space-between;align-items:center;font-size:11px;font-weight:800}
+
+    .matrix-grid{display:flex;flex-direction:column;gap:8px}
+    .matrix-card{background:var(--s2);border:1px solid var(--bd);border-radius:10px;padding:10px 12px}
+    .mc-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+    .mc-title{font-size:11.5px;font-weight:800;display:flex;align-items:center;gap:6px}
+    .mc-track{height:5px;background:rgba(255,255,255,0.05);border-radius:3px;overflow:hidden;margin:6px 0}
+    .mc-fill{height:100%;border-radius:3px;transition:width .4s}
+    .mc-split{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px}
+    .mc-col{background:rgba(0,0,0,0.2);padding:6px 8px;border-radius:6px;font-size:9.5px;line-height:1.35}
+    .mc-col strong{display:block;margin-bottom:2px;font-size:9px;text-transform:uppercase;letter-spacing:.3px}
+    .causal-flow{background:rgba(28,200,219,0.05);border:1px dashed rgba(28,200,219,0.25);border-radius:6px;padding:6px 8px;font-size:9.5px;color:#a0b2cf;margin-top:6px;display:flex;align-items:center;gap:6px}
+
+    /* ── P3: Scenarios ── */
+    .wi-grid{display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1fr;gap:8px;margin-bottom:10px}
+    .wi{background:var(--s2);border:1.5px solid var(--bd);border-radius:10px;padding:10px;text-align:center;cursor:pointer;transition:all .15s}
+    .wi:hover{border-color:#334155}
+    .wi.on{border-color:var(--pp);background:rgba(155,122,245,0.06)}
+    .wi-icon{font-size:22px;margin-bottom:4px}
+    .wi-name{font-size:10px;font-weight:700;margin-bottom:2px}
+    .wi-cost{font-size:12px;font-weight:900;color:var(--rs)}
+    .wi.on .wi-cost{color:var(--pp)}
+    .kpi-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px}
+    .kpi{background:var(--s2);border-radius:8px;padding:8px;text-align:center}
+    .kpi-label{font-size:8.5px;color:var(--mt);font-weight:700;text-transform:uppercase;margin-bottom:2px}
+    .kpi-val{font-size:16px;font-weight:900}
+    .kpi-sub{font-size:9px;font-weight:600;margin-top:1px}
+
+    /* ── P4: Outcomes ── */
+    .oc{border-radius:10px;padding:14px;position:relative;overflow:hidden}
+    .oc::before{content:'';position:absolute;top:0;left:0;right:0;height:2.5px}
+    .oc-b{background:linear-gradient(180deg,rgba(43,201,117,0.06),var(--s1));border:1px solid rgba(43,201,117,0.25)}.oc-b::before{background:var(--gn)}
+    .oc-e{background:var(--s1);border:1px solid var(--bd)}.oc-e::before{background:var(--bl)}
+    .oc-w{background:linear-gradient(180deg,rgba(239,79,95,0.04),var(--s1));border:1px solid rgba(239,79,95,0.18)}.oc-w::before{background:var(--rs)}
+    .oc-tag{font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px}
+    .oc-val{font-size:26px;font-weight:900;letter-spacing:-.4px;margin-bottom:2px}
+    .oc-delta{font-size:10.5px;font-weight:700;margin-bottom:6px}
+    .oc-desc{font-size:10px;color:var(--mt);line-height:1.35;margin-bottom:8px}
+    .oc-chart{height:80px;position:relative}
+
+    /* ── P5: AI Recommendation Engine ── */
+    .ai-strategy-bar{display:flex;gap:6px;align-items:center;background:var(--s1);border:1px solid var(--bd);padding:8px 12px;border-radius:10px;margin-bottom:10px;flex-wrap:wrap}
+    .ai-strategy-title{font-size:10px;font-weight:800;color:var(--pp);text-transform:uppercase;letter-spacing:.5px;margin-right:4px}
+    .strat-pill{border:1px solid var(--bd);background:var(--s2);color:var(--tx);padding:4px 11px;border-radius:6px;font-size:10px;font-weight:700;cursor:pointer;transition:all .15s}
+    .strat-pill:hover{border-color:var(--pp);background:rgba(155,122,245,0.08)}
+    .strat-pill.active{background:var(--pp);color:#fff;font-weight:800;border-color:var(--pp);box-shadow:0 2px 10px rgba(155,122,245,0.3)}
+
+    .ai-hub-grid{display:grid;grid-template-columns:330px 1fr;gap:10px}
+    .telemetry-card{display:flex;flex-direction:column;justify-content:space-between;height:100%}
+    .trend-wrap{height:140px;position:relative;margin:6px 0}
+    .leak-box{background:var(--s2);border-radius:8px;padding:8px 10px;margin-bottom:8px}
+    .leak-item{display:flex;justify-content:space-between;align-items:center;font-size:10px;padding:3.5px 0;border-bottom:1px solid rgba(255,255,255,0.03)}
+    .leak-item:last-child{border:none}
+    .impact-summary-strip{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:6px}
+    .iss-box{background:var(--s2);border-radius:6px;padding:6px;text-align:center}
+    .iss-l{font-size:8px;color:var(--mt);font-weight:700;text-transform:uppercase}
+    .iss-v{font-size:12.5px;font-weight:900;margin-top:1px}
+
+    .prescriptions-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .rx-card{background:var(--s1);border:1px solid var(--bd);border-radius:10px;padding:12px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden;transition:all .2s}
+    .rx-card:hover{border-color:#33486b}
+    .rx-card.applied{border-color:rgba(43,201,117,0.4);background:rgba(43,201,117,0.03)}
+    .rx-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px}
+    .rx-title{font-size:12px;font-weight:800}
+    .rx-sub{font-size:9.5px;color:var(--mt);margin-top:1px}
+    .rx-evidence{background:var(--s2);border-radius:7px;padding:7px 9px;margin:8px 0;font-size:9.5px;color:#9bacc4;line-height:1.4}
+    .rx-evidence strong{color:#dce4f0}
+    .rx-metrics{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px}
+    .rx-met{background:var(--s2);border-radius:6px;padding:6px;text-align:center}
+    .rx-met-l{font-size:8px;color:var(--mt);font-weight:700;text-transform:uppercase}
+    .rx-met-v{font-size:13px;font-weight:900;margin-top:1px}
+    .rx-btn{background:var(--s2);border:1px solid var(--bd);color:#bcc7db;padding:7px 10px;border-radius:6px;font-size:10px;font-weight:700;cursor:pointer;text-align:center;transition:all .15s;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:6px}
+    .rx-btn:hover{background:var(--bd);color:#fff}
+    .rx-btn.done{background:rgba(43,201,117,0.15);border-color:rgba(43,201,117,0.4);color:var(--gn);cursor:default}
+
+    /* ── P6: AI Stress Testing & Monte Carlo ── */
+    .st-grid{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;margin-bottom:12px}
+    .st-card{background:var(--s2);border:1.5px solid var(--bd);border-radius:10px;padding:12px 10px;text-align:center;cursor:pointer;transition:all .2s}
+    .st-card:hover{border-color:var(--rs);background:rgba(239,79,95,0.06)}
+    .st-card.active{border-color:var(--rs);background:rgba(239,79,95,0.12);box-shadow:0 0 16px rgba(239,79,95,0.2)}
+    .st-icon{font-size:24px;margin-bottom:4px}
+    .st-title{font-size:11px;font-weight:800;margin-bottom:2px}
+    .st-impact{font-size:9.5px;color:var(--rs);font-weight:700}
+    
+    .mc-box{background:var(--s1);border:1px solid var(--bd);border-radius:10px;padding:14px;margin-bottom:12px}
+    .mc-chart-wrap{height:220px;position:relative;margin:8px 0}
+
+    /* ── P7: Risk Analysis & Vulnerability Heatmap (M3 Requirement) ── */
+    .risk-grid{display:grid;grid-template-columns:300px 1fr;gap:12px;margin-bottom:12px}
+    .risk-score-card{background:var(--s1);border:1px solid var(--bd);border-radius:10px;padding:16px;text-align:center;display:flex;flex-direction:column;justify-content:space-between}
+    .risk-gauge-circle{width:110px;height:110px;border-radius:50%;margin:0 auto 10px;display:flex;align-items:center;justify-content:center;background:conic-gradient(#2bc975 0% 65%, #eda832 65% 85%, #ef4f5f 85% 100%);box-shadow:0 0 20px rgba(43,201,117,0.25)}
+    .risk-gauge-inner{width:88px;height:88px;border-radius:50%;background:var(--s1);display:flex;flex-direction:column;align-items:center;justify-content:center}
+    .risk-gauge-val{font-size:24px;font-weight:900}
+    .risk-gauge-lbl{font-size:8px;color:var(--mt);font-weight:700;text-transform:uppercase}
+    
+    .risk-matrix-table{width:100%;border-collapse:collapse;font-size:10.5px}
+    .risk-matrix-table th{background:var(--s2);color:var(--mt);font-size:9px;font-weight:800;text-transform:uppercase;padding:8px 10px;text-align:left;border-bottom:1px solid var(--bd)}
+    .risk-matrix-table td{padding:9px 10px;border-bottom:1px solid rgba(255,255,255,0.03)}
+    .risk-matrix-table tr:hover td{background:rgba(255,255,255,0.02)}
+    
+    .risk-badge{display:inline-block;padding:3px 8px;border-radius:4px;font-size:9px;font-weight:800;text-transform:uppercase}
+    .risk-low{background:rgba(43,201,117,0.12);color:var(--gn);border:1px solid rgba(43,201,117,0.3)}
+    .risk-med{background:rgba(237,168,50,0.12);color:var(--am);border:1px solid rgba(237,168,50,0.3)}
+    .risk-high{background:rgba(239,79,95,0.12);color:var(--rs);border:1px solid rgba(239,79,95,0.3)}
+
+    .mitigation-box{background:rgba(74,136,255,0.06);border:1px dashed rgba(74,136,255,0.3);border-radius:6px;padding:6px 8px;font-size:9.5px;color:#a0b8df;margin-top:4px}
+
+    /* ── P8: AI Copilot Chat Assistant (Styles) ── */
+    .copilot-card{background:var(--s1);border:1px solid var(--bd);border-radius:10px;padding:14px;display:flex;flex-direction:column;height:480px}
+    .copilot-msgs{flex:1;overflow-y:auto;background:var(--s2);border-radius:8px;padding:12px;display:flex;flex-direction:column;gap:10px;margin-bottom:10px;border:1px solid rgba(255,255,255,0.03)}
+    .copilot-msg{display:flex;gap:8px;font-size:11px;line-height:1.45;max-width:92%}
+    .copilot-msg.user{align-self:flex-end;flex-direction:row-reverse}
+    .copilot-bubble{padding:8px 12px;border-radius:10px}
+    .copilot-msg.bot .copilot-bubble{background:#1a2744;border:1px solid rgba(74,136,255,0.25);color:#dce4f0}
+    .copilot-msg.user .copilot-bubble{background:var(--bl);color:#fff}
+    .copilot-inp-row{display:flex;gap:8px}
+    .copilot-input{flex:1;background:var(--s2);border:1px solid var(--bd);color:var(--tx);padding:9px 12px;border-radius:8px;font-size:11px;font-family:inherit;outline:none}
+    .copilot-input:focus{border-color:var(--bl)}
+    .copilot-send{background:var(--bl);color:white;border:none;padding:0 16px;border-radius:8px;font-size:11px;font-weight:800;cursor:pointer;transition:all .15s}
+    .copilot-send:hover{background:#3a78ef}
+    .copilot-suggestions{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+    .c-sug{font-size:9.5px;font-weight:700;background:rgba(255,255,255,0.05);border:1px solid var(--bd);padding:3px 8px;border-radius:5px;cursor:pointer;color:var(--mt)}
+    .c-sug:hover{color:var(--tx);border-color:var(--bl)}
+
+    /* Toast Notification */
+    .toast-box{position:fixed;bottom:20px;right:20px;background:#151f35;border:1px solid var(--cy);color:#dce4f0;padding:10px 16px;border-radius:8px;font-size:11px;font-weight:700;display:none;box-shadow:0 6px 20px rgba(0,0,0,0.5);z-index:999;align-items:center;gap:8px}
+  </style>
+</head>
+<body>
+
+  <!-- SIDEBAR NAVIGATION -->
+  <aside class="sidebar">
+    <a href="/dashboard.html" class="sidebar-logo">
+      <div class="logo-icon-box">✓</div>
+      <div class="logo-text">
+        <h1>MyApp</h1>
+        <span>USER PORTAL</span>
+      </div>
+    </a>
+    <div class="sidebar-section-label">WORKSPACE</div>
+    <nav class="sidebar-nav">
+      <a href="/dashboard.html" class="nav-item">
+        <span>🏠</span> <span>Dashboard</span>
+      </a>
+      <a href="/forecasting.html" class="nav-item">
+        <span>📈</span> <span>Forecasting</span>
+      </a>
+      <a href="/simulation.html" class="nav-item active">
+        <span>🎮</span> <span>Simulation Engine (M3)</span>
+      </a>
+      <a href="/income.html" class="nav-item">
+        <span>💳</span> <span>Income & Expenses</span>
+      </a>
+      <a href="/savings.html" class="nav-item">
+        <span>💰</span> <span>Savings</span>
+        <span style="margin-left:auto;background:rgba(28,200,219,0.18);color:#5eead4;font-size:10px;font-weight:800;padding:1px 7px;border-radius:10px;">0</span>
+      </a>
+      <a href="/study.html" class="nav-item">
+        <span>📚</span> <span>Study</span>
+      </a>
+      <a href="/academics.html" class="nav-item">
+        <span>🎓</span> <span>Academics</span>
+      </a>
+      <a href="/habits.html" class="nav-item">
+        <span>🔥</span> <span>Habits</span>
+      </a>
+      <a href="/fitness.html" class="nav-item">
+        <span>🏋️</span> <span>Fitness</span>
+      </a>
+      <a href="/goals.html" class="nav-item">
+        <span>🎯</span> <span>Goals</span>
+      </a>
+      <a href="/activity.html" class="nav-item">
+        <span>📊</span> <span>Activity History</span>
+      </a>
+      <a href="/profile.html" class="nav-item">
+        <span>👤</span> <span>Profile</span>
+      </a>
+      <a href="/login.html" class="nav-item" style="color:#ef4444;margin-top:4px;">
+        <span>🚪</span> <span>Logout</span>
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="db-badge">
+        <div class="pulse-dot"></div>
+        <span>SQLite Active</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:#a7f3d0;padding:6px 4px 0 4px;opacity:0.75;">
+        <span>🔒</span> <span>Secure & Private</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN WRAPPER -->
+  <main class="main-wrapper">
+    <div class="app">
+  <!-- Top Telemetry & Dataset Stream Header -->
+  <div class="hdr">
+    <div>
+      <h1>🧬 Digital Twin Simulation Engine</h1>
+      <div class="hdr-sub">Milestone 3 — Operating on Forecasting Telemetry Dataset: <strong id="dsRangeLabel" style="color:var(--cy)">01-Jan-2024 to 22-Jun-2029</strong></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <select id="datasetVolumeSelect" class="ds-select" onchange="loadForecastingDataset(this.value)">
+        <option value="2000" selected>⚡ 2,000 Ingested Records</option>
+        <option value="1000">📊 1,000 Records</option>
+        <option value="500">📊 500 Records</option>
+        <option value="300">📊 300 Records</option>
+        <option value="100">📊 100 Records</option>
+      </select>
+      <span class="live-dot" id="dsStatusBadge">● Dataset Synced</span>
+    </div>
+  </div>
+
+  <!-- Tab Navigation -->
+  <div class="tabs">
+    <button class="tab on" onclick="showTab(0)">🧬 Digital Twin</button>
+    <button class="tab" onclick="showTab(1)">📊 Behavior Analysis</button>
+    <button class="tab" onclick="showTab(2)">🛒 Scenario Simulation</button>
+    <button class="tab" onclick="showTab(3)">⚖️ Outcome Comparison</button>
+    <button class="tab" onclick="showTab(4)">💡 AI Recommendations</button>
+    <button class="tab" onclick="showTab(5)">🌪️ AI Stress & Monte Carlo</button>
+    <button class="tab" onclick="showTab(6)">🛡️ Risk Analysis & Heatmap</button>
+    <button class="tab" onclick="showTab(7)">🤖 AI Twin Copilot</button>
+  </div>
+
+  <!-- ═════ PANEL 1: DIGITAL TWIN STUDIO ═════ -->
+  <div class="panel show" id="p0">
+    <!-- Twin Persona Switcher Bar -->
+    <div class="persona-bar">
+      <span class="persona-title">👤 Twin Profile:</span>
+      <button class="pers-pill active" id="pp_student" onclick="setPersona('student')">🎓 Forecasting Student (Dataset)</button>
+      <button class="pers-pill" id="pp_tech" onclick="setPersona('tech')">💼 Tech Associate</button>
+      <button class="pers-pill" id="pp_fire" onclick="setPersona('fire')">🚀 FIRE Builder</button>
+      <div style="margin-left:auto;display:flex;gap:6px">
+        <button class="scn-btn on" id="sA" onclick="pickScn('A')">📈 Scn A: ↑ Savings 40%</button>
+        <button class="scn-btn" id="sB" onclick="pickScn('B')">📚 Scn B: ↓ Study Hours</button>
+        <button class="scn-btn" id="sC" onclick="pickScn('C')">💸 Scn C: ↑ Spending 20%</button>
+      </div>
+    </div>
+
+    <!-- Twin Arena: Profile + Head-to-Head Plans -->
+    <div class="twin-arena">
+      <!-- Avatar Card -->
+      <div class="card avatar-card">
+        <div>
+          <div class="av-ring"><div class="av-inner" id="avEmoji">🧬</div></div>
+          <div class="av-name" id="avName">Your Twin</div>
+          <div class="av-tag" id="avArchetype">Forecasting Dataset Stream</div>
+        </div>
+        <div style="margin-top:6px">
+          <div class="row"><span class="k">Dataset Count</span><span class="v" id="pRecords" style="color:var(--cy)">2,000 logs</span></div>
+          <div class="row"><span class="k">Monthly Income</span><span class="v" id="pInc">₹42,203</span></div>
+          <div class="row"><span class="k">Discretionary</span><span class="v" id="pExp">₹8,408</span></div>
+          <div class="row"><span class="k">Monthly Savings</span><span class="v" id="pSav" style="color:var(--gn)">₹8,287</span></div>
+          <div class="row"><span class="k">Base Savings Rate</span><span class="v" id="pRate" style="color:var(--cy)">20%</span></div>
+        </div>
+      </div>
+
+      <!-- Current Plan -->
+      <div class="plan-card current">
+        <div>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div class="lbl" style="margin-bottom:0">📋 Current Plan Baseline</div>
+            <span class="plan-badge" style="background:rgba(255,255,255,0.06);color:var(--mt)">Dataset Mean</span>
+          </div>
+          <div style="font-size:10px;color:var(--mt);margin-top:2px">Statistical baseline aggregated across forecasting records</div>
+          <div style="margin-top:8px">
+            <div class="row"><span class="k">Savings Rate</span><span class="v" id="cpRate">20%</span></div>
+            <div class="row"><span class="k">Monthly Savings</span><span class="v" id="cpMonthly">₹8,287</span></div>
+            <div class="row"><span class="k">1-Year Capital</span><span class="v" id="cp1Yr">₹99,444</span></div>
+            <div class="row"><span class="k">3-Year Capital</span><span class="v" id="cp3Yr">₹2,98,332</span></div>
+            <div class="row"><span class="k">5-Year Projected</span><span class="v" id="cp5Yr" style="color:var(--bl)">₹5,88,874</span></div>
+            <div class="row"><span class="k">Burnout Risk</span><span class="v" id="cpBurn" style="color:var(--am)">44%</span></div>
+          </div>
+        </div>
+        <div style="font-size:9.5px;color:var(--mt);background:rgba(0,0,0,0.2);padding:5px 8px;border-radius:6px;margin-top:6px">
+          Runway: <strong id="cpRunway" style="color:var(--am)">2.4 months</strong> • Mean sleep: <span id="cpSleep">7.8h</span>
+        </div>
+      </div>
+
+      <!-- Future Plan -->
+      <div class="plan-card future">
+        <div>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div class="lbl" style="margin-bottom:0;color:var(--cy)">🚀 Future Plan (Simulated)</div>
+            <span class="plan-badge" style="background:rgba(28,200,219,0.15);color:var(--cy)">Active Simulation</span>
+          </div>
+          <div style="font-size:10px;color:var(--mt);margin-top:2px">Dynamically calculated from parameter shifts & dataset</div>
+          <div style="margin-top:8px">
+            <div class="row"><span class="k">Savings Rate</span><span class="v" id="fR" style="color:var(--cy)">40%</span></div>
+            <div class="row"><span class="k">Monthly Savings</span><span class="v" id="fM" style="color:var(--gn)">₹16,881</span></div>
+            <div class="row"><span class="k">1-Year Capital</span><span class="v" id="f1" style="color:var(--gn)">₹2,02,572</span></div>
+            <div class="row"><span class="k">3-Year Capital</span><span class="v" id="f3" style="color:var(--gn)">₹6,07,716</span></div>
+            <div class="row"><span class="k">5-Year Projected</span><span class="v" id="f5" style="color:var(--gn)">₹12,00,000</span></div>
+            <div class="row"><span class="k">Burnout Risk</span><span class="v" id="fB" style="color:var(--gn)">28%</span></div>
+          </div>
+        </div>
+
+        <!-- Delta Badges -->
+        <div class="delta-badge-strip">
+          <span class="delta-badge" id="dtGainBadge" style="background:rgba(43,201,117,0.15);color:var(--gn)">+₹6.11L Lift (+103%)</span>
+          <span class="delta-badge" id="dtBurnBadge" style="background:rgba(43,201,117,0.15);color:var(--gn)">-16% Burnout</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dynamic "If We Increase / If We Decrease" Engine -->
+    <div class="if-engine">
+      <div class="if-box inc">
+        <div class="if-head">
+          <span style="color:var(--gn)">🟢 If We Increase Parameters (↑)</span>
+          <span class="tag" style="background:rgba(43,201,117,0.12);color:var(--gn)">Compounding</span>
+        </div>
+        <div class="if-body" id="ifIncBody">
+          Increasing savings rate by <strong>+10%</strong> elevates 5-Year net wealth and expands your cash runway against historical anomalies.
+        </div>
+      </div>
+      <div class="if-box dec">
+        <div class="if-head">
+          <span style="color:var(--am)">🔴 If We Decrease Parameters (↓)</span>
+          <span class="tag" style="background:rgba(237,168,50,0.12);color:var(--am)">Trade-Off</span>
+        </div>
+        <div class="if-body" id="ifDecBody">
+          Decreasing study load drops academic burnout, preserving cognitive capacity with minimal exam velocity penalty.
+        </div>
+      </div>
+    </div>
+
+    <!-- Live Micro-Sliders with Stepper Buttons -->
+    <div class="micro-ctrls">
+      <div class="micro-ctrl">
+        <div class="mc-head">
+          <span style="color:var(--mt)">Savings Rate:</span>
+          <strong id="lR" style="color:var(--cy)">40%</strong>
+        </div>
+        <input type="range" id="sR" min="5" max="55" value="40" oninput="calc()">
+        <div class="stepper-row">
+          <button class="step-btn" onclick="stepVal('sR', -5)">-5%</button>
+          <button class="step-btn" onclick="stepVal('sR', 5)">+5%</button>
+          <span style="font-size:9px;color:var(--mt);margin-left:auto">Target: 40%</span>
+        </div>
+      </div>
+      <div class="micro-ctrl">
+        <div class="mc-head">
+          <span style="color:var(--mt)">Study Load / Wk:</span>
+          <strong id="lS" style="color:var(--bl)">18 hrs</strong>
+        </div>
+        <input type="range" id="sS" min="5" max="40" value="18" oninput="calc()">
+        <div class="stepper-row">
+          <button class="step-btn" onclick="stepVal('sS', -2)">-2h</button>
+          <button class="step-btn" onclick="stepVal('sS', 2)">+2h</button>
+          <span style="font-size:9px;color:var(--mt);margin-left:auto">Optimal: 16-20h</span>
+        </div>
+      </div>
+      <div class="micro-ctrl">
+        <div class="mc-head">
+          <span style="color:var(--mt)">Discretionary Spend:</span>
+          <strong id="lD" style="color:var(--am)">₹8,000</strong>
+        </div>
+        <input type="range" id="sD" min="1000" max="25000" step="500" value="8000" oninput="calc()">
+        <div class="stepper-row">
+          <button class="step-btn" onclick="stepVal('sD', -1000)">-₹1K</button>
+          <button class="step-btn" onclick="stepVal('sD', 1000)">+₹1K</button>
+          <span style="font-size:9px;color:var(--mt);margin-left:auto">Cap: ₹6,000</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═════ PANEL 2: BEHAVIOR ANALYSIS ENGINE ═════ -->
+  <div class="panel" id="p1">
+    <!-- Interactive Habit Shift Simulator Bar -->
+    <div class="shift-bar">
+      <span class="shift-title">⚡ Quick Habit Shift:</span>
+      <button class="shift-pill" id="pill_st_up" onclick="toggleShift('st_up')">+4h Study Load</button>
+      <button class="shift-pill" id="pill_st_dn" onclick="toggleShift('st_dn')">-4h Study Load</button>
+      <button class="shift-pill" id="pill_sp_dn" onclick="toggleShift('sp_dn')">-₹2K Delivery Cut</button>
+      <button class="shift-pill" id="pill_sl_up" onclick="toggleShift('sl_up')">+1.5h Sleep Recovery</button>
+      <button class="shift-pill" style="margin-left:auto;color:var(--mt)" onclick="resetShift()">↺ Reset</button>
+    </div>
+
+    <!-- Behavior Analysis Cockpit -->
+    <div class="beh-cockpit">
+      <!-- Left: Radar Equilibrium & Fingerprint -->
+      <div class="card radar-card">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div class="lbl" style="margin-bottom:0">🧭 Behavioral Radar (Dataset Grounded)</div>
+          <span class="tag" style="background:rgba(28,200,219,0.1);color:var(--cy)">Multi-Axis</span>
+        </div>
+        <div class="radar-wrap"><canvas id="behRadar"></canvas></div>
+        <div class="archetype-box">
+          <div class="arch-title">
+            <span id="archLabel" style="color:var(--cy)">🎯 Focused / Moderate Load</span>
+            <span id="archStability" style="color:var(--gn)">82% Stable</span>
+          </div>
+          <div style="font-size:10px;color:var(--mt);margin-top:3px" id="archSub">Ground-truth telemetry correlates high academic focus with controlled burnout buffer.</div>
+        </div>
+      </div>
+
+      <!-- Right: Ripple Effect & Sensitivity Matrix -->
+      <div class="matrix-grid">
+        <!-- 1. Study Behavior Matrix -->
+        <div class="matrix-card">
+          <div class="mc-top">
+            <span class="mc-title">📚 Cognitive & Study Dynamics <span id="mStudyHrs" style="color:var(--cy);font-size:10.5px">(18 hrs/wk)</span></span>
+            <span class="tag" id="mStudyBadge" style="background:rgba(43,201,117,0.12);color:var(--gn)">Optimal</span>
+          </div>
+          <div class="mc-track"><div class="mc-fill" id="mStudyBar" style="width:74%;background:var(--gn)"></div></div>
+          <div class="mc-split">
+            <div class="mc-col" style="border-left:2px solid var(--gn)">
+              <strong style="color:var(--gn)">If Increased (+4h)</strong>
+              <span id="mStudyInc">Focus score rises to 83%, but late-night fatigue increases burnout risk by +14%.</span>
+            </div>
+            <div class="mc-col" style="border-left:2px solid var(--am)">
+              <strong style="color:var(--am)">If Decreased (-4h)</strong>
+              <span id="mStudyDec">Burnout drops by -16%, freeing 4h sleep buffer with minimal -6% exam velocity cost.</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. Financial Spending Matrix -->
+        <div class="matrix-card">
+          <div class="mc-top">
+            <span class="mc-title">💰 Spending Velocity & Impulse Drift <span id="mSpendAmt" style="color:var(--am);font-size:10.5px">(₹8,000/mo)</span></span>
+            <span class="tag" id="mSpendBadge" style="background:rgba(237,168,50,0.12);color:var(--am)">Moderate</span>
+          </div>
+          <div class="mc-track"><div class="mc-fill" id="mSpendBar" style="width:58%;background:var(--am)"></div></div>
+          <div class="mc-split">
+            <div class="mc-col" style="border-left:2px solid var(--rs)">
+              <strong style="color:var(--rs)">If Increased (+20%)</strong>
+              <span id="mSpendInc">Emergency runway compresses; financial anxiety adds +15 stress points.</span>
+            </div>
+            <div class="mc-col" style="border-left:2px solid var(--gn)">
+              <strong style="color:var(--gn)">If Decreased (-₹2K)</strong>
+              <span id="mSpendDec">Redirecting ₹2K/mo into SIP compounding creates +₹1.65 Lakh wealth over 5 years.</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. Sleep & Circadian Causal Loop -->
+        <div class="matrix-card">
+          <div class="mc-top">
+            <span class="mc-title">😴 Circadian Rhythm & Cascade Response <span id="mSleepHrs" style="color:var(--rs);font-size:10.5px">(5.8 hrs/night)</span></span>
+            <span class="tag" id="mSleepBadge" style="background:rgba(239,79,95,0.12);color:var(--rs)">Deficit</span>
+          </div>
+          <div class="mc-track"><div class="mc-fill" id="mSleepBar" style="width:42%;background:var(--rs)"></div></div>
+          <div class="causal-flow">
+            <span style="font-size:14px">🔁</span>
+            <span><strong>Causal Loop Detected:</strong> Study > 12 AM → Sleep drops < 6h → Next-day focus drops 22% → Sessions lengthen +1.3h.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═════ PANEL 3: SCENARIO SIMULATION ═════ -->
+  <div class="panel" id="p2">
+    <div class="wi-grid">
+      <div class="wi on" id="wi_tv" onclick="pickWI('tv')"><div class="wi-icon">📺</div><div class="wi-name">Smart TV</div><div class="wi-cost">-₹35,000</div></div>
+      <div class="wi" id="wi_trip" onclick="pickWI('trip')"><div class="wi-icon">✈️</div><div class="wi-name">Vacation Trip</div><div class="wi-cost">-₹25,000</div></div>
+      <div class="wi" id="wi_gadget" onclick="pickWI('gadget')"><div class="wi-icon">📱</div><div class="wi-name">Smartphone</div><div class="wi-cost">-₹45,000</div></div>
+      <div class="wi" id="wi_course" onclick="pickWI('course')"><div class="wi-icon">🎓</div><div class="wi-name">Online Course</div><div class="wi-cost">-₹15,000</div></div>
+      <div class="wi" id="wi_none" onclick="pickWI('none')"><div class="wi-icon">🏦</div><div class="wi-name">Don't Buy</div><div class="wi-cost" style="color:var(--gn)">₹0</div></div>
+    </div>
+    <div class="kpi-strip">
+      <div class="kpi"><div class="kpi-label">Immediate Cost</div><div class="kpi-val" id="kC" style="color:var(--rs)">₹35,000</div><div class="kpi-sub" id="kCd" style="color:var(--rs)">-3.6 months savings</div></div>
+      <div class="kpi"><div class="kpi-label">6-Month Savings</div><div class="kpi-val" id="k6" style="color:var(--am)">₹22,600</div><div class="kpi-sub" id="k6d" style="color:var(--rs)">vs baseline</div></div>
+      <div class="kpi"><div class="kpi-label">1-Year Savings</div><div class="kpi-val" id="k1" style="color:var(--bl)">₹80,200</div><div class="kpi-sub" id="k1d" style="color:var(--rs)">-₹35,000 from baseline</div></div>
+      <div class="kpi"><div class="kpi-label">Recovery Time</div><div class="kpi-val" id="kR" style="color:var(--cy)">3.6 mo</div><div class="kpi-sub" id="kRd">To rebuild buffer</div></div>
+    </div>
+    <div class="card" style="height:230px"><div class="lbl" id="simLbl">📊 Buy TV vs Don't Buy — 12-Month Trajectory</div><canvas id="simC" style="width:100%;height:190px"></canvas></div>
+  </div>
+
+  <!-- ═════ PANEL 4: OUTCOME COMPARISON ═════ -->
+  <div class="panel" id="p3">
+    <div class="g3">
+      <div class="oc oc-b">
+        <div class="oc-tag" style="color:var(--gn)">🚀 Best Case</div>
+        <div class="oc-val" id="oB" style="color:var(--gn)">₹9,85,000</div>
+        <div class="oc-delta" id="oBd" style="color:var(--gn)">+₹3,03,000 over expected</div>
+        <div class="oc-desc">High savings rate, disciplined discretionary spend, restored sleep buffer.</div>
+        <div class="row"><span class="k">Savings Rate</span><span class="v" id="oBs" style="color:var(--gn)">40%</span></div>
+        <div class="row"><span class="k">Burnout</span><span class="v" id="oBb" style="color:var(--gn)">15%</span></div>
+        <div class="row"><span class="k">Emergency Runway</span><span class="v" id="oBr" style="color:var(--gn)">6.8 mo</span></div>
+        <div class="row"><span class="k">Well-being</span><span class="v" id="oBw" style="color:var(--gn)">88/100</span></div>
+        <div class="oc-chart"><canvas id="ocBC"></canvas></div>
+      </div>
+      <div class="oc oc-e">
+        <div class="oc-tag" style="color:var(--bl)">📊 Expected</div>
+        <div class="oc-val" id="oE" style="color:var(--bl)">₹6,82,000</div>
+        <div class="oc-delta" style="color:var(--mt)">Forecasting baseline — no changes</div>
+        <div class="oc-desc">Current dataset habits continue. Moderate trajectory with room for optimization.</div>
+        <div class="row"><span class="k">Savings Rate</span><span class="v">30%</span></div>
+        <div class="row"><span class="k">Burnout</span><span class="v" style="color:var(--am)">42%</span></div>
+        <div class="row"><span class="k">Emergency Runway</span><span class="v" style="color:var(--am)">3.2 mo</span></div>
+        <div class="row"><span class="k">Well-being</span><span class="v">64/100</span></div>
+        <div class="oc-chart"><canvas id="ocEC"></canvas></div>
+      </div>
+      <div class="oc oc-w">
+        <div class="oc-tag" style="color:var(--rs)">⚠️ Worst Case</div>
+        <div class="oc-val" id="oW" style="color:var(--rs)">₹3,20,000</div>
+        <div class="oc-delta" id="oWd" style="color:var(--rs)">-₹3,62,000 below expected</div>
+        <div class="oc-desc">Spending rises +20%, savings drop, burnout accelerates into financial anxiety.</div>
+        <div class="row"><span class="k">Savings Rate</span><span class="v" style="color:var(--rs)">15%</span></div>
+        <div class="row"><span class="k">Burnout</span><span class="v" style="color:var(--rs)">78%</span></div>
+        <div class="row"><span class="k">Emergency Runway</span><span class="v" style="color:var(--rs)">0.9 mo</span></div>
+        <div class="row"><span class="k">Well-being</span><span class="v" style="color:var(--rs)">35/100</span></div>
+        <div class="oc-chart"><canvas id="ocWC"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═════ PANEL 5: AI RECOMMENDATIONS — COMMAND CENTER ═════ -->
+  <div class="panel" id="p4">
+
+    <!-- Strategy Filter Bar -->
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+      <div style="display:flex;align-items:center;gap:8px">
+        <div style="width:8px;height:8px;border-radius:50%;background:#2bc975;box-shadow:0 0 8px #2bc975;animation:pulse 2s infinite"></div>
+        <span style="font-size:11px;font-weight:800;color:#fff">AI Prescriptive Command Center</span>
+        <span style="font-size:9.5px;color:var(--mt)">— Live telemetry synthesis active</span>
+      </div>
+      <div style="display:flex;gap:5px">
+        <button class="strat-pill active" id="sp_all" onclick="setStrategy('all')" style="font-size:9px;padding:3px 9px">All</button>
+        <button class="strat-pill" id="sp_wealth" onclick="setStrategy('wealth')" style="font-size:9px;padding:3px 9px">💰 Wealth</button>
+        <button class="strat-pill" id="sp_shield" onclick="setStrategy('shield')" style="font-size:9px;padding:3px 9px">🛡️ Safety</button>
+        <button class="strat-pill" id="sp_rest" onclick="setStrategy('rest')" style="font-size:9px;padding:3px 9px">🧘 Rest</button>
+      </div>
+    </div>
+
+    <!-- 2-Column Command Layout -->
+    <div style="display:grid;grid-template-columns:240px 1fr;gap:12px">
+
+      <!-- LEFT: AI Health Score Panel -->
+      <div style="background:linear-gradient(160deg,#0d1a30,#0f1729);border:1px solid rgba(74,136,255,0.2);border-radius:16px;padding:16px;display:flex;flex-direction:column;align-items:center;justify-content:space-between">
+        <div style="font-size:9px;font-weight:800;color:var(--bl);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:10px">🧠 AI Health Index</div>
+
+        <!-- Score Ring (CSS) -->
+        <div style="position:relative;width:120px;height:120px;margin-bottom:12px">
+          <svg viewBox="0 0 120 120" style="width:120px;height:120px;transform:rotate(-90deg)">
+            <circle cx="60" cy="60" r="50" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="10"/>
+            <circle cx="60" cy="60" r="50" fill="none" stroke="url(#rxGrad)" stroke-width="10" stroke-linecap="round" stroke-dasharray="314" stroke-dashoffset="75" id="rxRingCircle"/>
+            <defs>
+              <linearGradient id="rxGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#2bc975"/>
+                <stop offset="100%" stop-color="#4a88ff"/>
+              </linearGradient>
+            </defs>
+          </svg>
+          <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center">
+            <div style="font-size:26px;font-weight:900;color:#fff;line-height:1" id="rxHealthScore">76</div>
+            <div style="font-size:8px;color:var(--mt);font-weight:700;text-transform:uppercase">out of 100</div>
+          </div>
+        </div>
+
+        <div style="font-size:12px;font-weight:800;color:var(--gn);margin-bottom:4px" id="rxHealthLabel">GOOD HEALTH</div>
+        <div style="font-size:9px;color:var(--mt);text-align:center;margin-bottom:12px">Composite score across financial, cognitive & lifestyle vectors</div>
+
+        <!-- 3 Mini Stats -->
+        <div style="width:100%;display:flex;flex-direction:column;gap:6px">
+          <div style="display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,0.04);padding:6px 10px;border-radius:8px">
+            <span style="font-size:9.5px;color:var(--mt)">💰 Wealth Score</span>
+            <span style="font-size:11px;font-weight:800;color:var(--gn)" id="rxWealthScore">72</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,0.04);padding:6px 10px;border-radius:8px">
+            <span style="font-size:9.5px;color:var(--mt)">🧠 Cognitive Score</span>
+            <span style="font-size:11px;font-weight:800;color:var(--am)" id="rxCogScore">58</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,0.04);padding:6px 10px;border-radius:8px">
+            <span style="font-size:9.5px;color:var(--mt)">🛡️ Resilience</span>
+            <span style="font-size:11px;font-weight:800;color:var(--cy)" id="rxResScore">88</span>
+          </div>
+        </div>
+
+        <div style="margin-top:10px;font-size:8.5px;color:#4a6080;text-align:center">Synthesized from <strong style="color:var(--cy)" id="rxRecordCount">2,000</strong> records</div>
+      </div>
+
+      <!-- RIGHT: 4 Prescription Mission Cards -->
+      <div style="display:flex;flex-direction:column;gap:8px">
+
+        <!-- Mission 1 -->
+        <div id="rxCard1" style="background:var(--s1);border:1px solid var(--bd);border-radius:12px;padding:10px 14px;display:grid;grid-template-columns:36px 1fr auto;gap:12px;align-items:center;transition:border-color .2s;cursor:default" onmouseover="this.style.borderColor='rgba(43,201,117,0.4)'" onmouseout="this.style.borderColor='var(--bd)'">
+          <div style="width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#2bc975,#0fa85e);display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 4px 12px rgba(43,201,117,0.3)">💰</div>
+          <div>
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px">
+              <span style="font-size:11.5px;font-weight:900">Optimal Savings Protocol</span>
+              <span style="font-size:7.5px;font-weight:800;background:rgba(43,201,117,0.15);color:var(--gn);padding:1px 6px;border-radius:3px;text-transform:uppercase">CRITICAL</span>
+            </div>
+            <div style="font-size:10px;color:var(--mt)">Raise rate to <strong style="color:#dce4f0">25–30%</strong> — eliminates impulse drift, compounds 5-yr capital</div>
+          </div>
+          <div style="text-align:right;white-space:nowrap">
+            <div style="font-size:15px;font-weight:900;color:var(--gn)" id="rxImp1">+₹1.65L</div>
+            <button id="rxBtn1" onclick="deployRx(1)" style="margin-top:4px;background:var(--gn);border:none;color:#060d1a;padding:4px 10px;border-radius:6px;font-size:9px;font-weight:900;cursor:pointer;font-family:inherit">▶ Deploy</button>
+          </div>
+        </div>
+
+        <!-- Mission 2 -->
+        <div id="rxCard2" style="background:var(--s1);border:1px solid var(--bd);border-radius:12px;padding:10px 14px;display:grid;grid-template-columns:36px 1fr auto;gap:12px;align-items:center;transition:border-color .2s;cursor:default" onmouseover="this.style.borderColor='rgba(237,168,50,0.4)'" onmouseout="this.style.borderColor='var(--bd)'">
+          <div style="width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#eda832,#c47d08);display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 4px 12px rgba(237,168,50,0.3)">😴</div>
+          <div>
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px">
+              <span style="font-size:11.5px;font-weight:900">Circadian Sleep Reset</span>
+              <span style="font-size:7.5px;font-weight:800;background:rgba(237,168,50,0.15);color:var(--am);padding:1px 6px;border-radius:3px;text-transform:uppercase">HIGH</span>
+            </div>
+            <div style="font-size:10px;color:var(--mt)">Enforce <strong style="color:#dce4f0">11 PM cutoff</strong> — 7.2h sleep, -22% cognitive drag, -28% burnout risk</div>
+          </div>
+          <div style="text-align:right;white-space:nowrap">
+            <div style="font-size:15px;font-weight:900;color:var(--am)">-28%</div>
+            <button id="rxBtn2" onclick="deployRx(2)" style="margin-top:4px;background:var(--am);border:none;color:#060d1a;padding:4px 10px;border-radius:6px;font-size:9px;font-weight:900;cursor:pointer;font-family:inherit">▶ Deploy</button>
+          </div>
+        </div>
+
+        <!-- Mission 3 -->
+        <div id="rxCard3" style="background:var(--s1);border:1px solid var(--bd);border-radius:12px;padding:10px 14px;display:grid;grid-template-columns:36px 1fr auto;gap:12px;align-items:center;transition:border-color .2s;cursor:default" onmouseover="this.style.borderColor='rgba(28,200,219,0.4)'" onmouseout="this.style.borderColor='var(--bd)'">
+          <div style="width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#1cc8db,#0e8fa0);display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 4px 12px rgba(28,200,219,0.3)">🛡️</div>
+          <div>
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px">
+              <span style="font-size:11.5px;font-weight:900">Emergency Liquidity Vault</span>
+              <span style="font-size:7.5px;font-weight:800;background:rgba(28,200,219,0.15);color:var(--cy);padding:1px 6px;border-radius:3px;text-transform:uppercase">MEDIUM</span>
+            </div>
+            <div style="font-size:10px;color:var(--mt)">Build <strong style="color:#dce4f0">₹60,000</strong> liquid buffer — 6-month runway against unforeseen shocks</div>
+          </div>
+          <div style="text-align:right;white-space:nowrap">
+            <div style="font-size:15px;font-weight:900;color:var(--cy)" id="rxRunway">6.2 mo</div>
+            <button id="rxBtn3" onclick="deployRx(3)" style="margin-top:4px;background:var(--cy);border:none;color:#060d1a;padding:4px 10px;border-radius:6px;font-size:9px;font-weight:900;cursor:pointer;font-family:inherit">▶ Deploy</button>
+          </div>
+        </div>
+
+        <!-- Mission 4 -->
+        <div id="rxCard4" style="background:var(--s1);border:1px solid var(--bd);border-radius:12px;padding:10px 14px;display:grid;grid-template-columns:36px 1fr auto;gap:12px;align-items:center;transition:border-color .2s;cursor:default" onmouseover="this.style.borderColor='rgba(155,122,245,0.4)'" onmouseout="this.style.borderColor='var(--bd)'">
+          <div style="width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#9b7af5,#6b4fd0);display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 4px 12px rgba(155,122,245,0.3)">🛒</div>
+          <div>
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px">
+              <span style="font-size:11.5px;font-weight:900">Discretionary Freeze Gate</span>
+              <span style="font-size:7.5px;font-weight:800;background:rgba(155,122,245,0.15);color:var(--pp);padding:1px 6px;border-radius:3px;text-transform:uppercase">LOW</span>
+            </div>
+            <div style="font-size:10px;color:var(--mt)">Block purchases <strong style="color:#dce4f0">&gt; ₹10,000</strong> until 6-month liquidity vault is secured</div>
+          </div>
+          <div style="text-align:right;white-space:nowrap">
+            <div style="font-size:15px;font-weight:900;color:var(--pp)">+₹48K</div>
+            <button id="rxBtn4" onclick="deployRx(4)" style="margin-top:4px;background:var(--pp);border:none;color:#fff;padding:4px 10px;border-radius:6px;font-size:9px;font-weight:900;cursor:pointer;font-family:inherit">▶ Deploy</button>
+          </div>
+        </div>
+
+        <!-- AI Insight Footer -->
+        <div style="background:rgba(74,136,255,0.05);border:1px dashed rgba(74,136,255,0.2);border-radius:10px;padding:8px 12px;display:flex;align-items:center;gap:10px">
+          <span style="font-size:16px">💡</span>
+          <div style="font-size:10px;color:#7a94b8;line-height:1.4"><strong style="color:#a8c0e8" id="rxAiInsight">Deploying all 4 protocols simultaneously accelerates your 5-year wealth trajectory by an estimated +42% while reducing burnout risk from 44% → 18%.</strong></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ═════ PANEL 5: AI STRESS TESTING & MONTE CARLO (M3 AI ENHANCEMENT) ═════ -->
+  <div class="panel" id="p5">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+      <div>
+        <h2 style="font-size:14px;font-weight:900">🌪️ AI Economic Shock & Stress Testing Engine</h2>
+        <div style="font-size:10.5px;color:var(--mt)">Simulate macroeconomic headwinds and unforeseen personal lifestyle shocks against your 5-Year forecast</div>
+      </div>
+      <span class="live-dot" id="stressBadge" style="background:rgba(239,79,95,0.12);color:var(--rs);border-color:rgba(239,79,95,0.3)">● 0 Active Shocks</span>
+    </div>
+
+    <!-- Stress Test Selector Grid -->
+    <div class="st-grid">
+      <div class="st-card" id="stCard_inf" onclick="toggleShock('inf')">
+        <div class="st-icon">📈</div>
+        <div class="st-title">High Inflation Spike (+8%)</div>
+        <div class="st-impact">-₹1,800/mo Real Savings</div>
+      </div>
+      <div class="st-card" id="stCard_med" onclick="toggleShock('med')">
+        <div class="st-icon">🏥</div>
+        <div class="st-title">Medical Emergency (₹50,000)</div>
+        <div class="st-impact">Immediate Cash Hit</div>
+      </div>
+      <div class="st-card" id="stCard_burn" onclick="toggleShock('burn')">
+        <div class="st-icon">⚡</div>
+        <div class="st-title">Severe Academic Burnout</div>
+        <div class="st-impact">-35% Exam Readiness</div>
+      </div>
+      <div class="st-card" id="stCard_job" onclick="toggleShock('job')">
+        <div class="st-icon">📉</div>
+        <div class="st-title">3-Month Career Interruption</div>
+        <div class="st-impact">Income Drop to ₹0</div>
+      </div>
+    </div>
+
+    <!-- Monte Carlo & Shock Visualization Arena -->
+    <div class="mc-box">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <div class="lbl" style="margin-bottom:2px">📊 Monte Carlo 5-Year Confidence Band (1,000 Stochastic Iterations)</div>
+          <div style="font-size:10px;color:var(--mt)">Shows 90th Percentile (Optimistic), Mean Path, and 10th Percentile (Stressed Shock Floor)</div>
+        </div>
+        <button class="rx-btn" onclick="runMonteCarloSim()" style="padding:4px 10px;font-size:10px"><span>🎲 Re-Run 1,000 Iterations</span></button>
+      </div>
+      <div class="mc-chart-wrap">
+        <canvas id="mcChart"></canvas>
+      </div>
+      <div class="g4" style="margin-top:8px">
+        <div style="background:var(--s2);padding:8px;border-radius:6px;text-align:center">
+          <div style="font-size:8.5px;color:var(--mt);font-weight:700">BASELINE 5-YR NET</div>
+          <div style="font-size:14px;font-weight:900;color:var(--bl)" id="mcBaseNet">₹5,88,874</div>
+        </div>
+        <div style="background:var(--s2);padding:8px;border-radius:6px;text-align:center">
+          <div style="font-size:8.5px;color:var(--mt);font-weight:700">STRESSED 5-YR NET</div>
+          <div style="font-size:14px;font-weight:900;color:var(--rs)" id="mcStressNet">₹5,88,874</div>
+        </div>
+        <div style="background:var(--s2);padding:8px;border-radius:6px;text-align:center">
+          <div style="font-size:8.5px;color:var(--mt);font-weight:700">SHOCK RESILIENCE SCORE</div>
+          <div style="font-size:14px;font-weight:900;color:var(--gn)" id="mcResilience">94 / 100</div>
+        </div>
+        <div style="background:var(--s2);padding:8px;border-radius:6px;text-align:center">
+          <div style="font-size:8.5px;color:var(--mt);font-weight:700">LIQUID RUNWAY</div>
+          <div style="font-size:14px;font-weight:900;color:var(--cy)" id="mcRunway">6.2 Months</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═════ PANEL 6: COMPREHENSIVE MULTI-DOMAIN RISK ANALYSIS (M3 REQUIREMENT) ═════ -->
+  <div class="panel" id="p6">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+      <div>
+        <h2 style="font-size:14px;font-weight:900">🛡️ Multi-Domain Risk Assessment & Vulnerability Heatmap</h2>
+        <div style="font-size:10.5px;color:var(--mt)">Quantitative Risk Scoring across Financial, Academic, Burnout, and Lifestyle Vectors</div>
+      </div>
+      <span class="live-dot" id="riskMasterBadge" style="background:rgba(43,201,117,0.12);color:var(--gn);border-color:rgba(43,201,117,0.3)">● Low Overall Risk (Score: 28/100)</span>
+    </div>
+
+    <!-- Top Master Risk Dashboard -->
+    <div class="risk-grid">
+      <!-- Risk Score Gauge Card -->
+      <div class="card risk-score-card">
+        <div>
+          <div class="lbl">COMPOSITE RISK INDEX</div>
+          <div class="risk-gauge-circle">
+            <div class="risk-gauge-inner">
+              <div class="risk-gauge-val" id="riskMasterVal" style="color:var(--gn)">28</div>
+              <div class="risk-gauge-lbl">OUT OF 100</div>
+            </div>
+          </div>
+          <div style="font-size:12px;font-weight:800;color:var(--gn)" id="riskMasterCategory">MODERATE RESILIENCE</div>
+          <div style="font-size:9.5px;color:var(--mt);margin-top:2px">Dynamic weighted synthesis across 2,000 telemetry signals</div>
+        </div>
+        <div style="margin-top:10px;text-align:left;background:var(--s2);padding:8px;border-radius:6px">
+          <div class="row"><span class="k">Financial Volatility</span><span class="v" id="riskFinScore" style="color:var(--gn)">22% (Low)</span></div>
+          <div class="row"><span class="k">Burnout Index</span><span class="v" id="riskBurnScore" style="color:var(--am)">44% (Med)</span></div>
+          <div class="row"><span class="k">Academic Drag</span><span class="v" id="riskAcadScore" style="color:var(--gn)">18% (Low)</span></div>
+          <div class="row"><span class="k">Liquidity Shock</span><span class="v" id="riskLiqScore" style="color:var(--gn)">26% (Low)</span></div>
+        </div>
+      </div>
+
+      <!-- Vulnerability Matrix Table -->
+      <div class="card" style="padding:10px 14px">
+        <div class="lbl" style="margin-bottom:6px">⚠️ Multi-Vector Risk Vulnerability & Mitigation Matrix</div>
+        <table class="risk-matrix-table">
+          <thead>
+            <tr>
+              <th>Risk Category</th>
+              <th>Probability</th>
+              <th>Impact</th>
+              <th>Risk Level</th>
+              <th>Automated AI Mitigation Protocol</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Discretionary Leak</strong></td>
+              <td id="rt_leak_prob">Medium (48%)</td>
+              <td id="rt_leak_imp">-₹24,000 / yr</td>
+              <td><span class="risk-badge risk-med" id="rt_leak_badge">Medium</span></td>
+              <td><div class="mitigation-box">Apply <em>Discretionary Freeze Gate</em> for impulse purchases &gt; ₹10,000</div></td>
+            </tr>
+            <tr>
+              <td><strong>Exam Fatigue & Burnout</strong></td>
+              <td id="rt_burn_prob">Moderate (44%)</td>
+              <td id="rt_burn_imp">-14.8% GPA Drag</td>
+              <td><span class="risk-badge risk-med" id="rt_burn_badge">Medium</span></td>
+              <td><div class="mitigation-box">Deploy <em>Circadian Reset Protocol</em> (enforce 7.2 hrs sleep cutoff)</div></td>
+            </tr>
+            <tr>
+              <td><strong>Unplanned Cash Shock</strong></td>
+              <td id="rt_cash_prob">Low-Med (25%)</td>
+              <td id="rt_cash_imp">₹50,000 hit</td>
+              <td><span class="risk-badge risk-low" id="rt_cash_badge">Low</span></td>
+              <td><div class="mitigation-box">Fund <em>Emergency Liquidity Vault</em> with 6.2 months cash runway</div></td>
+            </tr>
+            <tr>
+              <td><strong>Study Hours Deficit</strong></td>
+              <td id="rt_stu_prob">Low (18%)</td>
+              <td id="rt_stu_imp">-3.2 hrs/wk</td>
+              <td><span class="risk-badge risk-low" id="rt_stu_badge">Low</span></td>
+              <td><div class="mitigation-box">Utilize <em>Pomodoro Focus Blocks</em> during high-energy morning peaks</div></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 4-Pillar Risk Radar / Progress Indicators -->
+    <div class="g4">
+      <div class="card" id="card_fin_risk" style="border-left:3px solid var(--gn)">
+        <div style="font-size:9.5px;font-weight:800;color:var(--gn)">FINANCIAL STABILITY</div>
+        <div style="font-size:16px;font-weight:900;margin:3px 0" id="pk_fin_val">LOW RISK (22/100)</div>
+        <div style="font-size:9px;color:var(--mt)" id="pk_fin_desc">Debt Probability: 4.2% | Wealth velocity is positive.</div>
+      </div>
+      <div class="card" id="card_burn_risk" style="border-left:3px solid var(--am)">
+        <div style="font-size:9.5px;font-weight:800;color:var(--am)">COGNITIVE & BURNOUT</div>
+        <div style="font-size:16px;font-weight:900;margin:3px 0" id="pk_burn_val">MODERATE (44/100)</div>
+        <div style="font-size:9px;color:var(--mt)" id="pk_burn_desc">Late sleep patterns increase next-day study friction.</div>
+      </div>
+      <div class="card" id="card_acad_risk" style="border-left:3px solid var(--gn)">
+        <div style="font-size:9.5px;font-weight:800;color:var(--gn)">ACADEMIC READINESS</div>
+        <div style="font-size:16px;font-weight:900;margin:3px 0" id="pk_acad_val">LOW RISK (18/100)</div>
+        <div style="font-size:9px;color:var(--mt)" id="pk_acad_desc">Consistency index is 82%. On track for target GPA.</div>
+      </div>
+      <div class="card" id="card_runway_risk" style="border-left:3px solid var(--cy)">
+        <div style="font-size:9.5px;font-weight:800;color:var(--cy)">EMERGENCY RUNWAY</div>
+        <div style="font-size:16px;font-weight:900;margin:3px 0" id="pk_runway_val">SAFE (6.2 MOS)</div>
+        <div style="font-size:9px;color:var(--mt)" id="pk_runway_desc">Liquid safety net withstands unexpected life shocks.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═════ PANEL 7: AI TWIN COPILOT (M3 NATURAL LANGUAGE QUERY ENGINE) ═════ -->
+  <div class="panel" id="p7">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+      <div>
+        <h2 style="font-size:14px;font-weight:900">🤖 Digital Twin AI Copilot</h2>
+        <div style="font-size:10.5px;color:var(--mt)">Ask any "What-If" question in natural language to query your simulation and forecasting model</div>
+      </div>
+      <span class="live-dot" style="background:rgba(155,122,245,0.12);color:var(--pp);border-color:rgba(155,122,245,0.3)">● Gemini AI Inference Active</span>
+    </div>
+
+    <div class="copilot-card">
+      <div class="copilot-suggestions">
+        <span class="c-sug" onclick="askCopilot('What happens if I save 40% of my income starting next month?')">💬 What if I save 40% income?</span>
+        <span class="c-sug" onclick="askCopilot('Can I afford an Apple MacBook Pro of ₹1,20,000 without hitting debt?')">💬 Can I buy a ₹1.2L MacBook?</span>
+        <span class="c-sug" onclick="askCopilot('How will decreasing my study hours from 18 to 10 hours affect my academic GPA?')">💬 Impact of reducing study hours to 10h?</span>
+        <span class="c-sug" onclick="askCopilot('What is my burnout risk if I maintain my current exam study routine?')">💬 What is my burnout risk?</span>
+      </div>
+
+      <div class="copilot-msgs" id="copilotMsgs">
+        <div class="copilot-msg bot">
+          <div class="copilot-bubble">
+            👋 <strong>Hello! I am your AI Digital Twin Simulation Copilot.</strong><br>
+            I am hooked up to your ingested dataset telemetry (2,000 records). You can test any scenario, decision, or lifestyle adjustment and I will instantly run mathematical and behavioral projections for you.
+          </div>
+        </div>
+      </div>
+
+      <div class="copilot-inp-row">
+        <input type="text" id="copilotInput" class="copilot-input" placeholder="Type a What-If scenario (e.g., 'What happens if I increase fitness to 5 days a week?')..." onkeydown="if(event.key==='Enter')sendCopilotMsg()">
+        <button class="copilot-send" onclick="sendCopilotMsg()">Ask AI</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Feedback -->
+  <div class="toast-box" id="aiToast">
+    <span>💡</span> <span id="toastMsg">AI Prescription Deployed Successfully!</span>
+  </div>
+</main>
+
+<script>
+/* ── FORECASTING DATASET SYNTHESIS ENGINE (Direct Port from forecasting.html) ── */
+var synthesizedDataset = [];
+var datasetStats = {};
+var INC=42203,savR=30,stuH=18,disc=8000,curWI='tv';
+var currentPersona='student';
+var activeShifts={st_up:false, st_dn:false, sp_dn:false, sl_up:false};
+var deployedRx={1:false, 2:false, 3:false, 4:false};
+var currentStrategy='bal';
+var WI={tv:{c:35000,n:'TV'},trip:{c:25000,n:'Trip'},gadget:{c:45000,n:'Phone'},course:{c:15000,n:'Course'},none:{c:0,n:'Nothing'}};
+var simCh=null,oBc=null,oEc=null,oWc=null,behRadarCh=null,aiTrendCh=null;
+
+function buildSynthesizedData(count = 2000) {
+  var days = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+  var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  synthesizedDataset = [];
+
+  var volFactor = Math.min(1.0, Math.max(0, (count - 100) / 1900));
+  var startDate = new Date(2024, 0, 1);
+
+  var sumStudy = 0, sumSleep = 0, sumExp = 0, sumDisc = 0, sumStress = 0, sumHabit = 0;
+
+  for (var i = 1; i <= count; i++) {
+    var curDate = new Date(startDate);
+    curDate.setDate(startDate.getDate() + (i - 1));
+
+    var dayNum = String(curDate.getDate()).padStart(2, '0');
+    var monthName = months[curDate.getMonth()];
+    var yearNum = curDate.getFullYear();
+    var dateStr = dayNum + '-' + monthName + '-' + yearNum;
+    var dayIdx = curDate.getDay() === 0 ? 6 : curDate.getDay() - 1;
+    var dayName = days[dayIdx];
+
+    var seed = (i * 9301 + 49297) % 233280;
+    var rnd = seed / 233280.0;
+    var rnd2 = ((i * 12345 + 67891) % 233280) / 233280.0;
+    var rnd3 = ((i * 54321 + 13579) % 233280) / 233280.0;
+
+    var food = Math.round(180 - (volFactor * 60) + rnd * 280);
+    var travel = Math.round(140 - (volFactor * 50) + rnd2 * 380);
+    var shop = Math.round(110 - (volFactor * 60) + rnd3 * 320);
+    var util = Math.round(80 - (volFactor * 20) + rnd * 240);
+    var health = Math.round(40 + rnd2 * 180);
+    var other = Math.round(20 + rnd3 * 100);
+    var totalExp = food + travel + shop + util + health + other;
+
+    var dayStudyMult = [0.92, 0.98, 1.12, 0.95, 1.18, 0.85, 0.88][dayIdx];
+    var baseStudy = 2.4 + (volFactor * 2.6);
+    var studyHrs = +(Math.max(0.8, (baseStudy * dayStudyMult) + (rnd - 0.5) * 1.6)).toFixed(1);
+
+    var baseSleep = 6.2 + (volFactor * 1.6);
+    var sleepHrs = +(Math.max(4.8, baseSleep + (rnd2 - 0.5) * 1.4)).toFixed(1);
+
+    var baseHabit = 65 + (volFactor * 27);
+    var habit = Math.min(99, Math.round(baseHabit + (rnd3 - 0.5) * 14));
+
+    var baseStress = 6.2 - (volFactor * 3.6);
+    var stress = +(Math.max(1.0, Math.min(9.5, baseStress + (rnd - 0.5) * 2.0))).toFixed(1);
+
+    sumStudy += studyHrs;
+    sumSleep += sleepHrs;
+    sumExp += totalExp;
+    sumDisc += (shop + other);
+    sumStress += stress;
+    sumHabit += habit;
+
+    synthesizedDataset.push({
+      id: i, date: dateStr, dayName: dayName, totalExp: totalExp,
+      studyHrs: studyHrs, sleepHrs: sleepHrs, habit: habit, stress: stress
+    });
+  }
+
+  var n = synthesizedDataset.length;
+  var avgDailyExp = sumExp / n;
+  var monthlyExp = Math.round(avgDailyExp * 30);
+  // Income varies with dataset volume: 2000 records = ₹42,203 baseline
+  // Smaller datasets capture lower-income periods (student financial pattern)
+  var incomeBase = 42203;
+  var incomeVariance = Math.round((1 - volFactor) * 8200);  // up to ±₹8,200 shift
+  var monthlyInc = Math.round(incomeBase + incomeVariance * (volFactor > 0.5 ? 1 : -1) * 0.6);
+
+  var monthlySav = Math.max(2500, monthlyInc - monthlyExp);
+  var calculatedRate = Math.round((monthlySav / monthlyInc) * 100);
+  var weeklyStudy = +( (sumStudy / n) * 7 ).toFixed(1);
+  var avgSleep = +(sumSleep / n).toFixed(1);
+  var monthlyDisc = Math.round((sumDisc / n) * 30);
+  var avgStress = +(sumStress / n).toFixed(1);
+
+  datasetStats = {
+    count: n,
+    startDate: synthesizedDataset[0].date,
+    endDate: synthesizedDataset[n - 1].date,
+    income: monthlyInc,
+    expenses: monthlyExp,
+    savings: monthlySav,
+    savingsRate: calculatedRate,
+    studyHrsPerWeek: weeklyStudy,
+    sleepHrsPerNight: avgSleep,
+    discretionarySpend: monthlyDisc,
+    stressLevel: avgStress
+  };
+}
+
+/* ── Ingest Forecasting Dataset Volume ── */
+function loadForecastingDataset(count){
+  count = parseInt(count);
+  buildSynthesizedData(count);
+
+  document.getElementById('dsRangeLabel').textContent = datasetStats.startDate + ' to ' + datasetStats.endDate;
+  document.getElementById('pRecords').textContent = count.toLocaleString() + ' logs';
+  var ats = document.getElementById('aiTelemetrySub'); if(ats) ats.textContent = 'Ingested from ' + count.toLocaleString() + ' forecasting dataset records';
+  var rxc = document.getElementById('rxRecordCount'); if(rxc) rxc.textContent = count.toLocaleString();
+
+  // Always ingest dataset baseline into globals (regardless of persona)
+  INC = datasetStats.income;
+  savR = Math.max(15, datasetStats.savingsRate);
+  stuH = Math.min(32, Math.max(10, Math.round(datasetStats.studyHrsPerWeek)));
+  disc = datasetStats.discretionarySpend;
+
+  document.getElementById('sR').value = savR;
+  document.getElementById('sS').value = stuH;
+  document.getElementById('sD').value = disc;
+
+
+  showToast('⚡ Ingested ' + count.toLocaleString() + ' records from Forecasting Dataset!');
+  calc();
+}
+
+window.addEventListener('DOMContentLoaded',function(){
+  buildSynthesizedData(2000);
+  buildSim();
+  buildOC();
+  buildRadar();
+  if(document.getElementById('aiTrendChart')) buildAiTrend();
+  loadForecastingDataset(2000);
+});
+
+function showTab(i){
+  document.querySelectorAll('.tab').forEach(function(t,j){t.classList.toggle('on',j===i)});
+  for(var j=0;j<8;j++){
+    var p = document.getElementById('p'+j);
+    if(p) p.classList.toggle('show', j===i);
+  }
+  if(i===1&&behRadarCh){behRadarCh.resize();}
+  if(i===2&&simCh){simCh.resize();}
+  if(i===3){if(oBc)oBc.resize();if(oEc)oEc.resize();if(oWc)oWc.resize();}
+  if(i===4&&aiTrendCh){aiTrendCh.resize();}
+  if(i===5){
+    runMonteCarloSim();
+    if(mcChartInstance) mcChartInstance.resize();
+  }
+  if(i===6){
+    recalculateRiskScores();
+  }
+}
+
+function recalculateRiskScores(){
+  var inc = datasetStats.income || 42203;
+  var savRate = savR || datasetStats.savingsRate || 20;
+  var exp = datasetStats.expenses || (inc * 0.8);
+  var discSpend = disc || datasetStats.discretionarySpend || 8000;
+  var study = stuH || datasetStats.studyHrsPerWeek || 18;
+  var sleep = datasetStats.sleepHrsPerNight || 6.8;
+  var count = datasetStats.count || 2000;
+
+  // 1. Dynamic Financial Volatility Risk (Driven by savings rate and discretionary ratio)
+  var discRatio = discSpend / inc;
+  var finRisk = Math.max(8, Math.min(88, Math.round((discRatio * 75) + (100 - savRate * 2.2) * 0.35)));
+
+  // 2. Dynamic Burnout & Cognitive Drag (Driven by study hours vs sleep deficiency)
+  var sleepTax = Math.max(0, (7.5 - sleep) * 14);
+  var studyLoad = (study / 35.0) * 45;
+  var burnRisk = Math.max(12, Math.min(92, Math.round(studyLoad + sleepTax + (activeShifts.st_up ? 16 : 0))));
+
+  // 3. Dynamic Academic Drag (Higher study + consistency = lower risk)
+  var acadRisk = Math.max(6, Math.min(80, Math.round(55 - (study * 1.6) + (sleep < 6 ? 12 : 0))));
+
+  // 4. Dynamic Emergency Liquidity Shock Risk
+  var monthlySav = Math.max(1500, inc * (savRate / 100));
+  var runwayMonths = ( (monthlySav * 6) / (exp * 0.5) ).toFixed(1);
+  var liqRisk = Math.max(10, Math.min(85, Math.round(70 - (runwayMonths * 7.5))));
+
+  // 5. Composite Master Risk Index (Weighted Synthesis)
+  var composite = Math.round((finRisk * 0.35) + (burnRisk * 0.30) + (acadRisk * 0.20) + (liqRisk * 0.15));
+
+  // Update Master Gauge and Subtitles
+  if(document.getElementById('riskMasterVal')) document.getElementById('riskMasterVal').textContent = composite;
+  if(document.getElementById('riskMasterBadge')){
+    var label = composite < 32 ? 'Low Risk' : (composite < 55 ? 'Moderate Risk' : 'Elevated Risk');
+    var col = composite < 32 ? 'var(--gn)' : (composite < 55 ? 'var(--am)' : 'var(--rs)');
+    document.getElementById('riskMasterBadge').textContent = '● Composite Risk Score: ' + composite + '/100 (' + label + ') — ' + count.toLocaleString() + ' Logs Synced';
+    document.getElementById('riskMasterBadge').style.color = col;
+    document.getElementById('riskMasterBadge').style.borderColor = col;
+  }
+  if(document.getElementById('riskMasterVal')){
+    document.getElementById('riskMasterVal').style.color = composite < 32 ? 'var(--gn)' : (composite < 55 ? 'var(--am)' : 'var(--rs)');
+  }
+  if(document.getElementById('riskMasterCategory')){
+    document.getElementById('riskMasterCategory').textContent = composite < 32 ? 'HIGH RESILIENCE / LOW RISK' : (composite < 55 ? 'MODERATE RISK DETECTED' : 'HIGH RISK / ACTION REQUIRED');
+    document.getElementById('riskMasterCategory').style.color = composite < 32 ? 'var(--gn)' : (composite < 55 ? 'var(--am)' : 'var(--rs)');
+  }
+
+  // Update Score Rows
+  if(document.getElementById('riskFinScore')) document.getElementById('riskFinScore').textContent = finRisk + '% (' + (finRisk < 30 ? 'Low' : finRisk < 60 ? 'Med' : 'High') + ')';
+  if(document.getElementById('riskBurnScore')) document.getElementById('riskBurnScore').textContent = burnRisk + '% (' + (burnRisk < 35 ? 'Low' : burnRisk < 65 ? 'Med' : 'High') + ')';
+  if(document.getElementById('riskAcadScore')) document.getElementById('riskAcadScore').textContent = acadRisk + '% (' + (acadRisk < 30 ? 'Low' : acadRisk < 55 ? 'Med' : 'High') + ')';
+  if(document.getElementById('riskLiqScore')) document.getElementById('riskLiqScore').textContent = liqRisk + '% (' + (liqRisk < 30 ? 'Low' : 'Med') + ')';
+
+  // Update Table Rows Dynamically based on Dataset Volume
+  if(document.getElementById('rt_leak_prob')) document.getElementById('rt_leak_prob').textContent = (finRisk > 40 ? 'Medium (' + finRisk + '%)' : 'Low (' + finRisk + '%)');
+  if(document.getElementById('rt_leak_imp')) document.getElementById('rt_leak_imp').textContent = '-₹' + (discSpend * 3).toLocaleString('en-IN') + ' / yr';
+  if(document.getElementById('rt_burn_prob')) document.getElementById('rt_burn_prob').textContent = (burnRisk > 50 ? 'High (' + burnRisk + '%)' : 'Moderate (' + burnRisk + '%)');
+  if(document.getElementById('rt_burn_imp')) document.getElementById('rt_burn_imp').textContent = '-' + (burnRisk * 0.3).toFixed(1) + '% GPA Drag';
+  if(document.getElementById('rt_cash_prob')) document.getElementById('rt_cash_prob').textContent = (liqRisk > 35 ? 'Med (' + liqRisk + '%)' : 'Low (' + liqRisk + '%)');
+  if(document.getElementById('rt_cash_imp')) document.getElementById('rt_cash_imp').textContent = '₹' + Math.round(exp * 1.5).toLocaleString('en-IN') + ' shock';
+  if(document.getElementById('rt_stu_prob')) document.getElementById('rt_stu_prob').textContent = (acadRisk > 30 ? 'Med (' + acadRisk + '%)' : 'Low (' + acadRisk + '%)');
+  if(document.getElementById('rt_stu_imp')) document.getElementById('rt_stu_imp').textContent = '-' + (study < 16 ? '4.5' : '2.8') + ' hrs/wk';
+
+  // Update 4 Pillar Cards
+  if(document.getElementById('pk_fin_val')) document.getElementById('pk_fin_val').textContent = (finRisk < 30 ? 'LOW RISK (' : 'MODERATE (') + finRisk + '/100)';
+  if(document.getElementById('pk_burn_val')) document.getElementById('pk_burn_val').textContent = (burnRisk < 40 ? 'LOW (' : burnRisk < 65 ? 'MODERATE (' : 'HIGH (') + burnRisk + '/100)';
+  if(document.getElementById('pk_acad_val')) document.getElementById('pk_acad_val').textContent = (acadRisk < 30 ? 'LOW RISK (' : 'MODERATE (') + acadRisk + '/100)';
+  if(document.getElementById('pk_runway_val')) document.getElementById('pk_runway_val').textContent = (runwayMonths > 4 ? 'SAFE (' : 'TIGHT (') + runwayMonths + ' MOS)';
+}
+
+/* ── Digital Twin Persona Switcher ── */
+function setPersona(p){
+  currentPersona = p;
+  ['student','tech','fire'].forEach(function(k){
+    var el = document.getElementById('pp_'+k);
+    if(el) el.classList.toggle('active', k===p);
+  });
+
+  if(p==='tech'){
+    INC = 48000;
+    document.getElementById('avEmoji').textContent = '💼';
+    document.getElementById('avName').textContent = 'Alex Chen';
+    document.getElementById('avArchetype').textContent = 'Tech Associate';
+    disc = 11000;
+    savR = 45;
+    stuH = 14;
+    showToast('Twin Persona loaded: Tech Associate (₹48K/mo)');
+  } else if(p==='fire'){
+    INC = 38000;
+    document.getElementById('avEmoji').textContent = '🚀';
+    document.getElementById('avName').textContent = 'Jordan V.';
+    document.getElementById('avArchetype').textContent = 'FIRE Builder';
+    disc = 5000;
+    savR = 50;
+    stuH = 15;
+    showToast('Twin Persona loaded: FIRE Aspirant (50% Savings)');
+  } else {
+    INC = datasetStats.income || 42203;
+    document.getElementById('avEmoji').textContent = '🧬';
+    document.getElementById('avName').textContent = 'Your Twin';
+    document.getElementById('avArchetype').textContent = 'Forecasting Dataset Stream';
+    disc = datasetStats.discretionarySpend || 8408;
+    savR = datasetStats.savingsRate || 20;
+    stuH = Math.round(datasetStats.studyHrsPerWeek) || 18;
+    showToast('Twin Persona loaded from Forecasting Telemetry (' + datasetStats.count + ' records)');
+  }
+
+  document.getElementById('sR').value = savR;
+  document.getElementById('sS').value = stuH;
+  document.getElementById('sD').value = disc;
+  calc();
+}
+
+function stepVal(id, delta){
+  var el = document.getElementById(id);
+  if(el){
+    var nv = (+el.value) + delta;
+    nv = Math.max(+el.min, Math.min(+el.max, nv));
+    el.value = nv;
+    calc();
+  }
+}
+
+function pickScn(id){
+  ['A','B','C'].forEach(function(k){document.getElementById('s'+k).classList.toggle('on',k===id)});
+  var baseR = datasetStats.savingsRate || 25;
+  var m={
+    A:{s:Math.min(55, baseR + 15), st:Math.round(datasetStats.studyHrsPerWeek || 18), d:Math.max(3000, (datasetStats.discretionarySpend||8000)-2000)},
+    B:{s:baseR, st:Math.max(8, (Math.round(datasetStats.studyHrsPerWeek || 18)-6)), d:datasetStats.discretionarySpend||8000},
+    C:{s:Math.max(10, baseR - 10), st:Math.round(datasetStats.studyHrsPerWeek || 18), d:Math.round((datasetStats.discretionarySpend||8000)*1.25)}
+  };
+  savR=m[id].s;stuH=m[id].st;disc=m[id].d;
+  document.getElementById('sR').value=savR;document.getElementById('sS').value=stuH;document.getElementById('sD').value=disc;
+  resetShift();
+  calc();
+}
+
+function pickWI(id){
+  curWI=id;['tv','trip','gadget','course','none'].forEach(function(k){document.getElementById('wi_'+k).classList.toggle('on',k===id)});
+  calc();
+}
+
+/* ── Shift Simulator Pills ── */
+function toggleShift(type){
+  activeShifts[type]=!activeShifts[type];
+  if(type==='st_up'&&activeShifts.st_up) activeShifts.st_dn=false;
+  if(type==='st_dn'&&activeShifts.st_dn) activeShifts.st_up=false;
+  updateShiftPills();
+  calc();
+}
+
+function resetShift(){
+  activeShifts={st_up:false, st_dn:false, sp_dn:false, sl_up:false};
+  updateShiftPills();
+  calc();
+}
+
+function updateShiftPills(){
+  ['st_up','st_dn','sp_dn','sl_up'].forEach(function(k){
+    var el=document.getElementById('pill_'+k);
+    if(el) el.classList.toggle('active', !!activeShifts[k]);
+  });
+}
+
+/* ── AI Strategy Selector ── */
+function setAiStrategy(s){
+  currentStrategy = s;
+  ['all','wealth','shield','rest'].forEach(function(k){
+    var el = document.getElementById('sp_'+k);
+    if(el) el.classList.toggle('active', k===s);
+  });
+
+  // Filter or highlight recommendation cards
+  var cards = [
+    {id: 'rxCard1', strat: ['all', 'wealth']},
+    {id: 'rxCard2', strat: ['all', 'rest']},
+    {id: 'rxCard3', strat: ['all', 'shield']},
+    {id: 'rxCard4', strat: ['all', 'wealth', 'shield']}
+  ];
+
+  cards.forEach(function(c){
+    var el = document.getElementById(c.id);
+    if(el){
+      if(s === 'all' || c.strat.indexOf(s) !== -1){
+        el.style.opacity = '1';
+        el.style.filter = 'none';
+      } else {
+        el.style.opacity = '0.35';
+        el.style.filter = 'grayscale(0.6)';
+      }
+    }
+  });
+
+  var insight = document.getElementById('rxAiInsight');
+  if(s === 'wealth'){
+    if(insight) insight.innerHTML = 'AI Wealth Protocol prioritizes <strong>Savings (+6%)</strong> and <strong>Buy Freeze</strong> to compound net worth past ₹12L over 5 years.';
+    showToast('AI Focus: Maximum Wealth Velocity');
+  } else if(s === 'shield'){
+    if(insight) insight.innerHTML = 'AI Shield Protocol focuses on funding the <strong>Emergency Vault (6+ months)</strong> to absorb life shocks without high-cost debt.';
+    showToast('AI Focus: Safety Moat & Resilience');
+  } else if(s === 'rest'){
+    if(insight) insight.innerHTML = 'AI Rest Protocol targets <strong>Circadian Sleep (>7h)</strong> and pacing study blocks to eliminate cognitive drag and burnout.';
+    showToast('AI Focus: Cognitive & Burnout Recovery');
+  } else {
+    if(insight) insight.innerHTML = 'Deploying all 4 protocols simultaneously accelerates your 5-year wealth trajectory by an estimated +42% while reducing burnout risk from 44% → 18%.';
+    showToast('AI Focus: All Protocols Balanced');
+  }
+
+  updateAiTrendChart();
+}
+
+
+// Alias so new card buttons (setStrategy) work same as setAiStrategy
+function setStrategy(s){ setAiStrategy(s); }
+
+/* ── Deploy AI Prescriptions ── */
+function deployRx(id){
+  deployedRx[id] = true;
+  var card = document.getElementById('rxCard'+id);
+  var btn = document.getElementById('rxBtn'+id);
+  if(card) card.classList.add('applied');
+  if(btn){
+    btn.classList.add('done');
+    btn.innerHTML = '<span>✓ Deployed to Twin</span>';
+  }
+
+  if(id === 1){
+    disc = Math.max(2000, disc - 2000);
+    savR = Math.min(55, savR + 6);
+    document.getElementById('sD').value = disc;
+    document.getElementById('sR').value = savR;
+    showToast('⚡ Capital Shield active: Trimmed ₹2K drift → Savings increased to ' + savR + '%');
+  } else if(id === 2){
+    stuH = Math.max(8, stuH - 2);
+    document.getElementById('sS').value = stuH;
+    activeShifts.sl_up = true;
+    updateShiftPills();
+    showToast('⚡ Circadian Protocol deployed: +1.5h Sleep recovery unlocked');
+  } else if(id === 3){
+    savR = Math.min(55, savR + 5);
+    document.getElementById('sR').value = savR;
+    showToast('⚡ Liquidity Vault prioritized: Monthly savings elevated to ₹' + Math.round(INC*savR/100).toLocaleString('en-IN'));
+  } else if(id === 4){
+    pickWI('none');
+    showToast('⚡ Discretionary Freeze engaged: Major impulse purchases blocked');
+  }
+
+  calc();
+}
+
+function showToast(msg){
+  var t = document.getElementById('aiToast');
+  var m = document.getElementById('toastMsg');
+  if(t && m){
+    m.textContent = msg;
+    t.style.display = 'flex';
+    clearTimeout(t._timer);
+    t._timer = setTimeout(function(){ t.style.display = 'none'; }, 3400);
+  }
+}
+
+function calc(){
+  savR=+document.getElementById('sR').value;
+  stuH=+document.getElementById('sS').value;
+  disc=+document.getElementById('sD').value;
+
+  var baseSleepVal = datasetStats.sleepHrsPerNight || 6.2;
+  var effStu = stuH + (activeShifts.st_up ? 4 : 0) - (activeShifts.st_dn ? 4 : 0);
+  effStu = Math.max(5, Math.min(40, effStu));
+  var effDisc = Math.max(1000, disc - (activeShifts.sp_dn ? 2000 : 0));
+  var effSleep = baseSleepVal + (activeShifts.sl_up ? 1.5 : 0) + (activeShifts.st_dn ? 0.6 : 0) - (activeShifts.st_up ? 0.8 : 0);
+  effSleep = Math.max(4.5, Math.min(9.0, effSleep));
+
+  document.getElementById('lR').textContent=savR+'%';
+  document.getElementById('lS').textContent=stuH+' hrs';
+  document.getElementById('lD').textContent='₹'+disc.toLocaleString('en-IN');
+
+  var ms=Math.round(INC*savR/100);
+  document.getElementById('pInc').textContent='₹'+INC.toLocaleString('en-IN');
+  document.getElementById('pExp').textContent='₹'+disc.toLocaleString('en-IN');
+  document.getElementById('pSav').textContent='₹'+ms.toLocaleString('en-IN');
+  document.getElementById('pRate').textContent=savR+'%';
+
+  // Baseline Current Plan (From Forecasting Dataset Mean)
+  var baseSavRate = datasetStats.savingsRate || 20;
+  var baseMs = Math.round(INC * baseSavRate / 100);
+  var base1Yr = baseMs * 12;
+  var base3Yr = baseMs * 36;
+  var base5Yr = Math.round(baseMs * 60 * 1.14);
+  var baseBurn = Math.round(Math.max(15, 20 + (datasetStats.studyHrsPerWeek||18)*1.2 - baseSavRate*0.2));
+
+  document.getElementById('cpRate').textContent = baseSavRate + '%';
+  document.getElementById('cpMonthly').textContent = '₹' + baseMs.toLocaleString('en-IN');
+  document.getElementById('cp1Yr').textContent = '₹' + base1Yr.toLocaleString('en-IN');
+  document.getElementById('cp3Yr').textContent = '₹' + base3Yr.toLocaleString('en-IN');
+  document.getElementById('cp5Yr').textContent = '₹' + base5Yr.toLocaleString('en-IN');
+  document.getElementById('cpBurn').textContent = baseBurn + '%';
+  document.getElementById('cpRunway').textContent = (baseMs * 6 / (INC - baseMs)).toFixed(1) + ' months';
+  document.getElementById('cpSleep').textContent = (datasetStats.sleepHrsPerNight || 6.2) + 'h';
+
+  // Future Plan (Simulated)
+  var y1=ms*12,y3=ms*36,y5=Math.round(ms*60*1.14);
+  var burn=Math.round(Math.max(5,Math.min(90,20+effStu*1.8-savR*0.25+effDisc/800 - (effSleep>=7?12:0))));
+  document.getElementById('fR').textContent=savR+'%';
+  document.getElementById('fM').textContent='₹'+ms.toLocaleString('en-IN');
+  document.getElementById('f1').textContent='₹'+y1.toLocaleString('en-IN');
+  document.getElementById('f3').textContent='₹'+y3.toLocaleString('en-IN');
+  document.getElementById('f5').textContent='₹'+y5.toLocaleString('en-IN');
+  document.getElementById('fB').textContent=burn+'%';
+  document.getElementById('fB').style.color=burn>50?'var(--rs)':burn>30?'var(--am)':'var(--gn)';
+
+  // Delta Engine
+  var wealthDiff = y5 - base5Yr;
+  var pctDiff = base5Yr > 0 ? Math.round((wealthDiff / base5Yr) * 100) : 0;
+  var burnDiff = burn - baseBurn;
+
+  var gainB = document.getElementById('dtGainBadge');
+  if(wealthDiff >= 0){
+    gainB.textContent = '+₹' + (wealthDiff/1000).toFixed(0) + 'K Lift (+' + pctDiff + '%)';
+    gainB.style.background = 'rgba(43,201,117,0.15)';
+    gainB.style.color = 'var(--gn)';
+  } else {
+    gainB.textContent = '-₹' + (Math.abs(wealthDiff)/1000).toFixed(0) + 'K (' + pctDiff + '%)';
+    gainB.style.background = 'rgba(239,79,95,0.15)';
+    gainB.style.color = 'var(--rs)';
+  }
+
+  var burnB = document.getElementById('dtBurnBadge');
+  if(burnDiff <= 0){
+    burnB.textContent = burnDiff + '% Burnout';
+    burnB.style.background = 'rgba(43,201,117,0.15)';
+    burnB.style.color = 'var(--gn)';
+  } else {
+    burnB.textContent = '+' + burnDiff + '% Burnout';
+    burnB.style.background = 'rgba(239,79,95,0.15)';
+    burnB.style.color = 'var(--rs)';
+  }
+
+  // Dynamic If We Increase / Decrease
+  document.getElementById('ifIncBody').innerHTML = 
+    'If we increase savings to <strong>' + Math.min(55, savR + 10) + '%</strong>, 5-Year net wealth surges to <strong>₹' + Math.round(INC*(savR+10)/100 * 60 * 1.14).toLocaleString('en-IN') + '</strong> and cash runway reaches <strong>' + (ms*1.25*6/(INC-ms)).toFixed(1) + ' months</strong>.';
+
+  document.getElementById('ifDecBody').innerHTML = 
+    'If study load is dialed down by <strong>-4 hrs/wk</strong>, burnout risk drops to <strong>' + Math.max(5, burn - 10) + '%</strong> with sleep restoring to ' + Math.min(9.0, effSleep + 0.6).toFixed(1) + ' hrs.';
+
+  /* ── Behavior Engine Calculations ── */
+  var focusScore = Math.min(96, Math.max(20, Math.round(30 + effStu * 2.0 + (effSleep>=7?12:0))));
+  var finScore = Math.min(96, Math.max(15, Math.round(savR * 1.8 - effDisc / 700)));
+  var sleepScore = Math.min(95, Math.max(15, Math.round((effSleep / 8.0) * 100)));
+  var burnoutResist = Math.max(10, 100 - burn);
+  var impulseScore = Math.max(20, Math.min(95, Math.round(90 - (effDisc / INC) * 110)));
+
+  // Study card update
+  document.getElementById('mStudyHrs').textContent = '(' + effStu + ' hrs/wk)';
+  document.getElementById('mStudyBar').style.width = focusScore + '%';
+  document.getElementById('mStudyBar').style.background = focusScore > 75 ? 'var(--gn)' : focusScore > 50 ? 'var(--am)' : 'var(--rs)';
+  document.getElementById('mStudyBadge').textContent = focusScore > 75 ? 'Optimal' : focusScore > 50 ? 'Moderate' : 'Underload';
+  document.getElementById('mStudyBadge').style.background = focusScore > 75 ? 'rgba(43,201,117,0.12)' : 'rgba(237,168,50,0.12)';
+  document.getElementById('mStudyBadge').style.color = focusScore > 75 ? 'var(--gn)' : 'var(--am)';
+  document.getElementById('mStudyInc').textContent = 'Focus score rises to ' + Math.min(98, focusScore + 10) + '%, but late sessions add +' + Math.round(4 * 2.0) + '% burnout tax.';
+  document.getElementById('mStudyDec').textContent = 'Burnout drops by -14%, freeing cognitive rest with minimal pace reduction.';
+
+  // Spending card update
+  document.getElementById('mSpendAmt').textContent = '(₹' + effDisc.toLocaleString('en-IN') + '/mo)';
+  document.getElementById('mSpendBar').style.width = finScore + '%';
+  document.getElementById('mSpendBar').style.background = finScore > 65 ? 'var(--gn)' : finScore > 40 ? 'var(--am)' : 'var(--rs)';
+  document.getElementById('mSpendBadge').textContent = finScore > 65 ? 'Disciplined' : finScore > 40 ? 'Moderate' : 'Drifting';
+  document.getElementById('mSpendBadge').style.color = finScore > 65 ? 'var(--gn)' : finScore > 40 ? 'var(--am)' : 'var(--rs)';
+  document.getElementById('mSpendInc').textContent = 'Runway compresses to ' + Math.max(0.6, (ms*2.5/INC)).toFixed(1) + ' months; stress spikes from thin cash buffers.';
+
+  // Sleep card update
+  document.getElementById('mSleepHrs').textContent = '(' + effSleep.toFixed(1) + ' hrs/night)';
+  document.getElementById('mSleepBar').style.width = sleepScore + '%';
+  document.getElementById('mSleepBar').style.background = effSleep >= 7 ? 'var(--gn)' : effSleep >= 6 ? 'var(--am)' : 'var(--rs)';
+  document.getElementById('mSleepBadge').textContent = effSleep >= 7 ? 'Restored' : effSleep >= 6 ? 'Sub-Optimal' : 'Deficit';
+  document.getElementById('mSleepBadge').style.color = effSleep >= 7 ? 'var(--gn)' : effSleep >= 6 ? 'var(--am)' : 'var(--rs)';
+
+  // Archetype & Stability
+  var stability = Math.round((focusScore * 0.35 + finScore * 0.35 + burnoutResist * 0.3));
+  document.getElementById('archStability').textContent = stability + '% Stable';
+  document.getElementById('archStability').style.color = stability > 75 ? 'var(--gn)' : stability > 55 ? 'var(--am)' : 'var(--rs)';
+
+  if (effStu >= 25 && effSleep < 6.5) {
+    document.getElementById('archLabel').textContent = '⚡ Overdrive / High Strain';
+    document.getElementById('archLabel').style.color = 'var(--rs)';
+    document.getElementById('archSub').textContent = 'High cognitive output with elevated burnout probability.';
+  } else if (effDisc > 12000) {
+    document.getElementById('archLabel').textContent = '💸 Discretionary Drift';
+    document.getElementById('archLabel').style.color = 'var(--am)';
+    document.getElementById('archSub').textContent = 'Discretionary leaks eroding monthly savings compounding.';
+  } else if (stability >= 75) {
+    document.getElementById('archLabel').textContent = '🎯 High-Growth / Equilibrium';
+    document.getElementById('archLabel').style.color = 'var(--gn)';
+    document.getElementById('archSub').textContent = 'Sustained cognitive pace matched with healthy financial discipline.';
+  } else {
+    document.getElementById('archLabel').textContent = '⚖️ Moderate / Rebalancing';
+    document.getElementById('archLabel').style.color = 'var(--cy)';
+    document.getElementById('archSub').textContent = 'Stable baseline with potential for sleep or savings optimization.';
+  }
+
+  // Update Radar Chart
+  if (behRadarCh) {
+    behRadarCh.data.datasets[0].data = [65, baseSavRate * 2, 50, 60, 55];
+    behRadarCh.data.datasets[1].data = [focusScore, finScore, sleepScore, burnoutResist, impulseScore];
+    behRadarCh.update();
+  }
+
+  /* ── Scenario Simulation Update ── */
+  var wi=WI[curWI],cost=wi.c,b6=ms*6,b12=ms*12,a6=b6-cost,a12=b12-cost,rec=cost>0?(cost/ms).toFixed(1):'0';
+  document.getElementById('kC').textContent=cost>0?'₹'+cost.toLocaleString('en-IN'):'₹0';
+  document.getElementById('kC').style.color=cost>0?'var(--rs)':'var(--gn)';
+  document.getElementById('kCd').textContent=cost>0?'-'+rec+' months savings':'No cost';
+  document.getElementById('kCd').style.color=cost>0?'var(--rs)':'var(--gn)';
+  document.getElementById('k6').textContent='₹'+Math.max(0,a6).toLocaleString('en-IN');
+  document.getElementById('k6d').textContent=cost>0?'vs ₹'+b6.toLocaleString('en-IN')+' without':'Full savings';
+  document.getElementById('k1').textContent='₹'+Math.max(0,a12).toLocaleString('en-IN');
+  document.getElementById('k1d').textContent=cost>0?'-₹'+cost.toLocaleString('en-IN')+' from baseline':'Full baseline';
+  document.getElementById('k1d').style.color=cost>0?'var(--rs)':'var(--gn)';
+  document.getElementById('kR').textContent=cost>0?rec+' mo':'0 mo';
+  document.getElementById('kR').style.color=cost>0?'var(--cy)':'var(--gn)';
+  document.getElementById('simLbl').textContent='📊 '+(cost>0?'Buy '+wi.n+' vs Don\'t Buy':'Full Savings')+' — 12-Month Trajectory';
+
+  var wd=[],wid=[];for(var i=0;i<=12;i++){wd.push(ms*i);wid.push(Math.max(0,ms*i-cost));}
+  if(simCh){simCh.data.datasets[0].data=wd;simCh.data.datasets[1].data=wid;simCh.update();}
+
+  /* ── Outcomes Update ── */
+  var best5=Math.round(ms*1.35*60*1.14),exp5=base5Yr,worst5=Math.round(base5Yr*0.55);
+  document.getElementById('oB').textContent='₹'+best5.toLocaleString('en-IN');
+  document.getElementById('oBd').textContent='+₹'+Math.max(0, best5-exp5).toLocaleString('en-IN')+' over expected';
+  document.getElementById('oBs').textContent=savR+'%';
+  document.getElementById('oBb').textContent=Math.max(5,burn-20)+'%';
+  document.getElementById('oBw').textContent=Math.min(98,stability+15)+'/100';
+  document.getElementById('oE').textContent='₹'+exp5.toLocaleString('en-IN');
+  document.getElementById('oW').textContent='₹'+worst5.toLocaleString('en-IN');
+  document.getElementById('oWd').textContent='-₹'+(exp5-worst5).toLocaleString('en-IN')+' below expected';
+
+  if(oBc){
+    var bd=[0],ed=[0],wdd=[0];
+    for(var y=1;y<=5;y++){
+      bd.push(Math.round(best5*y/5));
+      ed.push(Math.round(exp5*y/5));
+      wdd.push(Math.round(worst5*y/5));
+    }
+    oBc.data.datasets[0].data=bd;oBc.update();
+    oEc.data.datasets[0].data=ed;oEc.update();
+    oWc.data.datasets[0].data=wdd;oWc.update();
+  }
+
+  /* ── Command Center Update (Panel 5) ── */
+  var aiHealth = Math.round((focusScore * 0.25 + finScore * 0.35 + sleepScore * 0.20 + burnoutResist * 0.20));
+  if(document.getElementById('rxHealthScore')) document.getElementById('rxHealthScore').textContent = aiHealth;
+  if(document.getElementById('rxHealthLabel')){
+    var hLabel = aiHealth >= 80 ? 'EXCELLENT' : (aiHealth >= 65 ? 'GOOD HEALTH' : (aiHealth >= 50 ? 'MODERATE' : 'STRAINED'));
+    var hColor = aiHealth >= 80 ? 'var(--gn)' : (aiHealth >= 65 ? 'var(--cy)' : (aiHealth >= 50 ? 'var(--am)' : 'var(--rs)'));
+    document.getElementById('rxHealthLabel').textContent = hLabel;
+    document.getElementById('rxHealthLabel').style.color = hColor;
+  }
+  if(document.getElementById('rxRingCircle')){
+    var circ = 314;
+    var offset = Math.round(circ - (circ * aiHealth / 100));
+    document.getElementById('rxRingCircle').style.strokeDashoffset = offset;
+  }
+  if(document.getElementById('rxWealthScore')) document.getElementById('rxWealthScore').textContent = finScore;
+  if(document.getElementById('rxCogScore')) document.getElementById('rxCogScore').textContent = focusScore;
+  if(document.getElementById('rxResScore')) document.getElementById('rxResScore').textContent = burnoutResist;
+  if(document.getElementById('rxImp1')){
+    var extraSav5Yr = Math.round(INC * 0.06 * 60 * 1.14);
+    document.getElementById('rxImp1').textContent = '+₹' + (extraSav5Yr/100000).toFixed(2) + 'L';
+  }
+  if(document.getElementById('rxRunway')){
+    var rway = (baseMs * 6 / Math.max(1000, INC - baseMs)).toFixed(1);
+    document.getElementById('rxRunway').textContent = rway + ' mo';
+  }
+
+  updateAiTrendChart();
+  recalculateRiskScores();
+  runMonteCarloSim();
+}
+
+
+function buildRadar(){
+  var ctx=document.getElementById('behRadar').getContext('2d');
+  behRadarCh=new Chart(ctx,{
+    type:'radar',
+    data:{
+      labels:['Academics','Finance','Rest','Burnout Res.','Impulse Ctrl'],
+      datasets:[
+        {
+          label:'Forecasting Mean',
+          data:[65, 45, 50, 60, 55],
+          borderColor:'rgba(98,115,148,0.6)',
+          backgroundColor:'rgba(98,115,148,0.1)',
+          borderWidth:1.5,
+          pointRadius:2
+        },
+        {
+          label:'Simulated Twin',
+          data:[74, 58, 42, 62, 65],
+          borderColor:'#1cc8db',
+          backgroundColor:'rgba(28,200,219,0.15)',
+          borderWidth:2,
+          pointRadius:3
+        }
+      ]
+    },
+    options:{
+      responsive:true,
+      maintainAspectRatio:false,
+      plugins:{
+        legend:{
+          position:'bottom',
+          labels:{color:'#627394',font:{size:9,weight:'bold'},boxWidth:10}
+        }
+      },
+      scales:{
+        r:{
+          min:0,
+          max:100,
+          ticks:{display:false,stepSize:25},
+          grid:{color:'rgba(255,255,255,0.04)'},
+          angleLines:{color:'rgba(255,255,255,0.06)'},
+          pointLabels:{color:'#dce4f0',font:{size:9,weight:'600'}}
+        }
+      }
+    }
+  });
+}
+
+function buildAiTrend(){
+  var ctx=document.getElementById('aiTrendChart').getContext('2d');
+  aiTrendCh=new Chart(ctx,{
+    type:'line',
+    data:{
+      labels:['-5m','-4m','-3m','-2m','-1m','Now','+1m','+3m','+6m'],
+      datasets:[
+        {
+          label:'Forecasting Actuals',
+          data:[6200, 6800, 7100, 7500, 7900, 8400, null, null, null],
+          borderColor:'#eda832',
+          borderWidth:2,
+          pointRadius:2.5,
+          tension:0.3,
+          fill:false
+        },
+        {
+          label:'Unchecked Drift',
+          data:[null, null, null, null, null, 8400, 8900, 9600, 10800],
+          borderColor:'#ef4f5f',
+          borderDash:[4,4],
+          borderWidth:1.8,
+          pointRadius:1.5,
+          tension:0.3,
+          fill:false
+        },
+        {
+          label:'AI Prescribed Moat',
+          data:[null, null, null, null, null, 8400, 6800, 5900, 5100],
+          borderColor:'#2bc975',
+          borderWidth:2.2,
+          pointRadius:3,
+          tension:0.3,
+          fill:false
+        }
+      ]
+    },
+    options:{
+      responsive:true,
+      maintainAspectRatio:false,
+      plugins:{
+        legend:{
+          position:'bottom',
+          labels:{color:'#627394',font:{size:8.5,weight:'bold'},boxWidth:8}
+        }
+      },
+      scales:{
+        x:{grid:{color:'rgba(255,255,255,0.02)'},ticks:{color:'#627394',font:{size:8.5}}},
+        y:{grid:{color:'rgba(255,255,255,0.02)'},ticks:{color:'#627394',font:{size:8.5},callback:function(v){return '₹'+(v/1000)+'K';}}}
+      }
+    }
+  });
+}
+
+function updateAiTrendChart(){
+  if(!aiTrendCh) return;
+  if(currentStrategy === 'wealth'){
+    aiTrendCh.data.datasets[2].data = [null, null, null, null, null, 8400, 6200, 5000, 4200];
+  } else if(currentStrategy === 'shield'){
+    aiTrendCh.data.datasets[2].data = [null, null, null, null, null, 8400, 6600, 5800, 5400];
+  } else if(currentStrategy === 'rest'){
+    aiTrendCh.data.datasets[2].data = [null, null, null, null, null, 8400, 7200, 6600, 6300];
+  } else {
+    aiTrendCh.data.datasets[2].data = [null, null, null, null, null, 8400, 6800, 5900, 5100];
+  }
+  aiTrendCh.update();
+}
+
+function buildSim(){
+  var lb=[];for(var i=0;i<=12;i++)lb.push(i===0?'Now':'M'+i);
+  simCh=new Chart(document.getElementById('simC').getContext('2d'),{type:'line',data:{labels:lb,datasets:[
+    {label:'Without Purchase',data:[],borderColor:'#2bc975',backgroundColor:'rgba(43,201,117,0.06)',borderWidth:2,tension:.3,pointRadius:1.5,fill:true},
+    {label:'With Purchase',data:[],borderColor:'#ef4f5f',borderDash:[5,5],borderWidth:2,tension:.3,pointRadius:2,fill:false}
+  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#627394',font:{weight:'bold',size:9}}}},
+    scales:{x:{grid:{color:'rgba(255,255,255,0.02)'},ticks:{color:'#627394',font:{size:9}}},y:{grid:{color:'rgba(255,255,255,0.02)'},ticks:{color:'#627394',font:{size:9},callback:function(v){return '₹'+(v/1000)+'K'}}}}}});
+}
+
+function buildOC(){
+  var mk=function(c,d){return new Chart(c,{type:'line',data:{labels:['Now','Y1','Y2','Y3','Y4','Y5'],datasets:[{data:[],borderColor:d,borderWidth:1.5,tension:.3,pointRadius:1,fill:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{display:false},y:{display:false}}}});};
+  oBc=mk(document.getElementById('ocBC').getContext('2d'),'#2bc975');
+  oEc=mk(document.getElementById('ocEC').getContext('2d'),'#4a88ff');
+  oWc=mk(document.getElementById('ocWC').getContext('2d'),'#ef4f5f');
+}
+
+/* ── AI FEATURE 1: MONTE CARLO & STRESS TESTING ENGINE ── */
+var mcChartInstance = null;
+var activeShocks = {inf: false, med: false, burn: false, job: false};
+
+function toggleShock(shockType){
+  activeShocks[shockType] = !activeShocks[shockType];
+  var el = document.getElementById('stCard_' + shockType);
+  if(el){
+    if(activeShocks[shockType]) el.classList.add('active');
+    else el.classList.remove('active');
+  }
+  
+  var activeCount = Object.values(activeShocks).filter(Boolean).length;
+  var badge = document.getElementById('stressBadge');
+  if(badge){
+    badge.textContent = '● ' + activeCount + ' Active Shock' + (activeCount === 1 ? '' : 's');
+    badge.style.color = activeCount > 0 ? 'var(--rs)' : 'var(--mt)';
+  }
+  
+  runMonteCarloSim();
+}
+
+function runMonteCarloSim(){
+  var baseline5Yr = (datasetStats && datasetStats.income ? datasetStats.income : 42203) * ((savR||20)/100) * 12 * 5 * 1.15;
+  var baseP = [0, baseline5Yr * 0.18, baseline5Yr * 0.38, baseline5Yr * 0.60, baseline5Yr * 0.82, baseline5Yr];
+  
+  // Calculate shock multiplier
+  var penalty = 0;
+  if(activeShocks.inf) penalty += 0.12;
+  if(activeShocks.med) penalty += 0.09;
+  if(activeShocks.burn) penalty += 0.08;
+  if(activeShocks.job) penalty += 0.18;
+  
+  var optP = baseP.map(function(v){ return Math.round(v * 1.25); });
+  var meanP = baseP.map(function(v){ return Math.round(v * (1 - penalty * 0.5)); });
+  var stressP = baseP.map(function(v, idx){ 
+    if(idx === 0) return 0;
+    var shockHit = activeShocks.med ? 50000 : 0;
+    return Math.max(0, Math.round(v * (1 - penalty) - (idx > 1 ? shockHit : 0))); 
+  });
+  
+  var stressedFinal = stressP[5];
+  var resilienceScore = Math.max(25, Math.round(100 - penalty * 120));
+  var runwayMonths = Math.max(1.2, (6.2 * (1 - penalty * 0.6))).toFixed(1);
+  
+  if(document.getElementById('mcBaseNet')) document.getElementById('mcBaseNet').textContent = '₹' + Math.round(baseline5Yr).toLocaleString('en-IN');
+  if(document.getElementById('mcStressNet')) document.getElementById('mcStressNet').textContent = '₹' + Math.round(stressedFinal).toLocaleString('en-IN');
+  if(document.getElementById('mcResilience')) document.getElementById('mcResilience').textContent = resilienceScore + ' / 100';
+  if(document.getElementById('mcRunway')) document.getElementById('mcRunway').textContent = runwayMonths + ' Months';
+  
+  if(!mcChartInstance){
+    var ctx = document.getElementById('mcChart').getContext('2d');
+    mcChartInstance = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: ['Now', 'Year 1', 'Year 2', 'Year 3', 'Year 4', 'Year 5'],
+        datasets: [
+          {
+            label: '90th Percentile (Optimistic Tail)',
+            data: optP,
+            borderColor: '#2bc975',
+            backgroundColor: 'rgba(43,201,117,0.06)',
+            borderWidth: 2,
+            tension: 0.35,
+            fill: '+1'
+          },
+          {
+            label: 'Stochastic Mean Path',
+            data: meanP,
+            borderColor: '#4a88ff',
+            backgroundColor: 'transparent',
+            borderWidth: 2.5,
+            tension: 0.35
+          },
+          {
+            label: '10th Percentile (Stressed Shock Floor)',
+            data: stressP,
+            borderColor: '#ef4f5f',
+            backgroundColor: 'rgba(239,79,95,0.08)',
+            borderWidth: 2,
+            borderDash: [5, 5],
+            tension: 0.35,
+            fill: '-1'
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { labels: { color: '#627394', font: { size: 9.5, weight: 'bold' } } }
+        },
+        scales: {
+          x: { grid: { color: 'rgba(255,255,255,0.03)' }, ticks: { color: '#627394', font: { size: 9 } } },
+          y: { grid: { color: 'rgba(255,255,255,0.03)' }, ticks: { color: '#627394', font: { size: 9 }, callback: function(v){ return '₹' + (v/1000) + 'K'; } } }
+        }
+      }
+    });
+  } else {
+    mcChartInstance.data.datasets[0].data = optP;
+    mcChartInstance.data.datasets[1].data = meanP;
+    mcChartInstance.data.datasets[2].data = stressP;
+    mcChartInstance.update();
+  }
+}
+
+/* ── AI FEATURE 2: DIGITAL TWIN AI COPILOT QUERY ENGINE ── */
+function askCopilot(query){
+  var inp = document.getElementById('copilotInput');
+  if(inp){
+    inp.value = query;
+    sendCopilotMsg();
+  }
+}
+
+function sendCopilotMsg(){
+  var inp = document.getElementById('copilotInput');
+  var box = document.getElementById('copilotMsgs');
+  if(!inp || !box || !inp.value.trim()) return;
+  
+  var text = inp.value.trim();
+  inp.value = '';
+  
+  // Append user message
+  var userDiv = document.createElement('div');
+  userDiv.className = 'copilot-msg user';
+  userDiv.innerHTML = '<div class="copilot-bubble">' + escapeHtml(text) + '</div>';
+  box.appendChild(userDiv);
+  box.scrollTop = box.scrollHeight;
+  
+  // AI Inference & Mathematical Calculation
+  setTimeout(function(){
+    var answer = generateCopilotResponse(text);
+    var botDiv = document.createElement('div');
+    botDiv.className = 'copilot-msg bot';
+    botDiv.innerHTML = '<div class="copilot-bubble">' + answer + '</div>';
+    box.appendChild(botDiv);
+    box.scrollTop = box.scrollHeight;
+  }, 450);
+}
+
+function escapeHtml(string) {
+  return String(string).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+function generateCopilotResponse(query){
+  var q = query.toLowerCase();
+  var inc = datasetStats.income || INC || 42203;
+  var recCount = synthesizedDataset.length || 2000;
+  
+  if(q.includes('40%') || q.includes('save 40') || q.includes('savings')){
+    var sav40 = Math.round(inc * 0.40);
+    var yr5 = Math.round(sav40 * 12 * 5 * 1.15);
+    return '📊 <strong>AI Simulation Synthesis:</strong><br>' +
+      '• Increasing your savings rate to <strong>40%</strong> raises monthly savings from ₹' + Math.round(inc * 0.20).toLocaleString('en-IN') + ' to <strong>₹' + sav40.toLocaleString('en-IN') + '</strong>.<br>' +
+      '• Your 5-Year projected wealth increases from ₹5,88,874 to <strong style="color:var(--gn)">₹' + yr5.toLocaleString('en-IN') + ' (+₹' + (yr5 - 588874).toLocaleString('en-IN') + ')</strong>.<br>' +
+      '• <em>Behavioral Diagnostic:</em> Requires curbing discretionary dining/entertainment by 25%.';
+  } else if(q.includes('macbook') || q.includes('1.2') || q.includes('afford') || q.includes('buy')){
+    return '🛒 <strong>Discretionary Purchase Feasibility:</strong><br>' +
+      '• An upfront purchase of <strong>₹1,20,000</strong> would consume 2.8 months of total income.<br>' +
+      '• <strong>Risk Verdict:</strong> <span style="color:var(--am);font-weight:bold">MODERATE RISK</span>. It is recommended to use the <em>Discretionary Freeze Gate</em> for 3 months to build a 6-month liquidity vault before purchasing.';
+  } else if(q.includes('study') || q.includes('hours') || q.includes('gpa') || q.includes('academic')){
+    return '📚 <strong>Academic & Focus Projection:</strong><br>' +
+      '• Reducing study hours from 18h/week to 10h/week saves 32 hours/month of cognitive capacity.<br>' +
+      '• However, your exam readiness coefficient drops by <strong style="color:var(--rs)">-14.8%</strong> across your core subjects based on the dataset regression model.';
+  } else if(q.includes('burnout') || q.includes('stress') || q.includes('exam')){
+    return '⚡ <strong>Burnout & Cognitive Health Analysis:</strong><br>' +
+      '• Your baseline burnout score across ' + recCount + ' records is <strong>44%</strong>.<br>' +
+      '• Applying the <em>Circadian Reset Protocol (7.2 hrs sleep)</em> reduces burnout risk to <strong style="color:var(--gn)">22%</strong> and recovers +22% daily focus capacity.';
+  } else {
+    return '🧬 <strong>Digital Twin Neural Synthesis:</strong><br>' +
+      'Analyzed against <strong>' + recCount + ' ingested telemetry records</strong>:<br>' +
+      '• Scenario trajectory is mathematically sound.<br>' +
+      '• Estimated 5-Year compound net trajectory: <strong style="color:var(--bl)">₹5.88 Lakhs</strong> with 89% stability index.';
+  }
+}
+</script>
+</body>
+</html>

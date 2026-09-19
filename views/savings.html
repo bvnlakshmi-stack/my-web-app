@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Savings - MyApp</title>
+  <link rel="stylesheet" href="/css/dashboard.css">
+  <link rel="stylesheet" href="/css/savings.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+<div class="app-layout">
+  <!-- SIDEBAR -->
+      <!-- Standard Sidebar with Forecasting Included -->
+        <!-- LEFT SIDEBAR -->
+    <aside class="sidebar">
+      <!-- App Header / Logo -->
+      <div class="sidebar-logo">
+        <div class="logo-icon-box">✓</div>
+        <div class="logo-text">
+          <h2>MyApp</h2>
+          <span>USER PORTAL</span>
+        </div>
+      </div>
+      <div class="sidebar-section-label">WORKSPACE</div>
+
+      <!-- Navigation Links -->
+      <nav class="sidebar-nav">
+        <a href="/dashboard.html" class="nav-item">
+          <span class="nav-icon">🏠</span>
+          <span>Dashboard</span>
+        </a>
+        <a href="/forecasting.html" class="nav-item">
+          <span class="nav-icon">📈</span>
+          <span>Forecasting</span>
+        </a>
+      <a href="/simulation.html" class="nav-item"><span>🎮</span> <span>Simulation Engine (M3)</span></a>
+
+        <a href="/income.html" class="nav-item">
+          <span class="nav-icon">💳</span>
+          <span>Income & Expenses</span>
+        </a>
+        <a href="/savings.html" class="nav-item active">
+          <span class="nav-icon">💰</span>
+          <span>Savings</span>
+        </a>
+        <a href="/study.html" class="nav-item">
+          <span class="nav-icon">📚</span>
+          <span>Study</span>
+        </a>
+        <a href="/academics.html" class="nav-item">
+          <span class="nav-icon">🎓</span>
+          <span>Academics</span>
+        </a>
+        <a href="/habits.html" class="nav-item">
+          <span class="nav-icon">🔥</span>
+          <span>Habits</span>
+        </a>
+        <a href="/fitness.html" class="nav-item">
+          <span class="nav-icon">🏋️</span>
+          <span>Fitness</span>
+        </a>
+        <a href="/goals.html" class="nav-item">
+          <span class="nav-icon">🎯</span>
+          <span>Goals</span>
+        </a>
+        <a href="/activity.html" class="nav-item">
+          <span class="nav-icon">📊</span>
+          <span>Activity History</span>
+        </a>
+        <a href="/profile.html" class="nav-item">
+          <span class="nav-icon">👤</span>
+          <span>Profile</span>
+        </a>
+      </nav>
+
+      <!-- Bottom Database Status & Logout -->
+      <div class="sidebar-footer">
+        <div class="db-badge">
+          <span class="pulse-dot"></span>
+          <span>SQLite Active</span>
+        </div>
+        <a href="#" id="logoutBtn" class="nav-item logout-link">
+          <span class="nav-icon">🚪</span>
+          <span>Logout</span>
+        </a>
+      </div>
+    </aside>
+  <!-- MAIN CONTENT -->
+  <main class="main-content">
+    <!-- Top bar -->
+    <div class="sav-topbar">
+      <div>
+        <h1 class="sav-title">Savings</h1>
+      </div>
+      <div class="sav-user">
+        <div class="sav-avatar" id="userAvatar">U</div>
+        <span id="userName">User</span>
+      </div>
+    </div>
+    <!-- Page header -->
+    <div class="sav-hero">
+      <h2>💰 Your Savings Goals</h2>
+      <p>Track your savings and reach your financial goals</p>
+    </div>
+    <!-- Stat Cards -->
+    <div class="sav-stat-row">
+      <div class="sav-card">
+        <div class="sav-card-icon sav-icon-green">₹</div>
+        <div>
+          <div class="sav-card-label">Total Savings</div>
+          <div class="sav-card-value" id="statTotal">0</div>
+          <div class="sav-card-sub">Total amount saved</div>
+        </div>
+      </div>
+      <div class="sav-card">
+        <div class="sav-card-icon sav-icon-teal">✓</div>
+        <div>
+          <div class="sav-card-label">Goals Completed</div>
+          <div class="sav-card-value" id="statCompleted">0</div>
+          <div class="sav-card-sub" id="statCompletedSub">Out of 0 goals</div>
+        </div>
+      </div>
+      <div class="sav-card">
+        <div class="sav-card-icon sav-icon-orange">⏳</div>
+        <div>
+          <div class="sav-card-label">In Progress</div>
+          <div class="sav-card-value" id="statProgress">0</div>
+          <div class="sav-card-sub">Goals in progress</div>
+        </div>
+      </div>
+      <div class="sav-card">
+        <div class="sav-card-icon sav-icon-blue">📈</div>
+        <div>
+          <div class="sav-card-label">Success Rate</div>
+          <div class="sav-card-value" id="statRate">0%</div>
+          <div class="sav-card-sub">Keep going!</div>
+        </div>
+      </div>
+    </div>
+    <!-- Middle Row: Form + Chart + Activity -->
+    <div class="sav-mid-row">
+      <!-- Add Goal Form -->
+      <div class="sav-form-card">
+        <h3>➕ Add Savings Goal</h3>
+        <div id="savMsg"></div>
+        <div class="sav-field">
+          <label>Goal Name</label>
+          <input type="text" id="savName" placeholder="e.g. New Phone, Vacation...">
+        </div>
+        <div class="sav-field">
+          <label>Target Amount (₹)</label>
+          <input type="number" id="savTarget" placeholder="10000">
+        </div>
+        <div class="sav-field">
+          <label>Saved So Far (₹)</label>
+          <input type="number" id="savSaved" placeholder="0">
+        </div>
+        <div class="sav-field">
+          <label>Target Date</label>
+          <input type="date" id="savDate">
+        </div>
+        <button class="sav-add-btn" onclick="addGoal()">➕ Add Goal</button>
+      </div>
+      <!-- Donut Chart -->
+      <div class="sav-chart-card">
+        <h3>Savings Overview</h3>
+        <div class="chart-wrapper">
+          <canvas id="savChart"></canvas>
+          <div class="chart-center">
+            <div class="chart-center-label">Total</div>
+            <div class="chart-center-value" id="chartTotal">₹0</div>
+          </div>
+        </div>
+        <div class="chart-legend">
+          <div class="legend-item"><span class="legend-dot" style="background:#22c55e;"></span><span id="legendCompleted">Completed (₹0)</span></div>
+          <div class="legend-item"><span class="legend-dot" style="background:#3b82f6;"></span><span id="legendProgress">In Progress (₹0)</span></div>
+          <div class="legend-item"><span class="legend-dot" style="background:#e5e7eb;"></span><span id="legendNotStarted">Not Started (₹0)</span></div>
+        </div>
+      </div>
+      <!-- Recent Activity -->
+      <div class="sav-activity-card">
+        <div class="sav-activity-header">
+          <h3>Recent Activity</h3>
+          <span class="view-all-link">View All</span>
+        </div>
+        <div id="recentActivity">
+          <div class="no-activity">No activity yet!</div>
+        </div>
+      </div>
+    </div>
+    <!-- Goals Grid -->
+    <div class="sav-goals-section">
+      <div class="sav-goals-header">
+        <div>💰 SAVINGS GOALS</div>
+        <span class="view-all-link">View All Goals</span>
+      </div>
+      <div class="sav-goals-grid" id="goalsGrid">
+        <div class="no-goals">No savings goals yet. Add your first goal!</div>
+      </div>
+    </div>
+    <div class="page-footer">© 2026 MyApp. All rights reserved.</div>
+  </main>
+</div>
+<script>
+  document.getElementById('savDate').valueAsDate = new Date(Date.now() + 30*24*60*60*1000);
+  let donutChart;
+  function getData() {
+    return JSON.parse(localStorage.getItem('savings_data') || '[]');
+  }
+  function saveData(data) {
+    localStorage.setItem('savings_data', JSON.stringify(data));
+  }
+  function fmt(n) {
+    return '₹' + parseFloat(n || 0).toLocaleString('en-IN');
+  }
+  function getStatus(item) {
+    const pct = (parseFloat(item.saved) / parseFloat(item.target)) * 100;
+    if (pct >= 100) return 'completed';
+    if (pct > 0)    return 'progress';
+    return 'notstarted';
+  }
+  function addGoal() {
+    const name   = document.getElementById('savName').value.trim();
+    const target = parseFloat(document.getElementById('savTarget').value);
+    const saved  = parseFloat(document.getElementById('savSaved').value) || 0;
+    const date   = document.getElementById('savDate').value;
+    const msg    = document.getElementById('savMsg');
+    if (!name || !target) {
+      msg.style.cssText = 'background:#fee2e2;color:#991b1b;padding:8px;border-radius:8px;font-size:13px;margin-bottom:10px;';
+      msg.textContent = '❌ Please fill all fields!';
+      setTimeout(() => msg.textContent = '', 2000);
+      return;
+    }
+    const data = getData();
+    data.unshift({ name, target, saved, date, id: Date.now() });
+    saveData(data);
+    document.getElementById('savName').value   = '';
+    document.getElementById('savTarget').value = '';
+    document.getElementById('savSaved').value  = '';
+    msg.style.cssText = 'background:#dcfce7;color:#166534;padding:8px;border-radius:8px;font-size:13px;margin-bottom:10px;';
+    msg.textContent = '✅ Goal added!';
+    setTimeout(() => msg.textContent = '', 2000);
+    // Log activity
+    const acts = JSON.parse(localStorage.getItem('sav_activity') || '[]');
+    acts.unshift({ type: 'created', text: 'Goal Created', name, amount: target, time: new Date().toISOString() });
+    localStorage.setItem('sav_activity', JSON.stringify(acts.slice(0, 10)));
+    render();
+  }
+  function deleteGoal(id) {
+    const data = getData().filter(g => g.id !== id);
+    saveData(data);
+    render();
+  }
+  function render() {
+    const data = getData();
+    // Stats
+    let totalSaved = 0, completed = 0, inProgress = 0;
+    data.forEach(g => {
+      totalSaved += parseFloat(g.saved || 0);
+      const st = getStatus(g);
+      if (st === 'completed') completed++;
+      if (st === 'progress')  inProgress++;
+    });
+    const rate = data.length ? Math.round((completed / data.length) * 100) : 0;
+    document.getElementById('statTotal').textContent        = totalSaved.toLocaleString('en-IN');
+    document.getElementById('statCompleted').textContent    = completed;
+    document.getElementById('statCompletedSub').textContent = `Out of ${data.length} goals`;
+    document.getElementById('statProgress').textContent     = inProgress;
+    document.getElementById('statRate').textContent         = rate + '%';
+    // Chart data
+    const completedAmt   = data.filter(g => getStatus(g) === 'completed').reduce((s,g) => s + parseFloat(g.saved||0), 0);
+    const progressAmt    = data.filter(g => getStatus(g) === 'progress').reduce((s,g) => s + parseFloat(g.saved||0), 0);
+    const notStartedAmt  = data.filter(g => getStatus(g) === 'notstarted').reduce((s,g) => s + parseFloat(g.target||0), 0);
+    document.getElementById('chartTotal').textContent       = fmt(totalSaved);
+    document.getElementById('legendCompleted').textContent  = `Completed (${fmt(completedAmt)})`;
+    document.getElementById('legendProgress').textContent   = `In Progress (${fmt(progressAmt)})`;
+    document.getElementById('legendNotStarted').textContent = `Not Started (${fmt(notStartedAmt)})`;
+    // Donut chart
+    if (donutChart) donutChart.destroy();
+    const ctx = document.getElementById('savChart').getContext('2d');
+    donutChart = new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: ['Completed', 'In Progress', 'Not Started'],
+        datasets: [{
+          data: [completedAmt || 0.1, progressAmt || 0.1, notStartedAmt || 0.1],
+          backgroundColor: ['#22c55e', '#3b82f6', '#e5e7eb'],
+          borderWidth: 0,
+          hoverOffset: 6
+        }]
+      },
+      options: {
+        cutout: '70%',
+        plugins: { legend: { display: false } },
+        responsive: true,
+        maintainAspectRatio: true
+      }
+    });
+    // Goals grid
+    const grid = document.getElementById('goalsGrid');
+    if (data.length === 0) {
+      grid.innerHTML = '<div class="no-goals">No savings goals yet. Add your first goal above!</div>';
+    } else {
+      grid.innerHTML = data.map(g => {
+        const pct    = Math.min(100, Math.round((parseFloat(g.saved) / parseFloat(g.target)) * 100));
+        const status = getStatus(g);
+        const statusLabel = status === 'completed' ? 'Completed' : status === 'progress' ? 'In Progress' : 'Not Started';
+        const statusClass = status === 'completed' ? 'status-done' : status === 'progress' ? 'status-progress' : 'status-new';
+        const barColor    = status === 'completed' ? '#22c55e' : status === 'progress' ? '#3b82f6' : '#e5e7eb';
+        return `
+          <div class="goal-card">
+            <div class="goal-card-top">
+              <div>
+                <div class="goal-card-name">${g.name}</div>
+                <div class="goal-card-status ${statusClass}">${statusLabel}</div>
+              </div>
+              <button class="goal-delete" onclick="deleteGoal(${g.id})">🗑</button>
+            </div>
+            <div class="goal-amounts">${fmt(g.saved)} / ${fmt(g.target)}</div>
+            <div class="goal-bar-bg">
+              <div class="goal-bar-fill" style="width:${pct}%;background:${barColor};"></div>
+            </div>
+            <div class="goal-footer">
+              <span style="font-size:12px;color:#aaa;">${pct === 100 ? '🎉 Completed!' : `Target: ${g.date || 'No date'}`}</span>
+              <span style="font-size:12px;font-weight:700;color:${barColor};">${pct}%</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+    // Recent activity
+    const acts    = JSON.parse(localStorage.getItem('sav_activity') || '[]');
+    const actDiv  = document.getElementById('recentActivity');
+    if (acts.length === 0) {
+      actDiv.innerHTML = '<div class="no-activity">No activity yet!</div>';
+    } else {
+      actDiv.innerHTML = acts.slice(0, 3).map(a => `
+        <div class="act-item">
+          <div class="act-icon">${a.type === 'created' ? '🎯' : '💰'}</div>
+          <div class="act-info">
+            <div class="act-label" style="color:#22c55e;">${a.text}</div>
+            <div class="act-name">${a.name}</div>
+          </div>
+          <div class="act-amount">${fmt(a.amount)}</div>
+        </div>
+      `).join('');
+    }
+  }
+  async function init() {
+    try {
+      const res  = await fetch('/auth/me');
+      const data = await res.json();
+      if (!data.success) { window.location.href = '/login.html'; return; }
+      const name = data.user.fullname;
+      document.getElementById('userAvatar').textContent = name.charAt(0).toUpperCase();
+      document.getElementById('userName').textContent   = name;
+    } catch { window.location.href = '/login.html'; }
+    render();
+  }
+  document.getElementById('logoutBtn').addEventListener('click', async function(e) {
+    e.preventDefault();
+    await fetch('/auth/logout');
+    window.location.href = '/login.html';
+  });
+  init();
+</script>
+</body>
+</html>

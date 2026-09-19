@@ -1,0 +1,546 @@
+/* ===================================================
+   GROWTH & RISK FORECASTING HUB - UNIQUE STUDIO THEME
+   =================================================== */
+
+:root {
+  --primary-emerald: #10b981;
+  --dark-emerald: #064e3b;
+  --accent-blue: #3b82f6;
+  --accent-purple: #8b5cf6;
+  --card-bg: #ffffff;
+  --bg-page: #f8fafc;
+  --text-main: #0f172a;
+  --text-sub: #64748b;
+  --border-light: #e2e8f0;
+}
+
+/* Page Background */
+body {
+  background-color: var(--bg-page);
+  color: var(--text-main);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+.main-content {
+  flex: 1;
+  padding: 28px 36px;
+  overflow-y: auto;
+  background-color: #f8fafc;
+}
+
+/* ── TOP INTELLIGENCE BANNER ── */
+.intel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(135deg, #022c22 0%, #064e3b 60%, #047857 100%);
+  border-radius: 18px;
+  padding: 24px 30px;
+  color: white;
+  margin-bottom: 22px;
+  box-shadow: 0 10px 30px rgba(6, 78, 59, 0.2);
+}
+
+.badge-ai {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  background: rgba(16, 185, 129, 0.25);
+  color: #6ee7b7;
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid rgba(110, 231, 183, 0.3);
+  margin-bottom: 8px;
+}
+
+.intel-title-area h1 {
+  font-size: 24px;
+  font-weight: 800;
+  margin: 0 0 4px 0;
+  letter-spacing: -0.5px;
+}
+
+.intel-title-area p {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.75);
+  margin: 0;
+}
+
+.intel-score-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(8px);
+  padding: 12px 20px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.score-circle {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background: #10b981;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4);
+}
+
+.score-number {
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.score-label {
+  font-size: 9px;
+  opacity: 0.8;
+}
+
+.score-meta h4 {
+  font-size: 13px;
+  font-weight: 700;
+  margin: 0 0 4px 0;
+}
+
+.status-pill.optimal {
+  font-size: 11px;
+  color: #a7f3d0;
+  font-weight: 600;
+}
+
+/* ── KPI GRID ── */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  margin-bottom: 22px;
+}
+
+.kpi-card {
+  background: var(--card-bg);
+  border-radius: 16px;
+  padding: 18px 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  border: 1px solid var(--border-light);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.kpi-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+}
+
+.kpi-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  flex-shrink: 0;
+}
+
+.kpi-icon.finance { background: #dcfce7; }
+.kpi-icon.study   { background: #dbeafe; }
+.kpi-icon.habit   { background: #ffedd5; }
+
+.kpi-label {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--text-sub);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: block;
+  margin-bottom: 2px;
+}
+
+.kpi-body h3 {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--text-main);
+  margin: 0 0 4px 0;
+}
+
+.kpi-badge {
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.kpi-badge.positive { color: #16a34a; }
+.kpi-badge.neutral  { color: #0284c7; }
+
+/* ── STUDIO SPLIT GRID ── */
+.studio-grid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 20px;
+  margin-bottom: 22px;
+}
+
+.studio-card {
+  background: var(--card-bg);
+  border-radius: 18px;
+  border: 1px solid var(--border-light);
+  padding: 22px 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+/* Left Studio Header */
+.studio-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.domain-pills {
+  display: flex;
+  gap: 6px;
+  background: #f1f5f9;
+  padding: 4px;
+  border-radius: 10px;
+}
+
+.pill-btn {
+  border: none;
+  background: none;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-sub);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.pill-btn.active {
+  background: var(--dark-emerald);
+  color: white;
+  box-shadow: 0 2px 6px rgba(6, 78, 59, 0.25);
+}
+
+.time-toggles {
+  display: flex;
+  gap: 4px;
+  background: #f1f5f9;
+  padding: 3px;
+  border-radius: 8px;
+}
+
+.time-btn {
+  border: none;
+  background: none;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-sub);
+  cursor: pointer;
+}
+
+.time-btn.active {
+  background: #ffffff;
+  color: var(--text-main);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+}
+
+.chart-wrapper {
+  height: 240px;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+/* Simulator Box */
+.simulator-box {
+  background: #f8fafc;
+  border: 1.5px dashed #cbd5e1;
+  border-radius: 14px;
+  padding: 16px 18px;
+}
+
+.sim-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.sim-tag {
+  font-size: 10px;
+  font-weight: 800;
+  color: #059669;
+  background: #d1fae5;
+  padding: 3px 8px;
+  border-radius: 6px;
+  letter-spacing: 0.5px;
+}
+
+.sim-header h4 {
+  font-size: 13px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.sim-slider-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.sim-slider-row input[type="range"] {
+  flex: 1;
+  accent-color: var(--primary-emerald);
+  cursor: pointer;
+}
+
+.sim-val-display {
+  font-size: 12px;
+  color: var(--text-sub);
+  text-align: right;
+  min-width: 130px;
+}
+
+.sim-val-display strong {
+  display: block;
+  font-size: 15px;
+  color: var(--text-main);
+}
+
+.sim-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  border-top: 1px solid var(--border-light);
+  padding-top: 12px;
+}
+
+.sim-stat span {
+  font-size: 11px;
+  color: var(--text-sub);
+  display: block;
+}
+
+.sim-stat strong {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.green-text { color: #16a34a !important; }
+
+/* Study Metrics Box */
+.study-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-top: 14px;
+  background: #f8fafc;
+  padding: 14px;
+  border-radius: 12px;
+}
+
+.s-metric {
+  background: white;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border-light);
+}
+
+.s-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-sub);
+  display: block;
+  margin-bottom: 4px;
+}
+
+.s-metric h4 {
+  font-size: 16px;
+  font-weight: 800;
+  margin: 0 0 2px 0;
+}
+
+.s-metric small {
+  font-size: 10.5px;
+  color: var(--text-sub);
+}
+
+/* ── RIGHT PANEL: RISK RADAR ── */
+.side-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.side-header h3 {
+  font-size: 16px;
+  font-weight: 800;
+  margin: 0;
+}
+
+.tag-live {
+  font-size: 10px;
+  font-weight: 800;
+  color: #dc2626;
+  background: #fee2e2;
+  padding: 3px 8px;
+  border-radius: 6px;
+}
+
+.habit-risk-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.risk-item {
+  background: #f8fafc;
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  padding: 12px 14px;
+}
+
+.risk-top {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.r-badge {
+  font-size: 10.5px;
+  font-weight: 700;
+}
+
+.r-badge.anchor     { color: #16a34a; }
+.r-badge.warning    { color: #9333ea; }
+.r-badge.compounder { color: #2563eb; }
+.r-badge.alert      { color: #dc2626; }
+
+.r-progress-bar {
+  height: 6px;
+  background: #e2e8f0;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 6px;
+}
+
+.r-fill.green  { height: 100%; background: #10b981; }
+.r-fill.purple { height: 100%; background: #8b5cf6; }
+.r-fill.blue   { height: 100%; background: #3b82f6; }
+.r-fill.red    { height: 100%; background: #ef4444; }
+
+.r-desc {
+  font-size: 11px;
+  color: var(--text-sub);
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* Domino Insight Card */
+.domino-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: linear-gradient(135deg, #f0fdf4, #ecfdf5);
+  border: 1px solid #a7f3d0;
+  border-radius: 12px;
+  padding: 14px;
+}
+
+.domino-icon {
+  font-size: 20px;
+}
+
+.domino-content h5 {
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+  color: #065f46;
+  margin: 0 0 4px 0;
+}
+
+.domino-content p {
+  font-size: 11.5px;
+  color: #047857;
+  margin: 0;
+  line-height: 1.45;
+}
+
+/* ── BOTTOM DIRECTIVES ── */
+.directives-card {
+  background: var(--card-bg);
+  border-radius: 18px;
+  border: 1px solid var(--border-light);
+  padding: 22px 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.directives-card h3 {
+  font-size: 16px;
+  font-weight: 800;
+  margin: 0 0 16px 0;
+}
+
+.directives-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.dir-item {
+  background: #f8fafc;
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.dir-tag {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 6px;
+  margin-bottom: 8px;
+}
+
+.dir-tag.finance { background: #dcfce7; color: #15803d; }
+.dir-tag.study   { background: #dbeafe; color: #1e40af; }
+.dir-tag.health  { background: #f3e8ff; color: #6b21a8; }
+
+.dir-item h4 {
+  font-size: 13.5px;
+  font-weight: 700;
+  margin: 0 0 6px 0;
+}
+
+.dir-item p {
+  font-size: 11.5px;
+  color: var(--text-sub);
+  margin: 0;
+  line-height: 1.45;
+}
+
+/* Responsive */
+@media (max-width: 1050px) {
+  .studio-grid { grid-template-columns: 1fr; }
+  .kpi-grid { grid-template-columns: 1fr; }
+  .directives-grid { grid-template-columns: 1fr; }
+  .intel-header { flex-direction: column; gap: 14px; text-align: left; align-items: flex-start; }
+}

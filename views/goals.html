@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Goals - MyApp</title>
+  <link rel="stylesheet" href="/css/dashboard.css">
+  <link rel="stylesheet" href="/css/goals.css">
+</head>
+<body>
+<div class="app-layout">
+  
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon-box">✓</div>
+      <div class="logo-text"><h2>MyApp</h2><span>USER PORTAL</span></div>
+    </div>
+    <div class="sidebar-section-label">WORKSPACE</div>
+    <a href="/dashboard.html" class="nav-item"><span class="nav-icon">🏠</span><span>Dashboard</span></a>
+      <a href="/forecasting.html" class="nav-item"><span class="nav-icon">📈</span><span>Forecasting</span></a>
+      <a href="/simulation.html" class="nav-item"><span>🎮</span> <span>Simulation Engine (M3)</span></a>
+
+      <a href="/income.html"    class="nav-item"><span class="nav-icon">▭</span><span>Income & Expenses</span></a>
+      <a href="/savings.html"   class="nav-item"><span class="nav-icon">◎</span><span>Savings</span></a>
+      <a href="/study.html"     class="nav-item"><span class="nav-icon">▤</span><span>Study</span></a>
+      <a href="/academics.html" class="nav-item"><span class="nav-icon">◯</span><span>Academics</span></a>
+      <a href="/habits.html"    class="nav-item"><span class="nav-icon">🔥</span><span>Habits</span></a>
+      <a href="/fitness.html"   class="nav-item"><span class="nav-icon">∿</span><span>Fitness</span></a>
+      <a href="/goals.html"     class="nav-item active"><span class="nav-icon">◉</span><span>Goals</span></a>
+      <a href="/activity.html"  class="nav-item"><span class="nav-icon">▦</span><span>Activity History</span></a>
+      <a href="/profile.html"   class="nav-item"><span class="nav-icon">👤</span><span>Profile</span></a>
+      <a href="#" class="nav-item logout-item" id="logoutBtn"><span class="nav-icon">🚪</span><span>Logout</span></a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="db-status">
+        <span class="status-dot"></span>
+        <div>
+          <div style="color:rgba(255,255,255,0.8);font-size:12px;font-weight:600;">Database: SQLite Active</div>
+          <div style="color:rgba(255,255,255,0.45);font-size:11px;">All systems operational</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN AREA -->
+  <main class="main-content go-main">
+
+    <!-- Header Section -->
+    <div class="go-header">
+      <div>
+        <h1 class="go-title">Goals Dashboard</h1>
+        <p class="go-subtitle">Track your targets and achievements</p>
+      </div>
+      <button class="go-btn-add" onclick="openModal()">+ Add New Goal</button>
+    </div>
+
+    <!-- Quick Stats Summary -->
+    <div class="go-stats-row">
+      <div class="go-stat-card">
+        <span class="go-stat-icon" style="background:#eff6ff;color:#2563eb;">🎯</span>
+        <div>
+          <div class="go-stat-val" id="statTotal">0</div>
+          <div class="go-stat-lbl">Total Goals</div>
+        </div>
+      </div>
+      <div class="go-stat-card">
+        <span class="go-stat-icon" style="background:#fff7ed;color:#ea580c;">⚡</span>
+        <div>
+          <div class="go-stat-val" id="statActive">0</div>
+          <div class="go-stat-lbl">Active Goals</div>
+        </div>
+      </div>
+      <div class="go-stat-card">
+        <span class="go-stat-icon" style="background:#f0fdf4;color:#16a34a;">✅</span>
+        <div>
+          <div class="go-stat-val" id="statDone">0</div>
+          <div class="go-stat-lbl">Completed</div>
+        </div>
+      </div>
+      <div class="go-stat-card">
+        <span class="go-stat-icon" style="background:#fdf4ff;color:#9333ea;">📈</span>
+        <div>
+          <div class="go-stat-val" id="statAvg">0%</div>
+          <div class="go-stat-lbl">Avg Progress</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toolbar Filters -->
+    <div class="go-toolbar">
+      <div class="go-tabs">
+        <button class="go-tab active" onclick="setFilter('all', this)">All</button>
+        <button class="go-tab" onclick="setFilter('active', this)">Active</button>
+        <button class="go-tab" onclick="setFilter('completed', this)">Completed</button>
+      </div>
+      <div class="go-search-wrap">
+        <input type="text" id="goSearch" placeholder="Search goals..." oninput="render()">
+      </div>
+    </div>
+
+    <!-- Goals Card Grid -->
+    <div class="go-grid" id="goalsGrid">
+      <!-- Dynamically generated cards -->
+    </div>
+
+    <!-- Creation Modal -->
+    <div class="go-modal-overlay" id="goalModal" onclick="closeOnBg(event)">
+      <div class="go-modal">
+        <div class="go-modal-header">
+          <h3>🎯 Add New Goal</h3>
+          <button class="go-modal-close" onclick="closeModal()">✕</button>
+        </div>
+        <div id="goMsg"></div>
+        <div class="go-form">
+          <div class="go-field">
+            <label>Goal Title *</label>
+            <input type="text" id="goTitle" placeholder="e.g. Learn React, Complete Project...">
+          </div>
+          <div class="go-field">
+            <label>Description</label>
+            <textarea id="goDesc" rows="2" placeholder="Describe your goal..."></textarea>
+          </div>
+          <div class="go-form-row">
+            <div class="go-field">
+              <label>Category</label>
+              <select id="goCat">
+                <option value="📚 Education">📚 Education</option>
+                <option value="💼 Career">💼 Career</option>
+                <option value="💪 Fitness">💪 Fitness</option>
+                <option value="💰 Finance">💰 Finance</option>
+                <option value="🎨 Creative">🎨 Creative</option>
+                <option value="🤝 Personal">🤝 Personal</option>
+              </select>
+            </div>
+            <div class="go-field">
+              <label>Priority</label>
+              <select id="goPri">
+                <option value="High">🔴 High Priority</option>
+                <option value="Medium">🟡 Medium Priority</option>
+                <option value="Low">🟢 Low Priority</option>
+              </select>
+            </div>
+          </div>
+          <div class="go-form-row">
+            <div class="go-field">
+              <label>Start Date</label>
+              <input type="date" id="goStart">
+            </div>
+            <div class="go-field">
+              <label>Target Date</label>
+              <input type="date" id="goEnd">
+            </div>
+          </div>
+          <button class="go-btn-save" onclick="addGoal()">🚀 Create Goal</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tip Card -->
+    <div class="go-tip-box">
+      <span class="go-tip-icon">💡</span>
+      <p class="go-tip-text"><strong>Goal Tip:</strong> Setting intermediate timeline targets keeps motivation high. Track your progress weekly.</p>
+    </div>
+
+    <!-- Footer -->
+    <div class="go-footer">
+      © 2026 MyApp. All rights reserved.
+    </div>
+
+  </main>
+</div>
+
+<script>
+  let curFilter = 'all';
+  const CAT_THEMES = {
+    '📚 Education': { color: '#6366f1', bg: '#eff6ff' },
+    '💼 Career':    { color: '#f59e0b', bg: '#fffbeb' },
+    '💪 Fitness':   { color: '#22c55e', bg: '#f0fdf4' },
+    '💰 Finance':   { color: '#10b981', bg: '#ecfdf5' },
+    '🎨 Creative':  { color: '#d946ef', bg: '#fdf4ff' },
+    '🤝 Personal':  { color: '#3b82f6', bg: '#eff6ff' }
+  };
+
+  const PRI_THEMES = {
+    'High':   { color: '#ef4444', bg: '#fee2e2' },
+    'Medium': { color: '#f59e0b', bg: '#fef3c7' },
+    'Low':    { color: '#10b981', bg: '#dcfce7' }
+  };
+
+  // Set default dates in form
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('goStart').value = today;
+  const nextMonth = new Date(); nextMonth.setDate(nextMonth.getDate() + 30);
+  document.getElementById('goEnd').value = nextMonth.toISOString().split('T')[0];
+
+  function openModal() { document.getElementById('goalModal').classList.add('modal-open'); }
+  function closeModal() { document.getElementById('goalModal').classList.remove('modal-open'); }
+  function closeOnBg(e) { if (e.target.id === 'goalModal') closeModal(); }
+
+  function getData() { return JSON.parse(localStorage.getItem('goals_data') || '[]'); }
+  function saveData(d) { localStorage.setItem('goals_data', JSON.stringify(d)); }
+
+  function addGoal() {
+    const title = document.getElementById('goTitle').value.trim();
+    const msg = document.getElementById('goMsg');
+
+    if (!title) {
+      msg.style.cssText = 'background:#fef2f2;color:#dc2626;padding:8px 12px;border-radius:8px;font-size:13px;margin-bottom:12px;border-left:3px solid #dc2626;';
+      msg.textContent = '❌ Title is required!';
+      setTimeout(() => msg.textContent = '', 2000);
+      return;
+    }
+
+    const data = getData();
+    const newGoal = {
+      id: Date.now(),
+      title,
+      desc: document.getElementById('goDesc').value.trim(),
+      category: document.getElementById('goCat').value,
+      priority: document.getElementById('goPri').value,
+      start: document.getElementById('goStart').value,
+      end: document.getElementById('goEnd').value,
+      progress: 0,
+      status: 'active'
+    };
+
+    data.unshift(newGoal);
+    saveData(data);
+
+    document.getElementById('goTitle').value = '';
+    document.getElementById('goDesc').value = '';
+    
+    msg.style.cssText = 'background:#f0fdf4;color:#16a34a;padding:8px 12px;border-radius:8px;font-size:13px;margin-bottom:12px;border-left:3px solid #22c55e;';
+    msg.textContent = '✅ Goal created!';
+    setTimeout(() => {
+      msg.textContent = '';
+      closeModal();
+      render();
+    }, 800);
+  }
+
+  function deleteGoal(id) {
+    if (!confirm('Are you sure you want to delete this goal?')) return;
+    const data = getData().filter(g => g.id !== id);
+    saveData(data);
+    render();
+  }
+
+  function toggleDone(id) {
+    const data = getData();
+    const g = data.find(x => x.id === id);
+    if (g) {
+      g.status = g.status === 'done' ? 'active' : 'done';
+      g.progress = g.status === 'done' ? 100 : 0;
+      saveData(data);
+      render();
+    }
+  }
+
+  function sliderProgressChange(id, val) {
+    const data = getData();
+    const g = data.find(x => x.id === id);
+    if (g) {
+      g.progress = parseInt(val);
+      g.status = g.progress >= 100 ? 'done' : 'active';
+      saveData(data);
+      render();
+    }
+  }
+
+  function setFilter(f, btn) {
+    curFilter = f;
+    document.querySelectorAll('.go-tab').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    render();
+  }
+
+  function render() {
+    const data = getData();
+    const search = document.getElementById('goSearch').value.toLowerCase();
+    const grid = document.getElementById('goalsGrid');
+
+    // Calculate Summary Stats
+    const total = data.length;
+    const active = data.filter(g => g.status !== 'done').length;
+    const done = total - active;
+    const avg = total ? Math.round(data.reduce((sum, g) => sum + g.progress, 0) / total) : 0;
+
+    document.getElementById('statTotal').textContent = total;
+    document.getElementById('statActive').textContent = active;
+    document.getElementById('statDone').textContent = done;
+    document.getElementById('statAvg').textContent = avg + '%';
+
+    // Filters
+    let filtered = data;
+    if (curFilter === 'active') filtered = data.filter(g => g.status !== 'done');
+    if (curFilter === 'completed') filtered = data.filter(g => g.status === 'done');
+
+    if (search) {
+      filtered = filtered.filter(g => 
+        g.title.toLowerCase().includes(search) || 
+        g.category.toLowerCase().includes(search)
+      );
+    }
+
+    if (filtered.length === 0) {
+      grid.innerHTML = `<div class="go-grid-empty">No goals found. Set a goal above! 🎯</div>`;
+      return;
+    }
+
+    grid.innerHTML = filtered.map(g => {
+      const theme = CAT_THEMES[g.category] || { color: '#64748b', bg: '#f1f5f9' };
+      const pri = PRI_THEMES[g.priority] || { color: '#64748b', bg: '#f1f5f9' };
+      const isDone = g.status === 'done';
+
+      // Estimate remaining days
+      let remainingText = '';
+      if (g.end) {
+        const diff = Math.ceil((new Date(g.end) - new Date()) / 86400000);
+        remainingText = diff < 0 ? '⚠️ Overdue' : diff === 0 ? 'Due today' : `${diff} days remaining`;
+      }
+
+      return `
+        <div class="go-card ${isDone ? 'card-done' : ''}" style="border-top: 4px solid ${theme.color};">
+          <div class="go-card-head">
+            <span class="go-card-cat" style="background:${theme.bg}; color:${theme.color};">${g.category}</span>
+            <span class="go-card-pri" style="background:${pri.bg}; color:${pri.color};">${g.priority}</span>
+          </div>
+          
+          <h3 class="go-card-title ${isDone ? 'title-done' : ''}">${g.title}</h3>
+          <p class="go-card-desc">${g.desc || 'No description added.'}</p>
+          
+          <div class="go-card-time">${remainingText}</div>
+
+          <!-- Interactive Progress Area -->
+          <div class="go-card-progress">
+            <div class="go-prog-labels">
+              <span>Progress</span>
+              <strong>${g.progress}%</strong>
+            </div>
+            <div class="go-prog-bar-wrap">
+              <div class="go-prog-bar-fill" style="width: ${g.progress}%; background: ${theme.color};"></div>
+            </div>
+            <input type="range" min="0" max="100" value="${g.progress}" 
+              style="accent-color:${theme.color};" 
+              ${isDone ? 'disabled' : ''} 
+              onchange="sliderProgressChange(${g.id}, this.value)" 
+              oninput="this.previousElementSibling.previousElementSibling.children[1].textContent=this.value+'%'; this.previousElementSibling.children[0].style.width=this.value+'%'">
+          </div>
+
+          <!-- Bottom Actions -->
+          <div class="go-card-actions">
+            <button class="go-btn-done ${isDone ? 'btn-done-active' : ''}" style="--tc: ${theme.color};" onclick="toggleDone(${g.id})">
+              ${isDone ? '↩ Reopen' : '✓ Complete'}
+            </button>
+            <button class="go-btn-del" onclick="deleteGoal(${g.id})">🗑 Delete</button>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  async function init() {
+    try {
+      const res = await fetch('/auth/me');
+      const d = await res.json();
+      if (!d.success) {
+        window.location.href = '/login.html';
+        return;
+      }
+      render();
+    } catch {
+      window.location.href = '/login.html';
+    }
+  }
+
+  document.getElementById('logoutBtn').addEventListener('click', async function(e) {
+    e.preventDefault();
+    await fetch('/auth/logout');
+    window.location.href = '/login.html';
+  });
+
+  init();
+</script>
+</body>
+</html>
