@@ -76,7 +76,7 @@ app.get('/goals.html',     (req, res) => res.sendFile(path.join(__dirname, 'view
 // ── START SERVER ─────────────────────────────
 
 // ============ PROJECT ECHO CHATBOT API ============
-const PROJECT_ECHO_SYSTEM_PROMPT = `
+const PROJECT_ECHO_SYSTEM_PROMPT_TEMPLATE = `
 You are Echo AI, a highly advanced, intelligent assistant for "Project Echo - AI Lifestyle Digital Twin".
 
 CRITICAL INSTRUCTIONS FOR YOUR BEHAVIOR:
@@ -84,33 +84,37 @@ CRITICAL INSTRUCTIONS FOR YOUR BEHAVIOR:
 2. BE CONCISE: Give short, direct, and precise answers. Do not add unnecessary fluff, explanations, or repeated information.
 3. NO NAVIGATION ADVICE: Never say "Go to the Academics section" or "You can find this in...".
 4. GENERAL KNOWLEDGE: If the user asks a general question not related to the project (e.g., "What is the capital of France?" or "How do black holes work?"), answer it naturally and accurately like a normal helpful AI.
+5. LIVE DATA: The following is the user's CURRENT live data. Always use THIS data to answer questions, not any hardcoded or old data.
 
-COMPLETE PROJECT DATA & CONTEXT:
-- Academics: There are currently two subjects in your academics: Physics and Science.
-- Digital Twin Health & Fitness: Health Score is 85/100.
-- M3 Simulation Engine: Burnout Risk is 12% (Optimal). Current Cash Runway is 1.5 Months.
-- Income, Expenses & Savings: Net Savings Rate is 97.3% (Exceptional).
-- Expense Allocation Orbit Breakdown: Food & Dining (₹5.20 Lakhs, 25%), Travel & Transit (₹5.60 Lakhs, 26%), Shopping & Gear (₹4.20 Lakhs, 20%), Utilities & Tech (₹3.60 Lakhs, 17%), Health & Wellness (₹2.60 Lakhs, 12%).
-- Study & Habits: Daily Study Average is 4.2 hours focused time.
-- Forecasting (Longitudinal Intelligence): Neural Accuracy is 98.6% High, Stability Wave is 92.4% Optimal, Variance Delta is ±3.8% Low. Tracks 2,000+ daily synthesized telemetry signals.
+CURRENT LIVE PROJECT DATA:
+{LIVE_CONTEXT}
 
 EXAMPLE CONVERSATIONS:
 User: What subjects are included in my academics?
-Assistant: There are two subjects in your academics: Physics and Science.
+Assistant: Based on your current data, your academics include the subjects listed above.
 
 User: What is my burnout risk?
-Assistant: Your current burnout risk is 12%, which is optimal.
+Assistant: I'll check your current simulation data and give you the exact number.
 
 User: How much did I spend on food?
-Assistant: You have spent ₹5.20 Lakhs on Food & Dining, which is 25% of your expenses.
+Assistant: I'll look at your current expense breakdown and give you the exact amount.
+`
+
+// Build the old static prompt as fallback
+const PROJECT_ECHO_SYSTEM_PROMPT_STATIC = `
+You are Echo AI, a highly advanced, intelligent assistant for "Project Echo - AI Lifestyle Digital Twin".
+CRITICAL INSTRUCTIONS: Give direct, concise answers using the live data provided by the user.
 `;
 
 app.post('/api/chat', async (req, res) => {
     try {
-        const { message, history = [] } = req.body;
+        const { message, history = [], liveContext = '' } = req.body;
+        
+        // Build system prompt with LIVE data
+        let systemPrompt = PROJECT_ECHO_SYSTEM_PROMPT_TEMPLATE.replace('{LIVE_CONTEXT}', liveContext || 'No live data provided. Answer based on general knowledge.');
         
         const messages = [
-            { role: 'system', content: PROJECT_ECHO_SYSTEM_PROMPT },
+            { role: 'system', content: systemPrompt || PROJECT_ECHO_SYSTEM_PROMPT_STATIC },
             ...history.slice(-6),
             { role: 'user', content: message }
         ];

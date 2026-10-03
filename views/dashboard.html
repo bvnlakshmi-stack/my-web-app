@@ -1327,5 +1327,314 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 </script>
 
+
+<!-- CHATBOT-LIVE-DATA-FIX -->
+<script>
+(function() {
+    // Build a LIVE context string from localStorage for the chatbot
+    window.getLiveDataContext = function() {
+        var context = {};
+        
+        // ACADEMICS
+        try {
+            var academics = JSON.parse(localStorage.getItem('academics') || localStorage.getItem('subjects') || '[]');
+            if (academics.length > 0) {
+                context.academics = academics.map(function(a) { return a.name || a.subject || a; });
+            }
+            // Also check for subject-specific keys
+            var subjectKeys = Object.keys(localStorage).filter(function(k) {
+                return k.toLowerCase().includes('subject') || k.toLowerCase().includes('academic') || k.toLowerCase().includes('course');
+            });
+            subjectKeys.forEach(function(k) {
+                try {
+                    var val = JSON.parse(localStorage.getItem(k));
+                    if (val) context['academics_' + k] = val;
+                } catch(e) { context['academics_' + k] = localStorage.getItem(k); }
+            });
+        } catch(e) {}
+        
+        // INCOME & EXPENSES
+        try {
+            var transactions = JSON.parse(localStorage.getItem('transactions') || '[]');
+            var totalIncome = 0, totalExpense = 0;
+            transactions.forEach(function(t) {
+                var amt = parseFloat(t.amount) || 0;
+                if (t.type === 'income') totalIncome += amt;
+                else totalExpense += amt;
+            });
+            context.totalIncome = totalIncome || parseFloat(localStorage.getItem('totalIncome') || '0');
+            context.totalExpense = totalExpense || parseFloat(localStorage.getItem('totalExpense') || '0');
+            context.transactionCount = transactions.length;
+        } catch(e) {}
+        
+        // GOALS
+        try {
+            var goals = JSON.parse(localStorage.getItem('goals') || '[]');
+            context.totalGoals = goals.length;
+            context.completedGoals = goals.filter(function(g) { return g.completed || g.status === 'completed' || g.progress >= 100; }).length;
+            context.activeGoals = goals.length - context.completedGoals;
+            context.goalNames = goals.map(function(g) { return g.name || g.title || 'Unnamed'; });
+        } catch(e) {}
+        
+        // HABITS
+        try {
+            var habits = JSON.parse(localStorage.getItem('habits') || '[]');
+            context.totalHabits = habits.length;
+            context.activeHabits = habits.filter(function(h) { return h.active !== false; }).length;
+            context.habitNames = habits.map(function(h) { return h.name || h.title || 'Unnamed'; });
+        } catch(e) {}
+        
+        // SAVINGS
+        try {
+            var savings = JSON.parse(localStorage.getItem('savings') || localStorage.getItem('savingsData') || '[]');
+            if (Array.isArray(savings)) {
+                context.totalSavings = savings.reduce(function(sum, s) { return sum + (parseFloat(s.amount) || 0); }, 0);
+            }
+        } catch(e) {}
+        
+        // FITNESS / WORKOUTS
+        try {
+            var fitness = JSON.parse(localStorage.getItem('fitness') || localStorage.getItem('workouts') || '[]');
+            context.totalWorkouts = fitness.length;
+        } catch(e) {}
+        
+        // STUDY
+        try {
+            var study = JSON.parse(localStorage.getItem('study') || localStorage.getItem('studySessions') || '[]');
+            context.totalStudySessions = study.length;
+        } catch(e) {}
+        
+        // ACTIVITY LOGS
+        try {
+            var logs = JSON.parse(localStorage.getItem('real_activity_logs') || '[]');
+            context.totalActivities = logs.length;
+            context.totalLogins = logs.filter(function(l) { return l.type === 'login'; }).length;
+        } catch(e) {}
+        
+        return context;
+    };
+
+    // Create a human-readable summary of live data
+    window.getLiveDataSummary = function() {
+        var ctx = window.getLiveDataContext();
+        var summary = "CURRENT LIVE DATA FROM THE DASHBOARD:\n";
+        
+        if (ctx.academics && ctx.academics.length > 0) {
+            summary += "- Academics/Subjects: " + ctx.academics.join(", ") + "\n";
+        }
+        if (ctx.totalIncome) summary += "- Total Income: ₹" + ctx.totalIncome.toLocaleString('en-IN') + "\n";
+        if (ctx.totalExpense) summary += "- Total Expense: ₹" + ctx.totalExpense.toLocaleString('en-IN') + "\n";
+        if (ctx.transactionCount) summary += "- Transactions: " + ctx.transactionCount + "\n";
+        if (ctx.totalGoals) summary += "- Goals: " + ctx.totalGoals + " total, " + ctx.completedGoals + " completed, " + ctx.activeGoals + " active\n";
+        if (ctx.goalNames && ctx.goalNames.length > 0) summary += "- Goal Names: " + ctx.goalNames.join(", ") + "\n";
+        if (ctx.totalHabits) summary += "- Habits: " + ctx.totalHabits + " total, " + ctx.activeHabits + " active\n";
+        if (ctx.habitNames && ctx.habitNames.length > 0) summary += "- Habit Names: " + ctx.habitNames.join(", ") + "\n";
+        if (ctx.totalSavings) summary += "- Total Savings: ₹" + ctx.totalSavings.toLocaleString('en-IN') + "\n";
+        if (ctx.totalWorkouts) summary += "- Workouts: " + ctx.totalWorkouts + "\n";
+        if (ctx.totalStudySessions) summary += "- Study Sessions: " + ctx.totalStudySessions + "\n";
+        if (ctx.totalActivities) summary += "- Total Activities: " + ctx.totalActivities + ", Logins: " + ctx.totalLogins + "\n";
+        
+        return summary;
+    };
+
+    // INTERCEPT chatbot responses - override any existing chatbot function
+    // This works by monkey-patching common chatbot patterns
+    
+    var originalFetch = window.fetch;
+    window.fetch = function() {
+        var args = arguments;
+        var url = args[0];
+        
+        // If this is a chatbot API call, inject live context
+        if (typeof url === 'string' && (url.includes('chat') || url.includes('bot') || url.includes('ai') || url.includes('gemini') || url.includes('openai'))) {
+            try {
+                var options = args[1] || {};
+                if (options.body) {
+                    var body = JSON.parse(options.body);
+                    var liveContext = window.getLiveDataSummary();
+                    
+                    // Inject context into the message
+                    if (body.message) {
+                        body.message = liveContext + "\n\nUser Question: " + body.message;
+                    }
+                    if (body.prompt) {
+                        body.prompt = liveContext + "\n\nUser Question: " + body.prompt;
+                    }
+                    if (body.messages && Array.isArray(body.messages)) {
+                        body.messages.unshift({
+                            role: 'system',
+                            content: 'You are the Project Echo Digital Twin assistant. Always use this LIVE data to answer: ' + liveContext
+                        });
+                    }
+                    if (body.query) {
+                        body.query = liveContext + "\n\nUser Question: " + body.query;
+                    }
+                    
+                    options.body = JSON.stringify(body);
+                    args[1] = options;
+                }
+            } catch(e) { console.log('Chatbot context injection:', e); }
+        }
+        
+        return originalFetch.apply(this, args);
+    };
+    
+    // Also intercept XMLHttpRequest for older chatbot implementations
+    var origOpen = XMLHttpRequest.prototype.open;
+    var origSend = XMLHttpRequest.prototype.send;
+    var lastChatUrl = '';
+    
+    XMLHttpRequest.prototype.open = function() {
+        lastChatUrl = arguments[1] || '';
+        return origOpen.apply(this, arguments);
+    };
+    
+    XMLHttpRequest.prototype.send = function(data) {
+        if (lastChatUrl && (lastChatUrl.includes('chat') || lastChatUrl.includes('bot') || lastChatUrl.includes('ai'))) {
+            try {
+                var body = JSON.parse(data);
+                var liveContext = window.getLiveDataSummary();
+                if (body.message) body.message = liveContext + "\nUser Question: " + body.message;
+                if (body.prompt) body.prompt = liveContext + "\nUser Question: " + body.prompt;
+                if (body.query) body.query = liveContext + "\nUser Question: " + body.query;
+                data = JSON.stringify(body);
+            } catch(e) {}
+        }
+        return origSend.call(this, data);
+    };
+
+    console.log('✅ Chatbot is now connected to LIVE data!');
+    console.log('Current data:', window.getLiveDataContext());
+})();
+</script>
+
+
+<!-- CHATBOT-LIVE-SENDER -->
+<script>
+(function() {
+    // Gather ALL localStorage data into a readable context string
+    window.buildLiveContext = function() {
+        var lines = [];
+        
+        // Academics
+        try {
+            var academics = JSON.parse(localStorage.getItem('academics') || localStorage.getItem('subjects') || '[]');
+            if (Array.isArray(academics) && academics.length > 0) {
+                var subjectNames = academics.map(function(a) { return a.name || a.subject || a.title || (typeof a === 'string' ? a : JSON.stringify(a)); });
+                lines.push("- Academics: There are currently " + academics.length + " subjects: " + subjectNames.join(" and ") + ".");
+            }
+        } catch(e) {}
+        
+        // Income & Expenses
+        try {
+            var transactions = JSON.parse(localStorage.getItem('transactions') || '[]');
+            var totalIncome = 0, totalExpense = 0;
+            var categories = {};
+            transactions.forEach(function(t) {
+                var amt = parseFloat(t.amount) || 0;
+                if (t.type === 'income') totalIncome += amt;
+                else { totalExpense += amt; var cat = t.category || 'Other'; categories[cat] = (categories[cat] || 0) + amt; }
+            });
+            if (totalIncome > 0) lines.push("- Total Income: Rs." + totalIncome.toLocaleString('en-IN'));
+            if (totalExpense > 0) lines.push("- Total Expenses: Rs." + totalExpense.toLocaleString('en-IN'));
+            if (Object.keys(categories).length > 0) {
+                var catStr = Object.entries(categories).map(function(e) { return e[0] + ": Rs." + e[1].toLocaleString('en-IN'); }).join(", ");
+                lines.push("- Expense Breakdown: " + catStr);
+            }
+            var savings = totalIncome - totalExpense;
+            if (totalIncome > 0) lines.push("- Net Savings: Rs." + savings.toLocaleString('en-IN') + " (" + Math.round((savings/totalIncome)*100) + "% savings rate)");
+        } catch(e) {}
+        
+        // Goals
+        try {
+            var goals = JSON.parse(localStorage.getItem('goals') || '[]');
+            if (goals.length > 0) {
+                var completed = goals.filter(function(g) { return g.completed || g.status === 'completed' || g.progress >= 100; });
+                var goalNames = goals.map(function(g) { return (g.name || g.title || 'Unnamed') + " (" + (g.progress || 0) + "%)"; });
+                lines.push("- Goals: " + goals.length + " total, " + completed.length + " completed. Goals: " + goalNames.join(", "));
+            }
+        } catch(e) {}
+        
+        // Habits
+        try {
+            var habits = JSON.parse(localStorage.getItem('habits') || '[]');
+            if (habits.length > 0) {
+                var habitNames = habits.map(function(h) { return h.name || h.title || 'Unnamed'; });
+                var active = habits.filter(function(h) { return h.active !== false; });
+                lines.push("- Habits: " + habits.length + " total, " + active.length + " active. Habits: " + habitNames.join(", "));
+            }
+        } catch(e) {}
+        
+        // Savings
+        try {
+            var savingsData = JSON.parse(localStorage.getItem('savings') || localStorage.getItem('savingsData') || '[]');
+            if (Array.isArray(savingsData) && savingsData.length > 0) {
+                var totalSav = savingsData.reduce(function(s, item) { return s + (parseFloat(item.amount) || 0); }, 0);
+                lines.push("- Savings Goals: " + savingsData.length + " goals, Total saved: Rs." + totalSav.toLocaleString('en-IN'));
+            }
+        } catch(e) {}
+        
+        // Fitness
+        try {
+            var workouts = JSON.parse(localStorage.getItem('fitness') || localStorage.getItem('workouts') || '[]');
+            if (workouts.length > 0) {
+                lines.push("- Fitness: " + workouts.length + " workouts logged");
+            }
+        } catch(e) {}
+        
+        // Study
+        try {
+            var study = JSON.parse(localStorage.getItem('study') || localStorage.getItem('studySessions') || '[]');
+            if (study.length > 0) {
+                var totalMins = study.reduce(function(s, item) { return s + (parseFloat(item.duration || item.minutes) || 0); }, 0);
+                lines.push("- Study: " + study.length + " sessions, " + Math.round(totalMins/60*10)/10 + " hours total");
+            }
+        } catch(e) {}
+        
+        // Activity
+        try {
+            var logs = JSON.parse(localStorage.getItem('real_activity_logs') || '[]');
+            if (logs.length > 0) {
+                var logins = logs.filter(function(l) { return l.type === 'login'; });
+                lines.push("- Activity: " + logs.length + " total activities, " + logins.length + " logins");
+            }
+        } catch(e) {}
+        
+        // Scan ALL localStorage for anything we might have missed
+        try {
+            for (var i = 0; i < localStorage.length; i++) {
+                var key = localStorage.key(i);
+                if (['academics','subjects','transactions','goals','habits','savings','savingsData','fitness','workouts','study','studySessions','real_activity_logs'].indexOf(key) === -1) {
+                    var val = localStorage.getItem(key);
+                    if (val && val.length < 200 && !key.startsWith('_')) {
+                        try { val = JSON.stringify(JSON.parse(val)); } catch(e2) {}
+                        lines.push("- " + key + ": " + val);
+                    }
+                }
+            }
+        } catch(e) {}
+        
+        return lines.length > 0 ? lines.join("\n") : "No data found in localStorage yet.";
+    };
+    
+    // INTERCEPT fetch calls to /api/chat and inject liveContext
+    var originalFetch = window.fetch;
+    window.fetch = function(url, options) {
+        if (typeof url === 'string' && url.includes('/api/chat') && options && options.body) {
+            try {
+                var body = JSON.parse(options.body);
+                body.liveContext = window.buildLiveContext();
+                options.body = JSON.stringify(body);
+                console.log('✅ Live context injected into chatbot request!');
+                console.log(body.liveContext);
+            } catch(e) { console.log('Context injection error:', e); }
+        }
+        return originalFetch.call(this, url, options);
+    };
+    
+    console.log('✅ Chatbot live data sender ready!');
+})();
+</script>
+
 </body>
 </html>
