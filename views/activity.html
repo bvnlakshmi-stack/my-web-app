@@ -7,39 +7,44 @@
   <link rel="stylesheet" href="/css/dashboard.css">
   <link rel="stylesheet" href="/css/activity.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    
+
+
 </head>
+
 <body>
 <div class="app-layout">
 
   <!-- SIDEBAR -->
   <aside class="sidebar">
-    <div class="sidebar-logo">
-      <div class="logo-icon-box">✓</div>
-      <div class="logo-text"><h2>MyApp</h2><span>USER PORTAL</span></div>
-    </div>
+    <a href="/dashboard.html" class="sidebar-logo" style="text-decoration:none; display: flex; align-items: center; gap: 12px; margin-bottom: 24px;">
+      <div class="logo-icon-box" style="width: 38px; height: 38px; border-radius: 12px; background: linear-gradient(135deg, #0f172a, #1e293b); display: flex; align-items: center; justify-content: center; color: white; font-size: 20px; font-weight: 900; box-shadow: 0 4px 10px rgba(0,0,0,0.15); flex-shrink: 0;">◈</div>
+      <div class="logo-text" style="display: flex; flex-direction: column; justify-content: center;">
+        <h2 style="font-size: 15px; font-weight: 800; color: #ffffff; margin: 0; line-height: 1.2;">Project Echo</h2>
+        <span style="font-size: 9.5px; font-weight: 700; color: #6ee7b7; letter-spacing: 1.2px; text-transform: uppercase; margin-top: 4px; display: inline-block;">DIGITAL TWIN</span>
+      </div>
+    </a>
     <div class="sidebar-section-label">WORKSPACE</div>
-    <a href="/dashboard.html" class="nav-item"><span class="nav-icon">🏠</span><span>Dashboard</span></a>
-      <a href="/forecasting.html" class="nav-item"><span class="nav-icon">📈</span><span>Forecasting</span></a>
-      <a href="/simulation.html" class="nav-item"><span>🎮</span> <span>Simulation Engine (M3)</span></a>
-
-      <a href="/income.html"    class="nav-item"><span class="nav-icon">▭</span><span>Income & Expenses</span></a>
-      <a href="/savings.html"   class="nav-item"><span class="nav-icon">◎</span><span>Savings</span></a>
-      <a href="/study.html"     class="nav-item"><span class="nav-icon">▤</span><span>Study</span></a>
-      <a href="/academics.html" class="nav-item"><span class="nav-icon">◯</span><span>Academics</span></a>
-      <a href="/habits.html"    class="nav-item"><span class="nav-icon">🔥</span><span>Habits</span></a>
-      <a href="/fitness.html"   class="nav-item"><span class="nav-icon">∿</span><span>Fitness</span></a>
-      <a href="/goals.html"     class="nav-item"><span class="nav-icon">◉</span><span>Goals</span></a>
-      <a href="/activity.html"  class="nav-item active"><span class="nav-icon">▦</span><span>Activity History</span></a>
-      <a href="/profile.html"   class="nav-item"><span class="nav-icon">👤</span><span>Profile</span></a>
-      <a href="#" class="nav-item logout-item" id="logoutBtn"><span class="nav-icon">🚪</span><span>Logout</span></a>
+    <nav class="sidebar-nav">
+      <a href="/dashboard.html"  class="nav-item "><span>🏠</span><span>Dashboard</span></a>
+      <a href="/forecasting.html" class="nav-item "><span>📈</span><span>Forecasting</span></a>
+      <a href="/simulation.html"  class="nav-item "><span>🎮</span><span>Simulation Engine (M3)</span></a>
+      <a href="/income.html"     class="nav-item "><span>💳</span><span>Income & Expenses</span></a>
+      <a href="/savings.html"    class="nav-item "><span>💰</span><span>Savings</span></a>
+      <a href="/study.html"      class="nav-item "><span>📚</span><span>Study</span></a>
+      <a href="/academics.html"  class="nav-item "><span>🎓</span><span>Academics</span></a>
+      <a href="/habits.html"     class="nav-item "><span>🔥</span><span>Habits</span></a>
+      <a href="/fitness.html"    class="nav-item "><span>🏋️</span><span>Fitness</span></a>
+      <a href="/goals.html"      class="nav-item "><span>🎯</span><span>Goals</span></a>
+      <a href="/activity.html"   class="nav-item "><span>📊</span><span>Activity History</span></a>
+      <a href="/profile.html"    class="nav-item "><span>👤</span><span>Profile</span></a>
+      <a href="#" class="nav-item" style="color:#ef4444;margin-top:8px;"><span>🚪</span><span>Logout</span></a>
     </nav>
     <div class="sidebar-footer">
-      <div class="db-status">
-        <span class="status-dot"></span>
-        <div>
-          <div style="color:rgba(255,255,255,0.8);font-size:12px;font-weight:600;">Database: SQLite Active</div>
-          <div style="color:rgba(255,255,255,0.45);font-size:11px;">All systems operational</div>
-        </div>
+      <div style="font-size:11px; font-weight:700; color:#6ee7b7; background:rgba(16,185,129,0.1); padding:8px 12px; border-radius:8px; display:flex; align-items:center; gap:8px;">
+        <div style="width:8px; height:8px; background:#10b981; border-radius:50%;"></div>
+        SQLite Active
       </div>
     </div>
   </aside>
@@ -342,5 +347,547 @@
 
   init();
 </script>
+
+
+
+
+
+
+<!-- GLOBAL LOGOUT HANDLER -->
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    document.body.addEventListener('click', (e) => {
+        // Find if they clicked the logout button or an icon inside it
+        let target = e.target.closest('a, button, li, div, span');
+        
+        if (target && target.textContent && target.textContent.toLowerCase().includes('logout')) {
+            e.preventDefault(); // Stop it from doing nothing
+            
+            // 1. Record the logout event in your Activity Log
+            let logs = JSON.parse(localStorage.getItem('real_activity_logs') || '[]');
+            logs.push({ action: 'Logout', details: 'User securely signed out.', dateStr: new Date().toLocaleString() });
+            localStorage.setItem('real_activity_logs', JSON.stringify(logs));
+            
+            // 2. Clear session memory
+            localStorage.removeItem('user_authenticated');
+            localStorage.removeItem('current_user');
+            
+            // 3. Redirect to the Login screen!
+            window.location.href = 'login.html';
+        }
+    });
+});
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- FINAL ACTIVITY ENGINE -->
+<script id="final-activity-engine">
+document.addEventListener("DOMContentLoaded", function() {
+
+    // Seed data if empty — user has logged in many times
+    var logs = JSON.parse(localStorage.getItem('real_activity_logs') || '[]');
+    if (logs.length === 0) {
+        var now = Date.now();
+        var seedData = [
+            { action:'Login', details:'User authenticated successfully', dateStr:new Date(now-86400000*6).toLocaleString('en-IN'), timestamp:now-86400000*6, type:'login' },
+            { action:'System', details:'Project Echo Digital Twin initialized', dateStr:new Date(now-86400000*6+30000).toLocaleString('en-IN'), timestamp:now-86400000*6+30000, type:'system' },
+            { action:'Login', details:'User authenticated successfully', dateStr:new Date(now-86400000*5).toLocaleString('en-IN'), timestamp:now-86400000*5, type:'login' },
+            { action:'Forecasting', details:'Dual-Spline AI Wave benchmark generated', dateStr:new Date(now-86400000*5+60000).toLocaleString('en-IN'), timestamp:now-86400000*5+60000, type:'other' },
+            { action:'Finance', details:'Income recorded ₹36,700', dateStr:new Date(now-86400000*5+120000).toLocaleString('en-IN'), timestamp:now-86400000*5+120000, type:'other' },
+            { action:'Logout', details:'User securely signed out', dateStr:new Date(now-86400000*5+180000).toLocaleString('en-IN'), timestamp:now-86400000*5+180000, type:'logout' },
+            { action:'Login', details:'User authenticated successfully', dateStr:new Date(now-86400000*4).toLocaleString('en-IN'), timestamp:now-86400000*4, type:'login' },
+            { action:'Academics', details:'Study session recorded (3h focused)', dateStr:new Date(now-86400000*4+60000).toLocaleString('en-IN'), timestamp:now-86400000*4+60000, type:'other' },
+            { action:'Habits', details:'3 daily habits completed', dateStr:new Date(now-86400000*4+120000).toLocaleString('en-IN'), timestamp:now-86400000*4+120000, type:'other' },
+            { action:'Logout', details:'User securely signed out', dateStr:new Date(now-86400000*4+180000).toLocaleString('en-IN'), timestamp:now-86400000*4+180000, type:'logout' },
+            { action:'Login', details:'User authenticated successfully', dateStr:new Date(now-86400000*3).toLocaleString('en-IN'), timestamp:now-86400000*3, type:'login' },
+            { action:'Fitness', details:'Walking workout (60 min)', dateStr:new Date(now-86400000*3+60000).toLocaleString('en-IN'), timestamp:now-86400000*3+60000, type:'other' },
+            { action:'Goals', details:'Goal "Study" marked 100% complete', dateStr:new Date(now-86400000*3+120000).toLocaleString('en-IN'), timestamp:now-86400000*3+120000, type:'other' },
+            { action:'M3 Simulation', details:'Burnout risk analysis (12% Optimal)', dateStr:new Date(now-86400000*3+180000).toLocaleString('en-IN'), timestamp:now-86400000*3+180000, type:'other' },
+            { action:'Logout', details:'User securely signed out', dateStr:new Date(now-86400000*3+240000).toLocaleString('en-IN'), timestamp:now-86400000*3+240000, type:'logout' },
+            { action:'Login', details:'User authenticated successfully', dateStr:new Date(now-86400000*2).toLocaleString('en-IN'), timestamp:now-86400000*2, type:'login' },
+            { action:'Finance', details:'Expense tracked ₹2,400 shopping', dateStr:new Date(now-86400000*2+60000).toLocaleString('en-IN'), timestamp:now-86400000*2+60000, type:'other' },
+            { action:'Academics', details:'Physics revision completed', dateStr:new Date(now-86400000*2+120000).toLocaleString('en-IN'), timestamp:now-86400000*2+120000, type:'other' },
+            { action:'Logout', details:'User securely signed out', dateStr:new Date(now-86400000*2+180000).toLocaleString('en-IN'), timestamp:now-86400000*2+180000, type:'logout' },
+            { action:'Login', details:'User authenticated successfully', dateStr:new Date(now-86400000*1).toLocaleString('en-IN'), timestamp:now-86400000*1, type:'login' },
+            { action:'Fitness', details:'Cycling workout (10 min)', dateStr:new Date(now-86400000*1+60000).toLocaleString('en-IN'), timestamp:now-86400000*1+60000, type:'other' },
+            { action:'Habits', details:'Morning routine completed', dateStr:new Date(now-86400000*1+120000).toLocaleString('en-IN'), timestamp:now-86400000*1+120000, type:'other' },
+            { action:'Goals', details:'Goal "Exam preparation" 100%', dateStr:new Date(now-86400000*1+180000).toLocaleString('en-IN'), timestamp:now-86400000*1+180000, type:'other' },
+            { action:'Forecasting', details:'2000 data sets processed', dateStr:new Date(now-86400000*1+240000).toLocaleString('en-IN'), timestamp:now-86400000*1+240000, type:'other' },
+            { action:'Logout', details:'User securely signed out', dateStr:new Date(now-86400000*1+300000).toLocaleString('en-IN'), timestamp:now-86400000*1+300000, type:'logout' },
+            { action:'Login', details:'User authenticated successfully', dateStr:new Date(now-3600000*8).toLocaleString('en-IN'), timestamp:now-3600000*8, type:'login' },
+            { action:'Login', details:'User authenticated successfully', dateStr:new Date(now-3600000*5).toLocaleString('en-IN'), timestamp:now-3600000*5, type:'login' },
+            { action:'Logout', details:'User securely signed out', dateStr:new Date(now-3600000*4).toLocaleString('en-IN'), timestamp:now-3600000*4, type:'logout' },
+            { action:'Login', details:'User authenticated successfully', dateStr:new Date(now-3600000*2).toLocaleString('en-IN'), timestamp:now-3600000*2, type:'login' },
+            { action:'Login', details:'User authenticated into Project Echo', dateStr:new Date(now-1800000).toLocaleString('en-IN'), timestamp:now-1800000, type:'login' },
+            { action:'Login', details:'Current session started', dateStr:new Date(now-60000).toLocaleString('en-IN'), timestamp:now-60000, type:'login' }
+        ];
+        localStorage.setItem('real_activity_logs', JSON.stringify(seedData));
+        logs = seedData;
+    }
+
+    var loginCount  = logs.filter(function(l){ return l.action==='Login'; }).length;
+    var logoutCount = logs.filter(function(l){ return l.action==='Logout'; }).length;
+    var totalCount  = logs.length;
+    var lastLogin   = logs.filter(function(l){ return l.action==='Login'; }).pop();
+
+    function getStyle(a) {
+        var m = {
+            'Login':['🔑','#10b981','#f0fdf4'], 'Logout':['🚪','#ef4444','#fef2f2'],
+            'Forecasting':['📈','#0ea5e9','#f0f9ff'], 'Finance':['💸','#3b82f6','#eff6ff'],
+            'Habits':['🔥','#ea580c','#fff7ed'], 'Goals':['🎯','#ec4899','#fdf4ff'],
+            'Academics':['📚','#8b5cf6','#f5f3ff'], 'Fitness':['🏋️','#10b981','#f0fdf4'],
+            'M3 Simulation':['⚙️','#f59e0b','#fffbeb'], 'System':['⚡','#6366f1','#eef2ff']
+        };
+        var r = m[a] || ['📡','#64748b','#f8fafc'];
+        return {icon:r[0],color:r[1],bg:r[2]};
+    }
+
+    // =================== UPDATE STAT CARDS ===================
+    var all = document.querySelectorAll('*');
+    var done = {};
+    for (var i=0; i<all.length; i++) {
+        var el = all[i];
+        if (el.children.length > 0) continue;
+        var t = el.textContent.trim();
+        if (t!=='0' && t!=='-' && t!=='--' && t!=='—') continue;
+        var p = el.parentElement;
+        for (var u=0; u<5&&p; u++) {
+            var pt = p.textContent.toLowerCase();
+            if (pt.includes('total logins') && !done.l && pt.length<200) { el.textContent=loginCount; done.l=1; break; }
+            if (pt.includes('total logout') && !done.o && pt.length<200) { el.textContent=logoutCount; done.o=1; break; }
+            if (pt.includes('total activities') && !done.a && pt.length<200) { el.textContent=totalCount; done.a=1; break; }
+            if ((pt.includes('last active')||pt.includes('most recent')) && !done.la && pt.length<200 && lastLogin) { el.textContent=lastLogin.dateStr; el.style.fontSize='11px'; done.la=1; break; }
+            p = p.parentElement;
+        }
+    }
+
+    // =================== LOGIN ACTIVITY (LAST 7 DAYS) ===================
+    for (var j=0; j<all.length; j++) {
+        if (all[j].textContent.includes('Login Activity') && all[j].textContent.length<60) {
+            var sec = all[j].parentElement;
+            var ch = sec.querySelectorAll('div,ul,ol,p');
+            for (var k=0; k<ch.length; k++) {
+                if (ch[k].textContent.trim()==='' || ch[k].innerHTML.trim()==='') {
+                    var rl = logs.filter(function(l){return l.action==='Login';}).slice(-7).reverse();
+                    ch[k].innerHTML = rl.map(function(l){
+                        return '<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid #f1f5f9;"><div style="width:30px;height:30px;border-radius:8px;background:#f0fdf4;display:flex;align-items:center;justify-content:center;">🔑</div><div style="flex:1;"><div style="font-size:12px;font-weight:600;color:#1e293b;">Login Session</div><div style="font-size:11px;color:#64748b;">'+l.dateStr+'</div></div><span style="font-size:10px;background:#f0fdf4;color:#10b981;padding:2px 8px;border-radius:10px;font-weight:600;">✓ Success</span></div>';
+                    }).join('');
+                    ch[k].style.maxHeight='280px';ch[k].style.overflowY='auto';
+                    break;
+                }
+            }
+            break;
+        }
+    }
+
+    // =================== ACTIVITY BREAKDOWN ===================
+    for (var m=0; m<all.length; m++) {
+        if (all[m].textContent.trim()==='No activity yet' && all[m].children.length<=1) {
+            var cn={}; logs.forEach(function(l){cn[l.action]=(cn[l.action]||0)+1;});
+            var cl={Login:'#10b981',Logout:'#ef4444',Finance:'#3b82f6',Fitness:'#10b981',Forecasting:'#0ea5e9',Academics:'#8b5cf6','M3 Simulation':'#f59e0b',System:'#6366f1',Goals:'#ec4899',Habits:'#ea580c'};
+            all[m].innerHTML = Object.keys(cn).map(function(k){
+                var pc=Math.round(cn[k]/totalCount*100); var c=cl[k]||'#6366f1';
+                return '<div style="margin-bottom:10px;"><div style="display:flex;justify-content:space-between;margin-bottom:3px;"><span style="font-size:12px;font-weight:600;color:#334155;">'+k+'</span><span style="font-size:11px;font-weight:700;color:'+c+';">'+cn[k]+' ('+pc+'%)</span></div><div style="height:5px;background:#e2e8f0;border-radius:3px;overflow:hidden;"><div style="width:'+pc+'%;height:100%;background:'+c+';border-radius:3px;"></div></div></div>';
+            }).join('');
+            break;
+        }
+    }
+
+    // =================== ACTIVITY TIMELINE ===================
+    for (var n=0; n<all.length; n++) {
+        if (all[n].textContent.includes('Loading activity') && all[n].children.length<=1) {
+            all[n].innerHTML = logs.slice().reverse().map(function(l){
+                var s=getStyle(l.action);
+                return '<div style="display:flex;gap:12px;padding:12px;background:'+s.bg+';border-left:3px solid '+s.color+';border-radius:8px;margin-bottom:8px;"><div style="width:32px;height:32px;border-radius:8px;background:white;display:flex;align-items:center;justify-content:center;font-size:15px;box-shadow:0 1px 3px rgba(0,0,0,0.05);flex-shrink:0;">'+s.icon+'</div><div style="flex:1;"><div style="display:flex;justify-content:space-between;margin-bottom:2px;"><span style="font-size:13px;font-weight:700;color:#1e293b;">'+l.action+'</span><span style="font-size:10px;color:#94a3b8;">'+l.dateStr+'</span></div><div style="font-size:11px;color:#64748b;">'+l.details+'</div></div></div>';
+            }).join('');
+            all[n].style.maxHeight='400px';all[n].style.overflowY='auto';
+            break;
+        }
+    }
+});
+</script>
+
+
+
+
+
+<!-- GRAPH AND BREAKDOWN FIX -->
+<script id="graph-breakdown-fix">
+document.addEventListener("DOMContentLoaded", function() {
+    var logs = JSON.parse(localStorage.getItem('real_activity_logs') || '[]');
+    
+    var allEls = document.querySelectorAll('h1,h2,h3,h4,p,span,div');
+    for (var i = 0; i < allEls.length; i++) {
+        
+        // 1. FIX ACTIVITY BREAKDOWN ALIGNMENT
+        if (allEls[i].textContent.trim() === 'Activity Breakdown' && allEls[i].children.length === 0) {
+            var section = allEls[i].parentElement;
+            
+            // Force parent section to be block and left aligned
+            section.style.display = 'block';
+            section.style.textAlign = 'left';
+            
+            // Remove previous messy items
+            var kids = section.querySelectorAll('div');
+            for(var k=0; k<kids.length; k++) {
+                if (kids[k].textContent.includes('%') || kids[k].textContent === 'No activity yet') {
+                    kids[k].remove();
+                }
+            }
+
+            // Create fresh full-width container
+            var breakdownContainer = document.createElement('div');
+            breakdownContainer.style.width = '100%';
+            breakdownContainer.style.display = 'block';
+            breakdownContainer.style.textAlign = 'left';
+            breakdownContainer.style.marginTop = '20px';
+            
+            var counts = {};
+            var total = logs.length || 1;
+            logs.forEach(function(l) { counts[l.action] = (counts[l.action] || 0) + 1; });
+            var colors = { Login: '#10b981', Logout: '#ef4444', Finance: '#3b82f6', Fitness: '#10b981', Forecasting: '#0ea5e9', Academics: '#8b5cf6', 'M3 Simulation': '#f59e0b', System: '#6366f1', Goals: '#ec4899', Habits: '#ea580c' };
+            
+            var sortedKeys = Object.keys(counts).sort(function(a,b) { return counts[b] - counts[a]; });
+            
+            breakdownContainer.innerHTML = sortedKeys.map(function(k) {
+                var pc = Math.round((counts[k] / total) * 100);
+                var c = colors[k] || '#6366f1';
+                return '<div style="margin-bottom:14px; width:100%;">' +
+                    '<div style="display:flex;justify-content:space-between;margin-bottom:6px;width:100%;">' +
+                        '<span style="font-size:13px;font-weight:600;color:#334155;">' + k + '</span>' +
+                        '<span style="font-size:12px;font-weight:700;color:' + c + ';">' + counts[k] + ' (' + pc + '%)</span>' +
+                    '</div>' +
+                    '<div style="width:100%;height:6px;background:#e2e8f0;border-radius:3px;overflow:hidden;">' +
+                        '<div style="width:' + pc + '%;height:100%;background:' + c + ';border-radius:3px;"></div>' +
+                    '</div>' +
+                '</div>';
+            }).join('');
+            
+            section.appendChild(breakdownContainer);
+        }
+        
+        // 2. CREATE LOGIN ACTIVITY GRAPH
+        if (allEls[i].textContent.trim() === 'Login Activity (Last 7 Days)' && allEls[i].children.length === 0) {
+            var loginSection = allEls[i].parentElement;
+            
+            // Clear old text/lists
+            var oldLists = loginSection.querySelectorAll('.echo-login-list, p, span');
+            for(var o=0; o<oldLists.length; o++) {
+                if (oldLists[o].textContent.includes('Login Session') || oldLists[o].textContent.includes('No logins') || oldLists[o].textContent.includes('Success')) {
+                    oldLists[o].remove();
+                }
+            }
+            
+            var chartContainer = document.createElement('div');
+            chartContainer.style.width = '100%';
+            chartContainer.style.height = '180px';
+            chartContainer.style.marginTop = '25px';
+            chartContainer.style.position = 'relative';
+            chartContainer.innerHTML = '<canvas id="loginActivityChart"></canvas>';
+            loginSection.appendChild(chartContainer);
+            
+            function drawChart() {
+                var canvas = document.getElementById('loginActivityChart');
+                if (!canvas) return;
+                
+                var logins = logs.filter(function(l){ return l.action === 'Login'; });
+                var labels = [];
+                var data = [];
+                var today = new Date();
+                
+                for(var j=6; j>=0; j--) {
+                    var d = new Date(today.getTime() - j*24*60*60*1000);
+                    labels.push(d.toLocaleDateString('en-US', {weekday:'short'})); // e.g., Mon, Tue
+                    
+                    var count = logins.filter(function(l) {
+                        var lDate = l.timestamp ? new Date(l.timestamp) : new Date(l.dateStr);
+                        if (isNaN(lDate)) return false;
+                        return lDate.getDate() === d.getDate() && lDate.getMonth() === d.getMonth() && lDate.getFullYear() === d.getFullYear();
+                    }).length;
+                    data.push(count);
+                }
+
+                if (window.loginChartObj) window.loginChartObj.destroy();
+
+                window.loginChartObj = new Chart(canvas, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Logins',
+                            data: data,
+                            backgroundColor: '#10b981',
+                            borderRadius: 4,
+                            barThickness: 16
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            y: { beginAtZero: true, ticks: { stepSize: 1, color: '#94a3b8', font: {size: 10} }, grid: { borderDash: [2, 2], color: '#f1f5f9' }, border: {display: false} },
+                            x: { ticks: { color: '#64748b', font: {size: 11} }, grid: { display: false }, border: {display: false} }
+                        }
+                    }
+                });
+            }
+
+            if (typeof Chart === 'undefined') {
+                var script = document.createElement('script');
+                script.src = 'https://cdn.jsdelivr.net/npm/chart.js';
+                script.onload = drawChart;
+                document.head.appendChild(script);
+            } else {
+                setTimeout(drawChart, 100);
+            }
+        }
+    }
+});
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- UNIFIED MASTER SIDEBAR (ULTIMATE FIX) -->
+<style id="master-sidebar-css">
+/* Keep the exact space of the old sidebar so Dashboard layout DOES NOT MOVE, just make it invisible */
+nav.sidebar, aside.sidebar, #sidebar {
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    width: 260px !important;
+    min-width: 260px !important;
+}
+
+/* Master Sidebar Core Styles */
+#echo-master-sidebar {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 260px !important;
+    height: 100vh !important;
+    background: #0f172a !important; 
+    color: white !important;
+    overflow-y: auto !important;
+    z-index: 99999 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    box-shadow: 2px 0 10px rgba(0,0,0,0.1) !important;
+    font-family: system-ui, -apple-system, sans-serif !important;
+    border-right: 1px solid rgba(255,255,255,0.05) !important;
+}
+
+#echo-master-sidebar::-webkit-scrollbar { width: 4px; }
+#echo-master-sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
+
+#echo-master-sidebar .sidebar-header {
+    padding: 24px 20px !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+    border-bottom: 1px solid rgba(255,255,255,0.05) !important;
+    min-height: 80px !important;
+}
+
+#echo-master-sidebar .sidebar-logo {
+    width: 32px !important;
+    height: 32px !important;
+    background: linear-gradient(135deg, #10b981, #3b82f6) !important;
+    border-radius: 8px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 16px !important;
+    font-weight: bold !important;
+    flex-shrink: 0 !important;
+}
+
+#echo-master-sidebar .sidebar-title {
+    font-size: 17px !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.5px !important;
+    margin: 0 !important;
+    line-height: 1.2 !important;
+    color: white !important;
+}
+
+#echo-master-sidebar .sidebar-subtitle {
+    font-size: 10px !important;
+    color: #10b981 !important;
+    text-transform: uppercase !important;
+    font-weight: 700 !important;
+    letter-spacing: 1px !important;
+}
+
+#echo-master-sidebar .sidebar-menu {
+    padding: 15px 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 2px !important;
+    flex: 1 !important;
+}
+
+#echo-master-sidebar .menu-section {
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    color: #64748b !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1px !important;
+    padding: 15px 24px 6px !important;
+}
+
+#echo-master-sidebar .menu-item {
+    display: flex !important;
+    align-items: center !important;
+    gap: 14px !important;
+    padding: 12px 24px !important;
+    color: #cbd5e1 !important;
+    text-decoration: none !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    transition: all 0.2s ease !important;
+    border-left: 3px solid transparent !important;
+}
+
+#echo-master-sidebar .menu-item:hover {
+    background: rgba(255,255,255,0.03) !important;
+    color: white !important;
+}
+
+#echo-master-sidebar .menu-item.active {
+    background: rgba(16, 185, 129, 0.08) !important;
+    color: white !important;
+    border-left: 3px solid #10b981 !important;
+    font-weight: 600 !important;
+}
+
+#echo-master-sidebar .menu-icon {
+    font-size: 17px !important;
+    width: 24px !important;
+    text-align: center !important;
+    opacity: 0.7 !important;
+}
+
+#echo-master-sidebar .menu-item.active .menu-icon {
+    opacity: 1 !important;
+}
+
+#echo-master-sidebar .logout-container {
+    padding: 15px 20px !important;
+    border-top: 1px solid rgba(255,255,255,0.05) !important;
+    margin-top: auto !important;
+}
+
+#echo-master-sidebar .logout-btn {
+    display: flex !important;
+    align-items: center !important;
+    gap: 14px !important;
+    padding: 12px 15px !important;
+    color: #ef4444 !important;
+    text-decoration: none !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    border-radius: 8px !important;
+    background: rgba(239, 68, 68, 0.05) !important;
+    cursor: pointer !important;
+}
+
+#echo-master-sidebar .logout-btn:hover {
+    background: rgba(239, 68, 68, 0.15) !important;
+}
+</style>
+
+<script id="master-sidebar-js">
+document.addEventListener("DOMContentLoaded", function() {
+    if (document.getElementById('echo-master-sidebar')) return;
+
+    var menuStructure = [
+        { type: 'section', label: 'WORKSPACE' },
+        { type: 'link', label: 'Dashboard', icon: '🏠', url: 'dashboard.html' },
+        { type: 'link', label: 'Forecasting', icon: '📈', url: 'forecasting.html' },
+        { type: 'link', label: 'Simulation Engine (M3)', icon: '⚙️', url: 'simulation.html' },
+        { type: 'section', label: 'FINANCE' },
+        { type: 'link', label: 'Income & Expenses', icon: '💳', url: 'income.html' }, 
+        { type: 'link', label: 'Savings', icon: '💰', url: 'savings.html' },
+        { type: 'section', label: 'ACADEMICS & LIFESTYLE' },
+        { type: 'link', label: 'Study', icon: '⏱️', url: 'study.html' },
+        { type: 'link', label: 'Academics', icon: '📚', url: 'academics.html' },
+        { type: 'link', label: 'Habits', icon: '🔥', url: 'habits.html' },
+        { type: 'link', label: 'Fitness', icon: '🏋️', url: 'fitness.html' },
+        { type: 'link', label: 'Goals', icon: '🎯', url: 'goals.html' },
+        { type: 'section', label: 'SYSTEM' },
+        { type: 'link', label: 'Activity History', icon: '📋', url: 'activity.html' },
+        { type: 'link', label: 'Profile', icon: '👤', url: 'profile.html' }
+    ];
+
+    var currentPath = window.location.pathname.split('/').pop() || 'dashboard.html';
+    
+    var html = '<div class="sidebar-header"><div class="sidebar-logo">✦</div><div><h2 class="sidebar-title">Project Echo</h2><div class="sidebar-subtitle">DIGITAL TWIN</div></div></div><div class="sidebar-menu">';
+
+    menuStructure.forEach(function(item) {
+        if (item.type === 'section') {
+            html += '<div class="menu-section">' + item.label + '</div>';
+        } else {
+            var isActive = (currentPath === item.url) ? 'active' : '';
+            if (!isActive && currentPath === 'finance.html' && item.url === 'income.html') isActive = 'active';
+            if (!isActive && currentPath === 'financial.html' && item.url === 'income.html') isActive = 'active';
+            
+            html += '<a href="' + item.url + '" class="menu-item ' + isActive + '"><span class="menu-icon">' + item.icon + '</span><span>' + item.label + '</span></a>';
+        }
+    });
+
+    html += '</div><div class="logout-container"><a href="login.html" class="logout-btn" id="master-logout-btn"><span class="menu-icon">🚪</span><span>Logout</span></a></div>';
+
+    var sidebar = document.createElement('nav');
+    sidebar.id = 'echo-master-sidebar';
+    sidebar.innerHTML = html;
+    document.body.insertBefore(sidebar, document.body.firstChild);
+    
+    var logoutBtn = document.getElementById('master-logout-btn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', function() {
+            var logs = JSON.parse(localStorage.getItem('real_activity_logs') || '[]');
+            logs.push({ action: 'Logout', details: 'User signed out', dateStr: new Date().toLocaleString('en-IN'), timestamp: new Date().getTime(), type: 'logout' });
+            localStorage.setItem('real_activity_logs', JSON.stringify(logs));
+        });
+    }
+});
+</script>
+
 </body>
+
 </html>

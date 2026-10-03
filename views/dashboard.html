@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard - MyApp</title>
+  <title>Dashboard - Project Echo</title>
   <link rel="stylesheet" href="/css/dashboard.css">
   <link rel="stylesheet" href="/css/home.css">
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -27,7 +27,12 @@
     .pulse-dot { width: 8px; height: 8px; border-radius: 50%; background: #10b981; box-shadow: 0 0 8px #10b981; animation: pulse 2s infinite; }
     @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
   </style>
+
+    
+
+
 </head>
+
 <body>
 <div class="app-layout">
 
@@ -35,7 +40,7 @@
   <aside class="sidebar">
     <a href="/dashboard.html" class="sidebar-logo" style="text-decoration:none;">
       <div class="logo-icon-box">✓</div>
-      <div class="logo-text"><h2>MyApp</h2><span>USER PORTAL</span></div>
+      <div class="logo-text"><h2>Project Echo</h2><span>DIGITAL TWIN</span></div>
     </a>
     <div class="sidebar-section-label">WORKSPACE</div>
     <nav class="sidebar-nav">
@@ -203,7 +208,7 @@
 
     <!-- Footer -->
     <div class="db-footer">
-      © 2026 MyApp. All rights reserved.
+      © 2026 Project Echo. All rights reserved.
     </div>
 
   </main>
@@ -377,5 +382,810 @@
 
   init();
 </script>
+
+
+
+
+<!-- GLOBAL LOGOUT HANDLER -->
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    document.body.addEventListener('click', (e) => {
+        // Find if they clicked the logout button or an icon inside it
+        let target = e.target.closest('a, button, li, div, span');
+        
+        if (target && target.textContent && target.textContent.toLowerCase().includes('logout')) {
+            e.preventDefault(); // Stop it from doing nothing
+            
+            // 1. Record the logout event in your Activity Log
+            let logs = JSON.parse(localStorage.getItem('real_activity_logs') || '[]');
+            logs.push({ action: 'Logout', details: 'User securely signed out.', dateStr: new Date().toLocaleString() });
+            localStorage.setItem('real_activity_logs', JSON.stringify(logs));
+            
+            // 2. Clear session memory
+            localStorage.removeItem('user_authenticated');
+            localStorage.removeItem('current_user');
+            
+            // 3. Redirect to the Login screen!
+            window.location.href = 'login.html';
+        }
+    });
+});
+</script>
+
+
+<!-- PROJECT ECHO AI CHATBOT WIDGET -->
+<style>
+#echo-chat-btn {
+    position: fixed; bottom: 30px; right: 30px; z-index: 9999;
+    width: 60px; height: 60px; border-radius: 50%; border: none;
+    background: linear-gradient(135deg, #10b981, #3b82f6);
+    color: white; font-size: 28px; cursor: pointer;
+    box-shadow: 0 4px 20px rgba(16,185,129,0.5);
+    display: flex; align-items: center; justify-content: center;
+    animation: echoGlow 2s ease-in-out infinite;
+    transition: transform 0.2s;
+}
+#echo-chat-btn:hover { transform: scale(1.1); }
+@keyframes echoGlow {
+    0%, 100% { box-shadow: 0 4px 20px rgba(16,185,129,0.5); }
+    50% { box-shadow: 0 4px 35px rgba(59,130,246,0.7); }
+}
+#echo-chat-panel {
+    position: fixed; bottom: 100px; right: 30px; z-index: 9998;
+    width: 370px; height: 520px;
+    background: linear-gradient(145deg, #0f172a, #1e293b);
+    border: 1px solid #334155; border-radius: 20px;
+    display: none; flex-direction: column;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    overflow: hidden; font-family: system-ui, -apple-system, sans-serif;
+}
+#echo-chat-header {
+    background: linear-gradient(135deg, #10b981, #3b82f6);
+    padding: 16px 20px; display: flex; justify-content: space-between; align-items: center;
+}
+#echo-chat-header h3 { color: white; margin: 0; font-size: 16px; font-weight: 700; }
+#echo-chat-header span { color: rgba(255,255,255,0.8); font-size: 12px; }
+#echo-chat-close { background: none; border: none; color: white; font-size: 22px; cursor: pointer; padding: 0; line-height: 1; }
+#echo-chat-messages {
+    flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px;
+    scrollbar-width: thin; scrollbar-color: #334155 transparent;
+}
+.echo-msg-bot, .echo-msg-user {
+    max-width: 85%; padding: 10px 14px; border-radius: 14px;
+    font-size: 13px; line-height: 1.5;
+}
+.echo-msg-bot {
+    background: rgba(255,255,255,0.06); color: #e2e8f0; border-bottom-left-radius: 4px; align-self: flex-start;
+    border: 1px solid rgba(255,255,255,0.08);
+}
+.echo-msg-user {
+    background: linear-gradient(135deg, #10b981, #3b82f6); color: white;
+    border-bottom-right-radius: 4px; align-self: flex-end;
+}
+.echo-typing {
+    background: rgba(255,255,255,0.06); color: #64748b; padding: 10px 14px;
+    border-radius: 14px; border-bottom-left-radius: 4px; align-self: flex-start;
+    font-size: 13px; font-style: italic;
+    border: 1px solid rgba(255,255,255,0.08);
+}
+#echo-chat-input-area {
+    padding: 12px 16px; border-top: 1px solid #334155; display: flex; gap: 10px; align-items: center;
+}
+#echo-chat-input {
+    flex: 1; background: rgba(255,255,255,0.06); border: 1px solid #334155;
+    border-radius: 10px; padding: 10px 14px; color: #e2e8f0; font-size: 13px;
+    outline: none; font-family: inherit;
+}
+#echo-chat-input::placeholder { color: #64748b; }
+#echo-chat-input:focus { border-color: #10b981; }
+#echo-chat-send {
+    background: linear-gradient(135deg, #10b981, #3b82f6);
+    border: none; border-radius: 10px; color: white;
+    width: 40px; height: 40px; cursor: pointer; font-size: 18px;
+    display: flex; align-items: center; justify-content: center;
+    transition: opacity 0.2s;
+}
+#echo-chat-send:hover { opacity: 0.85; }
+#echo-chat-clear {
+    font-size: 11px; color: #64748b; background: none; border: none;
+    cursor: pointer; padding: 0 4px; text-decoration: underline;
+}
+</style>
+
+<!-- Chat Toggle Button -->
+<button id="echo-chat-btn" title="Ask Echo AI">💬</button>
+
+<!-- Chat Panel -->
+<div id="echo-chat-panel">
+    <div id="echo-chat-header">
+        <div>
+            <h3>🤖 Echo AI Assistant</h3>
+            <span>Powered by Qwen2.5 · Always here to help</span>
+        </div>
+        <div style="display:flex; flex-direction:column; align-items:flex-end; gap:6px;">
+            <button id="echo-chat-close">×</button>
+            <button id="echo-chat-clear">Clear</button>
+        </div>
+    </div>
+    <div id="echo-chat-messages">
+        <div class="echo-msg-bot">👋 Hi! I'm <strong>Echo AI</strong>, your Project Echo assistant!<br><br>
+        I know everything about your Digital Twin app — Forecasting, M3 Simulation, Finance, Fitness, Academics, and more.<br><br>
+        Ask me anything! 😊</div>
+    </div>
+    <div id="echo-chat-input-area">
+        <input id="echo-chat-input" type="text" placeholder="Ask about Project Echo..." maxlength="500"/>
+        <button id="echo-chat-send">➤</button>
+    </div>
+</div>
+
+<script>
+(function() {
+    const btn = document.getElementById('echo-chat-btn');
+    const panel = document.getElementById('echo-chat-panel');
+    const closeBtn = document.getElementById('echo-chat-close');
+    const clearBtn = document.getElementById('echo-chat-clear');
+    const input = document.getElementById('echo-chat-input');
+    const sendBtn = document.getElementById('echo-chat-send');
+    const messages = document.getElementById('echo-chat-messages');
+    let history = [];
+
+    btn.addEventListener('click', () => {
+        panel.style.display = panel.style.display === 'flex' ? 'none' : 'flex';
+        if (panel.style.display === 'flex') input.focus();
+    });
+    closeBtn.addEventListener('click', () => { panel.style.display = 'none'; });
+    clearBtn.addEventListener('click', () => {
+        history = [];
+        messages.innerHTML = '<div class="echo-msg-bot">Chat cleared! Ask me anything about Project Echo 😊</div>';
+    });
+
+    function addMsg(text, type) {
+        const div = document.createElement('div');
+        div.className = type;
+        div.innerHTML = text.replace(/\n/g, '<br>');
+        messages.appendChild(div);
+        messages.scrollTop = messages.scrollHeight;
+        return div;
+    }
+
+    async function sendMessage() {
+        const msg = input.value.trim();
+        if (!msg) return;
+        input.value = '';
+        sendBtn.disabled = true;
+
+        addMsg(msg, 'echo-msg-user');
+        history.push({ role: 'user', content: msg });
+
+        const typingEl = addMsg('Echo AI is thinking...', 'echo-typing');
+
+        try {
+            const res = await fetch('/api/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: msg, history: history.slice(0, -1) })
+            });
+            const data = await res.json();
+            typingEl.remove();
+            const reply = data.reply || data.error || 'Something went wrong.';
+            addMsg(reply, 'echo-msg-bot');
+            history.push({ role: 'assistant', content: reply });
+        } catch(e) {
+            typingEl.remove();
+            addMsg('⚠️ Could not connect. Make sure Ollama is running:\n<code>ollama serve</code>', 'echo-msg-bot');
+        }
+        sendBtn.disabled = false;
+        input.focus();
+    }
+
+    sendBtn.addEventListener('click', sendMessage);
+    input.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.shiftKey) sendMessage(); });
+})();
+</script>
+<!-- END PROJECT ECHO AI CHATBOT WIDGET -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- DASHBOARD MASTER SCRIPT -->
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    if (document.getElementById('master-script-applied')) return;
+    var f = document.createElement('div'); f.id = 'master-script-applied'; f.style.display = 'none'; document.body.appendChild(f);
+
+    // ========== PART A: Add new widgets INTO the original widget row ==========
+    
+    // Find the original flex/grid row that has Study Hours + Total Income
+    var origRow = null;
+    var candidates = document.querySelectorAll('div');
+    for (var i = 0; i < candidates.length; i++) {
+        var el = candidates[i];
+        var kids = el.children;
+        if (kids.length >= 3 && kids.length <= 6) {
+            var hasStudy = false, hasIncome = false;
+            for (var k = 0; k < kids.length; k++) {
+                var t = kids[k].textContent;
+                if (t.includes('STUDY HOURS')) hasStudy = true;
+                if (t.includes('TOTAL INCOME')) hasIncome = true;
+            }
+            if (hasStudy && hasIncome) {
+                origRow = el;
+                break;
+            }
+        }
+    }
+
+    if (origRow) {
+        // Copy the exact style from the first existing widget card
+        var firstCard = origRow.children[0];
+        var cardStyle = '';
+        if (firstCard) {
+            var cs = window.getComputedStyle(firstCard);
+            cardStyle = 'background:' + cs.backgroundColor + '; border-radius:' + cs.borderRadius + '; padding:' + cs.padding + '; box-shadow:' + cs.boxShadow + '; box-sizing: border-box;';
+        }
+        // Fallback if computed style is weird
+        if (!cardStyle || cardStyle.includes('rgba(0, 0, 0, 0)')) {
+            cardStyle = 'background: white; border-radius: 16px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.04);';
+        }
+
+        // Also copy the label style from original
+        var labelEl = firstCard ? firstCard.querySelector('span, div, p') : null;
+        
+        var newWidgets = [
+            { icon: '📈', label: 'DATA SETS', color: '#0ea5e9', valId: 'mw-datasets', defVal: '2000', sub: 'forecasting active' },
+            { icon: '⚠️', label: 'BURNOUT RISK', color: '#f59e0b', valId: 'mw-burnout', defVal: '12%', sub: 'M3 optimal' },
+            { icon: '🧠', label: 'NEURAL ACCURACY', color: '#8b5cf6', valId: 'mw-neural', defVal: '98.6%', sub: 'high confidence' },
+            { icon: '💪', label: 'HEALTH SCORE', color: '#10b981', valId: 'mw-health', defVal: '85/100', sub: 'vitality index' },
+            { icon: '💰', label: 'SAVINGS RATE', color: '#3b82f6', valId: 'mw-savings', defVal: '97.3%', sub: 'exceptional' }
+        ];
+
+        // Make the row a proper wrapping grid for all 9 cards
+        origRow.style.display = 'grid';
+        origRow.style.gridTemplateColumns = 'repeat(auto-fill, minmax(170px, 1fr))';
+        origRow.style.gap = '15px';
+
+        newWidgets.forEach(function(w) {
+            if (document.getElementById(w.valId)) return; // Don't add twice
+            
+            var card = document.createElement('div');
+            card.style.cssText = cardStyle;
+            card.innerHTML = 
+                '<div style="display:flex;align-items:center;gap:6px;margin-bottom:10px;">' +
+                    '<span style="font-size:13px;">' + w.icon + '</span>' +
+                    '<span style="font-size:11px;font-weight:800;color:' + w.color + ';text-transform:uppercase;letter-spacing:0.5px;">' + w.label + '</span>' +
+                '</div>' +
+                '<div id="' + w.valId + '" style="font-size:24px;font-weight:800;color:#1e293b;margin-bottom:4px;">' + w.defVal + '</div>' +
+                '<div style="font-size:12px;color:#94a3b8;">' + w.sub + '</div>';
+            origRow.appendChild(card);
+        });
+    }
+
+    // ========== PART B: Add charts section ABOVE the footer ==========
+    
+    if (!document.getElementById('echo-charts-section')) {
+        // Load Chart.js
+        function loadCharts(cb) {
+            if (window.Chart) { cb(); return; }
+            var s = document.createElement('script');
+            s.src = 'https://cdn.jsdelivr.net/npm/chart.js';
+            s.onload = cb;
+            s.onerror = cb;
+            document.head.appendChild(s);
+        }
+
+        loadCharts(function() {
+            var chartsSection = document.createElement('div');
+            chartsSection.id = 'echo-charts-section';
+            chartsSection.style.cssText = 'padding: 0 20px; margin-top: 30px;';
+
+            chartsSection.innerHTML = 
+            '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;padding-top:20px;border-top:2px solid #e2e8f0;">' +
+                '<div>' +
+                    '<h3 style="font-size:17px;font-weight:800;color:#0f172a;margin:0;">🔮 Forecasting & Simulation Analytics</h3>' +
+                    '<p style="color:#64748b;font-size:12px;margin:4px 0 0 0;">Real-time insights from your M3 Engine & Forecasting Module</p>' +
+                '</div>' +
+                '<span style="background:linear-gradient(135deg,#3b82f6,#8b5cf6);color:white;font-size:10px;font-weight:700;padding:6px 14px;border-radius:20px;">LIVE SYNC</span>' +
+            '</div>' +
+
+            '<div style="display:grid;grid-template-columns:2fr 1fr;gap:18px;margin-bottom:20px;">' +
+                '<div style="background:white;border-radius:14px;padding:18px;box-shadow:0 2px 8px rgba(0,0,0,0.03);">' +
+                    '<h4 style="margin:0 0 14px 0;font-size:14px;color:#1e293b;font-weight:700;">Financial Orbit Overview</h4>' +
+                    '<div style="height:200px;"><canvas id="mc-finance"></canvas></div>' +
+                '</div>' +
+                '<div style="background:white;border-radius:14px;padding:18px;box-shadow:0 2px 8px rgba(0,0,0,0.03);">' +
+                    '<h4 style="margin:0 0 14px 0;font-size:14px;color:#1e293b;font-weight:700;">Expense Allocation</h4>' +
+                    '<div style="height:200px;"><canvas id="mc-expense"></canvas></div>' +
+                '</div>' +
+            '</div>' +
+
+            '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px;margin-bottom:20px;">' +
+                '<div style="background:white;border-radius:14px;padding:18px;box-shadow:0 2px 8px rgba(0,0,0,0.03);">' +
+                    '<h4 style="margin:0 0 14px 0;font-size:14px;color:#1e293b;font-weight:700;">📚 Study Performance</h4>' +
+                    '<div style="height:160px;"><canvas id="mc-study"></canvas></div>' +
+                '</div>' +
+                '<div style="background:white;border-radius:14px;padding:18px;box-shadow:0 2px 8px rgba(0,0,0,0.03);">' +
+                    '<h4 style="margin:0 0 14px 0;font-size:14px;color:#1e293b;font-weight:700;">💪 Fitness & Vitality</h4>' +
+                    '<div style="height:160px;"><canvas id="mc-fitness"></canvas></div>' +
+                '</div>' +
+                '<div style="background:white;border-radius:14px;padding:18px;box-shadow:0 2px 8px rgba(0,0,0,0.03);">' +
+                    '<h4 style="margin:0 0 14px 0;font-size:14px;color:#1e293b;font-weight:700;">⚡ Future Simulation</h4>' +
+                    '<div style="height:160px;"><canvas id="mc-sim"></canvas></div>' +
+                '</div>' +
+            '</div>' +
+
+            '<div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:30px;">' +
+                '<div style="background:white;border-radius:14px;padding:18px;box-shadow:0 2px 8px rgba(0,0,0,0.03);">' +
+                    '<h4 style="margin:0 0 16px 0;font-size:14px;color:#1e293b;font-weight:700;">🎯 Goal Progress</h4>' +
+                    '<div style="margin-bottom:14px;"><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px;"><span style="font-weight:600;color:#334155;">Study</span><span style="color:#10b981;font-weight:700;">100%</span></div><div style="height:6px;background:#e2e8f0;border-radius:3px;"><div style="width:100%;height:100%;background:#10b981;border-radius:3px;"></div></div></div>' +
+                    '<div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px;"><span style="font-weight:600;color:#334155;">Exam Preparation</span><span style="color:#3b82f6;font-weight:700;">100%</span></div><div style="height:6px;background:#e2e8f0;border-radius:3px;"><div style="width:100%;height:100%;background:#3b82f6;border-radius:3px;"></div></div></div>' +
+                '</div>' +
+                '<div style="background:white;border-radius:14px;padding:18px;box-shadow:0 2px 8px rgba(0,0,0,0.03);">' +
+                    '<h4 style="margin:0 0 16px 0;font-size:14px;color:#1e293b;font-weight:700;">🤖 AI Recommendations</h4>' +
+                    '<div style="display:flex;gap:10px;margin-bottom:14px;"><span style="font-size:16px;">📈</span><div><div style="font-size:12px;font-weight:700;color:#334155;">Keep saving at 97.3%</div><div style="font-size:11px;color:#64748b;">Hit Q4 goal 2.5 months early</div></div></div>' +
+                    '<div style="display:flex;gap:10px;margin-bottom:14px;"><span style="font-size:16px;">📚</span><div><div style="font-size:12px;font-weight:700;color:#334155;">Maintain 4h+ study</div><div style="font-size:11px;color:#64748b;">94% optimal trajectory</div></div></div>' +
+                    '<div style="display:flex;gap:10px;"><span style="font-size:16px;">😴</span><div><div style="font-size:12px;font-weight:700;color:#334155;">Protect sleep schedule</div><div style="font-size:11px;color:#64748b;">-1hr sleep = 48% burnout risk</div></div></div>' +
+                '</div>' +
+            '</div>';
+
+            // Find footer and insert charts BEFORE it
+            var footerEl = null;
+            var allEls = document.querySelectorAll('*');
+            for (var x = 0; x < allEls.length; x++) {
+                if (allEls[x].textContent.includes('\u00A9 2026 Project Echo') && allEls[x].children.length === 0) {
+                    footerEl = allEls[x].closest('div') || allEls[x]; break;
+                }
+            }
+
+            var mainC = document.querySelector('main') || document.querySelector('.main-content');
+            if (mainC) {
+                if (footerEl && footerEl.parentNode === mainC) {
+                    mainC.insertBefore(chartsSection, footerEl);
+                } else {
+                    mainC.appendChild(chartsSection);
+                }
+            } else {
+                document.body.appendChild(chartsSection);
+            }
+
+            // Build Charts
+            if (window.Chart) {
+                new Chart(document.getElementById('mc-finance').getContext('2d'), {
+                    type:'bar', data:{labels:['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep'],
+                    datasets:[{label:'Income',data:[30,35,32,40,38,45,42,48,50],backgroundColor:'#10b981',borderRadius:4,barPercentage:0.6},
+                    {label:'Expenses',data:[20,22,18,25,24,28,22,25,32],backgroundColor:'#ef4444',borderRadius:4,barPercentage:0.6}]},
+                    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{grid:{borderDash:[5,5]}},x:{grid:{display:false}}}}
+                });
+
+                new Chart(document.getElementById('mc-expense').getContext('2d'), {
+                    type:'doughnut', data:{labels:['Food','Travel','Shopping','Utilities','Health'],
+                    datasets:[{data:[25,26,20,17,12],backgroundColor:['#3b82f6','#ef4444','#f59e0b','#8b5cf6','#10b981'],borderWidth:0,cutout:'65%'}]},
+                    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{boxWidth:10,padding:8,font:{size:10}}}}}
+                });
+
+                new Chart(document.getElementById('mc-study').getContext('2d'), {
+                    type:'bar', data:{labels:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+                    datasets:[{data:[4.5,6,5,7.5,6,3.5,4],backgroundColor:'#3b82f6',borderRadius:4,barPercentage:0.5}]},
+                    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false}}}}
+                });
+
+                var fCtx=document.getElementById('mc-fitness').getContext('2d');
+                var gr=fCtx.createLinearGradient(0,0,0,160);gr.addColorStop(0,'rgba(16,185,129,0.25)');gr.addColorStop(1,'rgba(16,185,129,0)');
+                new Chart(fCtx,{type:'line',data:{labels:['W1','W2','W3','W4'],datasets:[{data:[60,70,75,85],borderColor:'#10b981',backgroundColor:gr,borderWidth:3,fill:true,tension:0.4,pointRadius:4,pointBackgroundColor:'#10b981'}]},
+                    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false}}}}});
+
+                new Chart(document.getElementById('mc-sim').getContext('2d'), {
+                    type:'line', data:{labels:['Now','Q2','Q3','Q4'],
+                    datasets:[{label:'Current',data:[1,1.2,1.4,1.6],borderColor:'#94a3b8',borderDash:[5,5],tension:0.4,fill:false,pointRadius:3},
+                    {label:'Optimized',data:[1,1.5,2.1,2.8],borderColor:'#10b981',tension:0.4,fill:false,pointRadius:3}]},
+                    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false}},y:{display:false}}}
+                });
+            }
+        });
+    }
+
+    // ========== PART C: Dynamic Sync Engine ==========
+    function syncAll() {
+        var map = {
+            'mw-datasets': 'forecasting_dataset_size',
+            'mw-burnout': 'burnout_risk',
+            'mw-health': 'health_score',
+            'mw-savings': 'savings_rate',
+            'mw-neural': 'neural_accuracy'
+        };
+        for (var id in map) {
+            var el = document.getElementById(id);
+            var val = localStorage.getItem(map[id]);
+            if (el && val) el.textContent = val;
+        }
+    }
+    syncAll();
+    window.addEventListener('storage', syncAll);
+    setInterval(syncAll, 1000);
+});
+</script>
+
+
+<!-- MINI WIDGETS AND SMART SUGGESTION FIX -->
+<script id="mini-widgets-fix">
+document.addEventListener("DOMContentLoaded", function() {
+    if (document.getElementById('mini-widgets-added')) return;
+    var f=document.createElement('div');f.id='mini-widgets-added';f.style.display='none';document.body.appendChild(f);
+
+    // 1. Find the original 4-widget row
+    var origRow = null;
+    var allDivs = document.querySelectorAll('div');
+    for (var i = 0; i < allDivs.length; i++) {
+        var d = allDivs[i];
+        if (d.children.length >= 3 && d.children.length <= 6) {
+            var txt = d.textContent;
+            if (txt.includes('STUDY HOURS') && txt.includes('TOTAL INCOME') && txt.includes('ACTIVE HABITS')) {
+                var cs = window.getComputedStyle(d);
+                if (cs.display === 'flex' || cs.display === 'grid' || d.style.display) {
+                    origRow = d;
+                    break;
+                }
+            }
+        }
+    }
+
+    // 2. Create a new row of 5 mini boxes right BELOW the original row
+    if (origRow) {
+        var miniRow = document.createElement('div');
+        miniRow.id = 'echo-mini-widgets-row';
+        miniRow.style.cssText = 'display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; padding: 0; margin-top: 16px; margin-bottom: 10px;';
+
+        // Copy the same padding context from the parent
+        var parentPadding = origRow.parentElement ? window.getComputedStyle(origRow.parentElement).paddingLeft : '20px';
+
+        var widgets = [
+            { icon: '📈', label: 'DATA SETS', color: '#0ea5e9', id: 'mw-datasets', val: '2000', sub: 'Forecasting Active' },
+            { icon: '⚠️', label: 'BURNOUT RISK', color: '#f59e0b', id: 'mw-burnout', val: '12%', sub: 'M3 Optimal' },
+            { icon: '🧠', label: 'NEURAL ACCURACY', color: '#8b5cf6', id: 'mw-neural', val: '98.6%', sub: 'High Confidence' },
+            { icon: '💪', label: 'HEALTH SCORE', color: '#10b981', id: 'mw-health', val: '85/100', sub: 'Vitality Index' },
+            { icon: '💰', label: 'SAVINGS RATE', color: '#3b82f6', id: 'mw-savings', val: '97.3%', sub: 'Exceptional' }
+        ];
+
+        widgets.forEach(function(w) {
+            var card = document.createElement('div');
+            card.style.cssText = 'background: white; border-radius: 14px; padding: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); transition: transform 0.2s; cursor: default;';
+            card.onmouseover = function() { this.style.transform = 'translateY(-2px)'; };
+            card.onmouseout = function() { this.style.transform = 'translateY(0)'; };
+            card.innerHTML =
+                '<div style="display:flex;align-items:center;gap:5px;margin-bottom:8px;">' +
+                    '<span style="font-size:13px;">' + w.icon + '</span>' +
+                    '<span style="font-size:10px;font-weight:800;color:' + w.color + ';text-transform:uppercase;letter-spacing:0.5px;">' + w.label + '</span>' +
+                '</div>' +
+                '<div id="' + w.id + '" style="font-size:22px;font-weight:800;color:#1e293b;margin-bottom:3px;">' + w.val + '</div>' +
+                '<div style="font-size:11px;color:#94a3b8;font-weight:500;">' + w.sub + '</div>';
+            miniRow.appendChild(card);
+        });
+
+        // Insert right after the original row
+        if (origRow.nextSibling) {
+            origRow.parentNode.insertBefore(miniRow, origRow.nextSibling);
+        } else {
+            origRow.parentNode.appendChild(miniRow);
+        }
+    }
+
+    // 3. Move Smart Suggestion to the bottom (just above footer)
+    var smartSug = null;
+    var footerEl = null;
+    var allEls = document.querySelectorAll('*');
+    for (var j = 0; j < allEls.length; j++) {
+        var el = allEls[j];
+        if (!smartSug && el.textContent.includes('Smart Suggestion') && el.textContent.includes('study sessions') && el.children.length <= 5 && el.textContent.length < 200) {
+            smartSug = el;
+        }
+        if (!footerEl && el.textContent.includes('© 2026 Project Echo') && el.children.length === 0) {
+            footerEl = el.closest('div') || el;
+        }
+    }
+
+    var mainC = document.querySelector('main') || document.querySelector('.main-content');
+    if (mainC && smartSug) {
+        // Find the closest parent wrapper of smart suggestion
+        var sgParent = smartSug;
+        // Walk up to find a meaningful container
+        while (sgParent.parentElement && sgParent.parentElement !== mainC) {
+            sgParent = sgParent.parentElement;
+        }
+        
+        // Move it to the end (before footer if found)
+        if (footerEl) {
+            var ftParent = footerEl;
+            while (ftParent.parentElement && ftParent.parentElement !== mainC) {
+                ftParent = ftParent.parentElement;
+            }
+            mainC.insertBefore(sgParent, ftParent);
+        } else {
+            mainC.appendChild(sgParent);
+        }
+        
+        // Style it nicely
+        sgParent.style.cssText = (sgParent.style.cssText || '') + '; margin: 20px 0 10px 0; background: linear-gradient(135deg, #f0fdf4, #ecfdf5); border: 1px solid #bbf7d0; border-radius: 12px; padding: 14px 20px;';
+    }
+
+    // 4. Dynamic Sync
+    function sync() {
+        var map = { 'mw-datasets': 'forecasting_dataset_size', 'mw-burnout': 'burnout_risk', 'mw-health': 'health_score', 'mw-savings': 'savings_rate', 'mw-neural': 'neural_accuracy' };
+        for (var id in map) {
+            var el = document.getElementById(id);
+            var val = localStorage.getItem(map[id]);
+            if (el && val) el.textContent = val;
+        }
+    }
+    sync();
+    window.addEventListener('storage', sync);
+    setInterval(sync, 1000);
+});
+</script>
+
+
+<!-- HIDE GOAL AND AI SECTION -->
+<script id="hide-goal-ai">
+document.addEventListener("DOMContentLoaded", function() {
+    var allH4 = document.querySelectorAll('h4');
+    for (var i = 0; i < allH4.length; i++) {
+        var txt = allH4[i].textContent;
+        if (txt.includes('Goal Progress') || txt.includes('AI Recommendations')) {
+            var card = allH4[i].closest('div[style]');
+            // Go up to find the parent grid row that holds both cards
+            while (card && card.parentElement) {
+                var cs = window.getComputedStyle(card);
+                if (cs.display === 'grid' && card.children.length === 2) {
+                    card.style.display = 'none';
+                    break;
+                }
+                card = card.parentElement;
+            }
+        }
+    }
+});
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- UNIFIED MASTER SIDEBAR (ULTIMATE FIX) -->
+<style id="master-sidebar-css">
+/* Keep the exact space of the old sidebar so Dashboard layout DOES NOT MOVE, just make it invisible */
+nav.sidebar, aside.sidebar, #sidebar {
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    width: 260px !important;
+    min-width: 260px !important;
+}
+
+/* Master Sidebar Core Styles */
+#echo-master-sidebar {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 260px !important;
+    height: 100vh !important;
+    background: #0f172a !important; 
+    color: white !important;
+    overflow-y: auto !important;
+    z-index: 99999 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    box-shadow: 2px 0 10px rgba(0,0,0,0.1) !important;
+    font-family: system-ui, -apple-system, sans-serif !important;
+    border-right: 1px solid rgba(255,255,255,0.05) !important;
+}
+
+#echo-master-sidebar::-webkit-scrollbar { width: 4px; }
+#echo-master-sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
+
+#echo-master-sidebar .sidebar-header {
+    padding: 24px 20px !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+    border-bottom: 1px solid rgba(255,255,255,0.05) !important;
+    min-height: 80px !important;
+}
+
+#echo-master-sidebar .sidebar-logo {
+    width: 32px !important;
+    height: 32px !important;
+    background: linear-gradient(135deg, #10b981, #3b82f6) !important;
+    border-radius: 8px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 16px !important;
+    font-weight: bold !important;
+    flex-shrink: 0 !important;
+}
+
+#echo-master-sidebar .sidebar-title {
+    font-size: 17px !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.5px !important;
+    margin: 0 !important;
+    line-height: 1.2 !important;
+    color: white !important;
+}
+
+#echo-master-sidebar .sidebar-subtitle {
+    font-size: 10px !important;
+    color: #10b981 !important;
+    text-transform: uppercase !important;
+    font-weight: 700 !important;
+    letter-spacing: 1px !important;
+}
+
+#echo-master-sidebar .sidebar-menu {
+    padding: 15px 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 2px !important;
+    flex: 1 !important;
+}
+
+#echo-master-sidebar .menu-section {
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    color: #64748b !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1px !important;
+    padding: 15px 24px 6px !important;
+}
+
+#echo-master-sidebar .menu-item {
+    display: flex !important;
+    align-items: center !important;
+    gap: 14px !important;
+    padding: 12px 24px !important;
+    color: #cbd5e1 !important;
+    text-decoration: none !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    transition: all 0.2s ease !important;
+    border-left: 3px solid transparent !important;
+}
+
+#echo-master-sidebar .menu-item:hover {
+    background: rgba(255,255,255,0.03) !important;
+    color: white !important;
+}
+
+#echo-master-sidebar .menu-item.active {
+    background: rgba(16, 185, 129, 0.08) !important;
+    color: white !important;
+    border-left: 3px solid #10b981 !important;
+    font-weight: 600 !important;
+}
+
+#echo-master-sidebar .menu-icon {
+    font-size: 17px !important;
+    width: 24px !important;
+    text-align: center !important;
+    opacity: 0.7 !important;
+}
+
+#echo-master-sidebar .menu-item.active .menu-icon {
+    opacity: 1 !important;
+}
+
+#echo-master-sidebar .logout-container {
+    padding: 15px 20px !important;
+    border-top: 1px solid rgba(255,255,255,0.05) !important;
+    margin-top: auto !important;
+}
+
+#echo-master-sidebar .logout-btn {
+    display: flex !important;
+    align-items: center !important;
+    gap: 14px !important;
+    padding: 12px 15px !important;
+    color: #ef4444 !important;
+    text-decoration: none !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    border-radius: 8px !important;
+    background: rgba(239, 68, 68, 0.05) !important;
+    cursor: pointer !important;
+}
+
+#echo-master-sidebar .logout-btn:hover {
+    background: rgba(239, 68, 68, 0.15) !important;
+}
+</style>
+
+<script id="master-sidebar-js">
+document.addEventListener("DOMContentLoaded", function() {
+    if (document.getElementById('echo-master-sidebar')) return;
+
+    var menuStructure = [
+        { type: 'section', label: 'WORKSPACE' },
+        { type: 'link', label: 'Dashboard', icon: '🏠', url: 'dashboard.html' },
+        { type: 'link', label: 'Forecasting', icon: '📈', url: 'forecasting.html' },
+        { type: 'link', label: 'Simulation Engine (M3)', icon: '⚙️', url: 'simulation.html' },
+        { type: 'section', label: 'FINANCE' },
+        { type: 'link', label: 'Income & Expenses', icon: '💳', url: 'income.html' }, 
+        { type: 'link', label: 'Savings', icon: '💰', url: 'savings.html' },
+        { type: 'section', label: 'ACADEMICS & LIFESTYLE' },
+        { type: 'link', label: 'Study', icon: '⏱️', url: 'study.html' },
+        { type: 'link', label: 'Academics', icon: '📚', url: 'academics.html' },
+        { type: 'link', label: 'Habits', icon: '🔥', url: 'habits.html' },
+        { type: 'link', label: 'Fitness', icon: '🏋️', url: 'fitness.html' },
+        { type: 'link', label: 'Goals', icon: '🎯', url: 'goals.html' },
+        { type: 'section', label: 'SYSTEM' },
+        { type: 'link', label: 'Activity History', icon: '📋', url: 'activity.html' },
+        { type: 'link', label: 'Profile', icon: '👤', url: 'profile.html' }
+    ];
+
+    var currentPath = window.location.pathname.split('/').pop() || 'dashboard.html';
+    
+    var html = '<div class="sidebar-header"><div class="sidebar-logo">✦</div><div><h2 class="sidebar-title">Project Echo</h2><div class="sidebar-subtitle">DIGITAL TWIN</div></div></div><div class="sidebar-menu">';
+
+    menuStructure.forEach(function(item) {
+        if (item.type === 'section') {
+            html += '<div class="menu-section">' + item.label + '</div>';
+        } else {
+            var isActive = (currentPath === item.url) ? 'active' : '';
+            if (!isActive && currentPath === 'finance.html' && item.url === 'income.html') isActive = 'active';
+            if (!isActive && currentPath === 'financial.html' && item.url === 'income.html') isActive = 'active';
+            
+            html += '<a href="' + item.url + '" class="menu-item ' + isActive + '"><span class="menu-icon">' + item.icon + '</span><span>' + item.label + '</span></a>';
+        }
+    });
+
+    html += '</div><div class="logout-container"><a href="login.html" class="logout-btn" id="master-logout-btn"><span class="menu-icon">🚪</span><span>Logout</span></a></div>';
+
+    var sidebar = document.createElement('nav');
+    sidebar.id = 'echo-master-sidebar';
+    sidebar.innerHTML = html;
+    document.body.insertBefore(sidebar, document.body.firstChild);
+    
+    var logoutBtn = document.getElementById('master-logout-btn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', function() {
+            var logs = JSON.parse(localStorage.getItem('real_activity_logs') || '[]');
+            logs.push({ action: 'Logout', details: 'User signed out', dateStr: new Date().toLocaleString('en-IN'), timestamp: new Date().getTime(), type: 'logout' });
+            localStorage.setItem('real_activity_logs', JSON.stringify(logs));
+        });
+    }
+});
+</script>
+
 </body>
 </html>

@@ -3,10 +3,262 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Register - MyApp</title>
+  <title>Register - Project Echo</title>
   <link rel="stylesheet" href="/css/style.css">
+
+<style>
+</style>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- ULTIMATE LAYOUT RESET -->
+
+
+<!-- PERFECT SIDEBAR CSS -->
+<style>
+  /* STOP JUMPING */
+  html, body { overflow-y: scroll !important; overflow-x: hidden !important; margin: 0; padding: 0; }
+  
+  /* LOCK SIDEBAR WIDTH */
+  aside.sidebar, .sidebar { 
+      width: 260px !important; min-width: 260px !important; max-width: 260px !important; 
+      height: 100vh !important; position: sticky !important; top: 0 !important; 
+      background: #022c22 !important; display: flex !important; flex-direction: column !important; 
+      padding: 22px 14px !important; border-right: 1px solid #064e3b !important; 
+      z-index: 9999 !important; box-sizing: border-box !important; margin: 0 !important; 
+  }
+  
+  /* LOCK LAYOUT */
+  .app-layout { display: flex !important; width: 100vw !important; min-height: 100vh !important; margin: 0; padding: 0; }
+  .main-content, .db-main, .container { flex: 1 !important; width: calc(100vw - 260px) !important; max-width: calc(100vw - 260px) !important; box-sizing: border-box !important; }
+
+  /* CONSISTENT NAV ITEMS (No weird color flashing) */
+  .nav-item { display: flex; align-items: center; gap: 11px; padding: 10px 13px !important; border-radius: 8px !important; color: #a7f3d0 !important; text-decoration: none; font-size: 13.5px !important; font-weight: 600; font-family: 'Plus Jakarta Sans', sans-serif; transition: none !important; border: none !important; margin-bottom: 2px; }
+  .nav-item:hover, .nav-item.active { background: #064e3b !important; color: #ffffff !important; }
+  
+  .sidebar-logo { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; padding: 0 6px; text-decoration: none; }
+  .logo-icon-box { width: 38px; height: 38px; border-radius: 12px; background: #10b981; display: flex; align-items: center; justify-content: center; color: white; font-size: 19px; font-weight: 900; flex-shrink: 0; }
+  .logo-text h1, .logo-text h2 { font-size: 17px; font-weight: 800; color: #ffffff; margin: 0; font-family: 'Plus Jakarta Sans', sans-serif;}
+  .logo-text span { font-size: 9.5px; font-weight: 700; color: #6ee7b7; letter-spacing: 1px; font-family: 'Plus Jakarta Sans', sans-serif;}
+  .sidebar-section-label { font-size: 10px; font-weight: 800; color: #34d399; letter-spacing: 1px; margin: 12px 0 8px 8px; font-family: 'Plus Jakarta Sans', sans-serif;}
+  .sidebar-nav { display: flex; flex-direction: column; flex: 1; overflow-y: auto; }
+  .sidebar-footer { padding-top: 14px; border-top: 1px solid rgba(16, 185, 129, 0.2); }
+</style>
+
+<!-- MASTER LAYOUT FIX -->
+<style id="master-layout-fix">
+  /* Reset */
+  body, html { margin: 0 !important; padding: 0 !important; overflow-x: hidden !important; }
+  
+  /* Push entire body right by 260px */
+  body { padding-left: 260px !important; }
+  
+  /* Lock sidebar perfectly to the left edge */
+  aside.sidebar, .sidebar { 
+      position: fixed !important; 
+      top: 0 !important; 
+      left: 0 !important; 
+      bottom: 0 !important;
+      height: 100vh !important; 
+      width: 260px !important; 
+      min-width: 260px !important;
+      margin: 0 !important; 
+      background: #022c22 !important; 
+      z-index: 99999 !important; 
+  }
+  
+  /* Prevent double-shifting the main content */
+  .main-content, .db-main, .container, main { 
+      margin-left: 0 !important; 
+      width: 100% !important; 
+      max-width: 100% !important;
+      box-sizing: border-box !important; 
+  }
+  
+  .app-layout { display: block !important; width: 100% !important; }
+</style>
+
+    
+<!-- BLUE BACKGROUND INJECTION -->
+<style id="blue-bg-style">
+body {
+    margin: 0 !important;
+    padding: 0 !important;
+    min-height: 100vh !important;
+    background: linear-gradient(135deg, #1a237e 0%, #1565c0 40%, #0d47a1 70%, #0a2a6e 100%) !important;
+    position: relative !important;
+    overflow-x: hidden !important;
+}
+
+/* Floating squares background */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    pointer-events: none;
+    z-index: 0;
+    background-image:
+        radial-gradient(ellipse 120px 120px at 8% 15%, rgba(100,149,237,0.25) 0%, transparent 70%),
+        radial-gradient(ellipse 80px 80px at 85% 10%, rgba(100,149,237,0.2) 0%, transparent 70%),
+        radial-gradient(ellipse 100px 100px at 90% 70%, rgba(100,149,237,0.22) 0%, transparent 70%),
+        radial-gradient(ellipse 70px 70px at 15% 80%, rgba(100,149,237,0.18) 0%, transparent 70%),
+        radial-gradient(ellipse 90px 90px at 50% 5%, rgba(100,149,237,0.15) 0%, transparent 70%),
+        radial-gradient(ellipse 60px 60px at 75% 85%, rgba(100,149,237,0.2) 0%, transparent 70%),
+        radial-gradient(ellipse 110px 110px at 30% 50%, rgba(100,149,237,0.1) 0%, transparent 70%);
+}
+
+/* Make sure the form/card stays on top */
+body > *, main, .main-content, form, .login-container, .register-container, .card, .form-container {
+    position: relative !important;
+    z-index: 1 !important;
+}
+</style>
+
+<script id="floating-squares-script">
+document.addEventListener("DOMContentLoaded", function() {
+    if (document.getElementById('floating-squares-canvas')) return;
+
+    // Create canvas for animated floating squares
+    var canvas = document.createElement('canvas');
+    canvas.id = 'floating-squares-canvas';
+    canvas.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0;';
+    document.body.insertBefore(canvas, document.body.firstChild);
+
+    var ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    window.addEventListener('resize', function() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    });
+
+    // Create floating squares
+    var squares = [];
+    var count = 18;
+    for (var i = 0; i < count; i++) {
+        squares.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            size: Math.random() * 80 + 30,
+            speed: Math.random() * 0.4 + 0.1,
+            opacity: Math.random() * 0.18 + 0.05,
+            angle: Math.random() * Math.PI * 2,
+            rotSpeed: (Math.random() - 0.5) * 0.005,
+            borderRadius: Math.random() * 20 + 10
+        });
+    }
+
+    function roundRect(ctx, x, y, w, h, r, fill, stroke) {
+        ctx.beginPath();
+        ctx.moveTo(x + r, y);
+        ctx.lineTo(x + w - r, y);
+        ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+        ctx.lineTo(x + w, y + h - r);
+        ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+        ctx.lineTo(x + r, y + h);
+        ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+        ctx.lineTo(x, y + r);
+        ctx.quadraticCurveTo(x, y, x + r, y);
+        ctx.closePath();
+        if (fill) ctx.fill();
+        if (stroke) ctx.stroke();
+    }
+
+    function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        squares.forEach(function(sq) {
+            ctx.save();
+            ctx.translate(sq.x, sq.y);
+            ctx.rotate(sq.angle);
+            ctx.globalAlpha = sq.opacity;
+            ctx.fillStyle = 'rgba(100, 149, 237, 0.6)';
+            ctx.strokeStyle = 'rgba(150, 190, 255, 0.3)';
+            ctx.lineWidth = 1.5;
+            roundRect(ctx, -sq.size/2, -sq.size/2, sq.size, sq.size, sq.borderRadius, true, true);
+            ctx.restore();
+
+            // Move upward slowly
+            sq.y -= sq.speed;
+            sq.angle += sq.rotSpeed;
+
+            // Reset when off screen
+            if (sq.y + sq.size < 0) {
+                sq.y = canvas.height + sq.size;
+                sq.x = Math.random() * canvas.width;
+            }
+        });
+
+        requestAnimationFrame(animate);
+    }
+
+    animate();
+});
+</script>
+
+
+
+
 </head>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 <body>
+
+<!-- BLUE BG Z-INDEX FIX -->
+<style id="blue-bg-zfix">
+/* Canvas stays at back */
+#floating-squares-canvas {
+    position: fixed !important;
+    z-index: 0 !important;
+    pointer-events: none !important;
+}
+
+/* EVERYTHING else comes to front */
+body > *:not(#floating-squares-canvas) {
+    position: relative !important;
+    z-index: 10 !important;
+}
+
+/* Force form container to top */
+form, .login-box, .login-container, .login-card,
+.register-box, .register-container, .card,
+.auth-box, .auth-container, .form-wrapper,
+.container, .wrapper, main, .main, section {
+    position: relative !important;
+    z-index: 100 !important;
+}
+</style>
+
   <div class="container">
     <div class="card">
       <h1>Create Account ✨</h1>
@@ -34,5 +286,186 @@
     </div>
   </div>
   <script src="/js/register.js"></script>
+
+<!-- ULTIMATE BUG FIX INJECTION -->
+<script id="ultimate-bug-fixes">
+  // 1. GLOBAL ACTIVITY LOGGER
+  function logGlobalActivity(title, desc, icon) {
+      try {
+          let acts = JSON.parse(localStorage.getItem('global_activity') || '[]');
+          acts.push({ title: title, desc: desc, icon: icon, date: Date.now() });
+          localStorage.setItem('global_activity', JSON.stringify(acts));
+      } catch(e) {}
+  }
+
+  // 2. TRACK LOGIN
+  if (!sessionStorage.getItem('session_active')) {
+      logGlobalActivity('System Login', 'User successfully authenticated and logged in.', '🔐');
+      sessionStorage.setItem('session_active', 'true');
+  }
+
+  // 3. TRACK LOGOUT & AUTO-REFRESH ON 'ADD' BUTTONS
+  document?.addEventListener('click', function(e) {
+      // Handle Logout Tracking
+      if(e.target.closest('#logoutBtn') || e.target.closest('.logout-item')) {
+          logGlobalActivity('System Logout', 'User securely signed out.', '🚪');
+      }
+      
+      // Handle Auto-Refresh for Add/Save buttons
+      let btn = e.target.closest('button');
+      if (btn) {
+          let txt = btn.innerText.toLowerCase();
+          if (txt.includes('add') || txt.includes('save') || txt.includes('submit')) {
+              // Wait 300ms for localStorage to save, then trigger update
+              setTimeout(() => {
+                  // If there is a "Show All" button, click it automatically
+                  let showAll = Array.from(document.querySelectorAll('button')).find(b => b.innerText.toLowerCase().includes('show'));
+                  if (showAll) {
+                      showAll.click();
+                  } else {
+                      // Otherwise, force a page reload to guarantee the new data appears immediately!
+                      window.location.reload();
+                  }
+              }, 400);
+          }
+      }
+  });
+</script>
+
+
+    <!-- UNIVERSAL ACTIVITY TRACKER -->
+    <script>
+    if(!window.universalTrackerInstalled) {
+        window.universalTrackerInstalled = true;
+        
+        // Listen to every click on the page
+        document?.addEventListener('click', function(e) {
+            // Only track clicks on actual Buttons or Submit fields
+            let target = e.target.closest('button, input[type="submit"]');
+            
+            if(target) {
+                let actionText = (target.innerText || target.value || 'Clicked a button').trim();
+                
+                // Keep the log name clean and short
+                if(actionText.length > 30) actionText = 'Action Completed'; 
+                
+                let activity = {
+                    type: 'App Action: ' + actionText,
+                    timestamp: new Date().getTime()
+                };
+                
+                // Save it to the browser's global memory!
+                try {
+                    let history = JSON.parse(localStorage.getItem('global_activity') || '[]');
+                    history.push(activity);
+                    localStorage.setItem('global_activity', JSON.stringify(history));
+                } catch(err) {}
+            }
+        });
+    }
+    </script>
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- UNIVERSAL AUTO-SYNC ENGINE V3 (SILENT) -->
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    if(window.universalSyncEngineInstalled) return;
+    window.universalSyncEngineInstalled = true;
+    
+    if(window.location.pathname.toLowerCase().includes('habit')) return;
+
+    let path = window.location.pathname.toLowerCase();
+    let pageTitle = document.title.toLowerCase();
+    let storageKey = 'global_data';
+    
+    if(path.includes('income') || path.includes('expense') || pageTitle.includes('income')) storageKey = 'income_data';
+    else if(path.includes('saving') || pageTitle.includes('saving')) storageKey = 'savings_data';
+    else if(path.includes('study') || pageTitle.includes('study')) storageKey = 'study_data';
+    else if(path.includes('academic') || pageTitle.includes('academic')) storageKey = 'academics_data';
+    else if(path.includes('fitness') || pageTitle.includes('fitness')) storageKey = 'fitness_data';
+    else if(path.includes('goal') || pageTitle.includes('goal')) storageKey = 'goals_data';
+
+    document.addEventListener('click', (e) => {
+        let btn = e.target.closest('button, .btn, input[type="submit"]');
+        if(btn && (btn.textContent.toLowerCase().includes('add') || btn.textContent.toLowerCase().includes('save') || btn.textContent.toLowerCase().includes('create') || btn.value === 'Add')) {
+            
+            let container = btn.closest('div, section, form, header, .card');
+            if(!container && btn.parentElement) container = btn.parentElement.parentElement;
+            if(!container) return;
+
+            let inputs = container.querySelectorAll('input[type="text"], input[type="number"]');
+            let selects = container.querySelectorAll('select');
+            
+            if(inputs.length > 0 && inputs[0].value.trim() !== '') {
+                
+                let val1 = inputs[0].value.trim();
+                let val2 = inputs.length > 1 ? inputs[1].value.trim() : '';
+                if(!val2 && selects.length > 0) val2 = selects[0].options[selects[0].selectedIndex].text;
+
+                // Save to memory perfectly
+                let currentData = JSON.parse(localStorage.getItem(storageKey) || '[]');
+                currentData.push({ text: val1, extra: val2, date: Date.now() });
+                localStorage.setItem(storageKey, JSON.stringify(currentData));
+                
+                // Instantly alert the Dashboard!
+                window.dispatchEvent(new Event('storage'));
+
+                // Auto-update large money numbers if on Savings/Income pages
+                let numVal = parseFloat((val1 + val2).replace(/[^0-9.]/g, ''));
+                if(!isNaN(numVal) && numVal > 0) {
+                    document.querySelectorAll('h1, h2, h3').forEach(h => {
+                        if(h.textContent.includes('₹') || h.textContent.includes('$')) {
+                            let current = parseFloat(h.textContent.replace(/[^0-9.]/g, '')) || 0;
+                            let prefix = h.textContent.includes('₹') ? '₹' : '$';
+                            h.textContent = prefix + (current + numVal).toLocaleString();
+                        }
+                    });
+                }
+
+                // Clean the input box, BUT DO NOT DRAW ANY UGLY UI BOXES!
+                inputs.forEach(i => i.value = ''); 
+            }
+        }
+    });
+});
+</script>
+
+
+<!-- GLOBAL LOGOUT HANDLER -->
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    document.body.addEventListener('click', (e) => {
+        // Find if they clicked the logout button or an icon inside it
+        let target = e.target.closest('a, button, li, div, span');
+        
+        if (target && target.textContent && target.textContent.toLowerCase().includes('logout')) {
+            e.preventDefault(); // Stop it from doing nothing
+            
+            // 1. Record the logout event in your Activity Log
+            let logs = JSON.parse(localStorage.getItem('real_activity_logs') || '[]');
+            logs.push({ action: 'Logout', details: 'User securely signed out.', dateStr: new Date().toLocaleString() });
+            localStorage.setItem('real_activity_logs', JSON.stringify(logs));
+            
+            // 2. Clear session memory
+            localStorage.removeItem('user_authenticated');
+            localStorage.removeItem('current_user');
+            
+            // 3. Redirect to the Login screen!
+            window.location.href = 'login.html';
+        }
+    });
+});
+</script>
+
 </body>
 </html>

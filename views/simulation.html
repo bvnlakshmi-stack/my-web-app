@@ -12,7 +12,7 @@
     body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;display:flex;margin:0;padding:0;overflow-x:hidden}
 
     /* UNIFIED DEEP EMERALD SIDEBAR (Pixel-Matched to Forecasting & Dashboard) */
-    .sidebar { width: 260px; min-width: 260px; max-width: 260px; height: 100vh; position: sticky; top: 0; background: #022c22; display: flex; flex-direction: column; padding: 22px 14px; border-right: 1px solid #064e3b; z-index: 100; box-sizing: border-box; }
+    
     .sidebar-logo { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; padding: 0 6px; text-decoration: none; }
     .logo-icon-box { width: 38px; height: 38px; border-radius: 12px; background: linear-gradient(135deg, #10b981, #059669); display: flex; align-items: center; justify-content: center; color: white; font-size: 19px; font-weight: 900; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4); flex-shrink: 0; }
     .logo-text h1, .logo-text h2 { font-size: 17px; font-weight: 800; color: #ffffff; line-height: 1.2; margin: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
@@ -237,68 +237,145 @@
     /* Toast Notification */
     .toast-box{position:fixed;bottom:20px;right:20px;background:#151f35;border:1px solid var(--cy);color:#dce4f0;padding:10px 16px;border-radius:8px;font-size:11px;font-weight:700;display:none;box-shadow:0 6px 20px rgba(0,0,0,0.5);z-index:999;align-items:center;gap:8px}
   </style>
+
+<style>
+</style>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- ULTIMATE LAYOUT RESET -->
+
+
+<!-- PERFECT SIDEBAR CSS -->
+<style>
+  /* STOP JUMPING */
+  html, body { overflow-y: scroll !important; overflow-x: hidden !important; margin: 0; padding: 0; }
+  
+  /* LOCK SIDEBAR WIDTH */
+  aside.sidebar, .sidebar { 
+      width: 260px !important; min-width: 260px !important; max-width: 260px !important; 
+      height: 100vh !important; position: sticky !important; top: 0 !important; 
+      background: #022c22 !important; display: flex !important; flex-direction: column !important; 
+      padding: 22px 14px !important; border-right: 1px solid #064e3b !important; 
+      z-index: 9999 !important; box-sizing: border-box !important; margin: 0 !important; 
+  }
+  
+  /* LOCK LAYOUT */
+  .app-layout { display: flex !important; width: 100vw !important; min-height: 100vh !important; margin: 0; padding: 0; }
+  .main-content, .db-main, .container { flex: 1 !important; width: calc(100vw - 260px) !important; max-width: calc(100vw - 260px) !important; box-sizing: border-box !important; }
+
+  /* CONSISTENT NAV ITEMS (No weird color flashing) */
+  .nav-item { display: flex; align-items: center; gap: 11px; padding: 10px 13px !important; border-radius: 8px !important; color: #a7f3d0 !important; text-decoration: none; font-size: 13.5px !important; font-weight: 600; font-family: 'Plus Jakarta Sans', sans-serif; transition: none !important; border: none !important; margin-bottom: 2px; }
+  .nav-item:hover, .nav-item.active { background: #064e3b !important; color: #ffffff !important; }
+  
+  .sidebar-logo { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; padding: 0 6px; text-decoration: none; }
+  .logo-icon-box { width: 38px; height: 38px; border-radius: 12px; background: #10b981; display: flex; align-items: center; justify-content: center; color: white; font-size: 19px; font-weight: 900; flex-shrink: 0; }
+  .logo-text h1, .logo-text h2 { font-size: 17px; font-weight: 800; color: #ffffff; margin: 0; font-family: 'Plus Jakarta Sans', sans-serif;}
+  .logo-text span { font-size: 9.5px; font-weight: 700; color: #6ee7b7; letter-spacing: 1px; font-family: 'Plus Jakarta Sans', sans-serif;}
+  .sidebar-section-label { font-size: 10px; font-weight: 800; color: #34d399; letter-spacing: 1px; margin: 12px 0 8px 8px; font-family: 'Plus Jakarta Sans', sans-serif;}
+  .sidebar-nav { display: flex; flex-direction: column; flex: 1; overflow-y: auto; }
+  .sidebar-footer { padding-top: 14px; border-top: 1px solid rgba(16, 185, 129, 0.2); }
+</style>
+
+<!-- MASTER LAYOUT FIX -->
+<style id="master-layout-fix">
+  /* Reset */
+  body, html { margin: 0 !important; padding: 0 !important; overflow-x: hidden !important; }
+  
+  /* Push entire body right by 260px */
+  body { padding-left: 260px !important; }
+  
+  /* Lock sidebar perfectly to the left edge */
+  aside.sidebar, .sidebar { 
+      position: fixed !important; 
+      top: 0 !important; 
+      left: 0 !important; 
+      bottom: 0 !important;
+      height: 100vh !important; 
+      width: 260px !important; 
+      min-width: 260px !important;
+      margin: 0 !important; 
+      background: #022c22 !important; 
+      z-index: 99999 !important; 
+  }
+  
+  /* Prevent double-shifting the main content */
+  .main-content, .db-main, .container, main { 
+      margin-left: 0 !important; 
+      width: 100% !important; 
+      max-width: 100% !important;
+      box-sizing: border-box !important; 
+  }
+  
+  .app-layout { display: block !important; width: 100% !important; }
+</style>
+
+    
+
+
 </head>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 <body>
 
   <!-- SIDEBAR NAVIGATION -->
   <aside class="sidebar">
-    <a href="/dashboard.html" class="sidebar-logo">
-      <div class="logo-icon-box">✓</div>
-      <div class="logo-text">
-        <h1>MyApp</h1>
-        <span>USER PORTAL</span>
+    <a href="/dashboard.html" class="sidebar-logo" style="text-decoration:none; display: flex; align-items: center; gap: 12px; margin-bottom: 24px;">
+      <div class="logo-icon-box" style="width: 38px; height: 38px; border-radius: 12px; background: linear-gradient(135deg, #0f172a, #1e293b); display: flex; align-items: center; justify-content: center; color: white; font-size: 20px; font-weight: 900; box-shadow: 0 4px 10px rgba(0,0,0,0.15); flex-shrink: 0;">◈</div>
+      <div class="logo-text" style="display: flex; flex-direction: column; justify-content: center;">
+        <h2 style="font-size: 15px; font-weight: 800; color: #ffffff; margin: 0; line-height: 1.2;">Project Echo</h2>
+        <span style="font-size: 9.5px; font-weight: 700; color: #6ee7b7; letter-spacing: 1.2px; text-transform: uppercase; margin-top: 4px; display: inline-block;">DIGITAL TWIN</span>
       </div>
     </a>
     <div class="sidebar-section-label">WORKSPACE</div>
     <nav class="sidebar-nav">
-      <a href="/dashboard.html" class="nav-item">
-        <span>🏠</span> <span>Dashboard</span>
-      </a>
-      <a href="/forecasting.html" class="nav-item">
-        <span>📈</span> <span>Forecasting</span>
-      </a>
-      <a href="/simulation.html" class="nav-item active">
-        <span>🎮</span> <span>Simulation Engine (M3)</span>
-      </a>
-      <a href="/income.html" class="nav-item">
-        <span>💳</span> <span>Income & Expenses</span>
-      </a>
-      <a href="/savings.html" class="nav-item">
-        <span>💰</span> <span>Savings</span>
-        <span style="margin-left:auto;background:rgba(28,200,219,0.18);color:#5eead4;font-size:10px;font-weight:800;padding:1px 7px;border-radius:10px;">0</span>
-      </a>
-      <a href="/study.html" class="nav-item">
-        <span>📚</span> <span>Study</span>
-      </a>
-      <a href="/academics.html" class="nav-item">
-        <span>🎓</span> <span>Academics</span>
-      </a>
-      <a href="/habits.html" class="nav-item">
-        <span>🔥</span> <span>Habits</span>
-      </a>
-      <a href="/fitness.html" class="nav-item">
-        <span>🏋️</span> <span>Fitness</span>
-      </a>
-      <a href="/goals.html" class="nav-item">
-        <span>🎯</span> <span>Goals</span>
-      </a>
-      <a href="/activity.html" class="nav-item">
-        <span>📊</span> <span>Activity History</span>
-      </a>
-      <a href="/profile.html" class="nav-item">
-        <span>👤</span> <span>Profile</span>
-      </a>
-      <a href="/login.html" class="nav-item" style="color:#ef4444;margin-top:4px;">
-        <span>🚪</span> <span>Logout</span>
-      </a>
+      <a href="/dashboard.html"  class="nav-item "><span>🏠</span><span>Dashboard</span></a>
+      <a href="/forecasting.html" class="nav-item "><span>📈</span><span>Forecasting</span></a>
+      <a href="/simulation.html"  class="nav-item active"><span>🎮</span><span>Simulation Engine (M3)</span></a>
+      <a href="/income.html"     class="nav-item "><span>💳</span><span>Income & Expenses</span></a>
+      <a href="/savings.html"    class="nav-item "><span>💰</span><span>Savings</span></a>
+      <a href="/study.html"      class="nav-item "><span>📚</span><span>Study</span></a>
+      <a href="/academics.html"  class="nav-item "><span>🎓</span><span>Academics</span></a>
+      <a href="/habits.html"     class="nav-item "><span>🔥</span><span>Habits</span></a>
+      <a href="/fitness.html"    class="nav-item "><span>🏋️</span><span>Fitness</span></a>
+      <a href="/goals.html"      class="nav-item "><span>🎯</span><span>Goals</span></a>
+      <a href="/activity.html"   class="nav-item "><span>📊</span><span>Activity History</span></a>
+      <a href="/profile.html"    class="nav-item "><span>👤</span><span>Profile</span></a>
+      <a href="#" class="nav-item" style="color:#ef4444;margin-top:8px;"><span>🚪</span><span>Logout</span></a>
     </nav>
     <div class="sidebar-footer">
-      <div class="db-badge">
-        <div class="pulse-dot"></div>
-        <span>SQLite Active</span>
-      </div>
-      <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:#a7f3d0;padding:6px 4px 0 4px;opacity:0.75;">
-        <span>🔒</span> <span>Secure & Private</span>
+      <div style="font-size:11px; font-weight:700; color:#6ee7b7; background:rgba(16,185,129,0.1); padding:8px 12px; border-radius:8px; display:flex; align-items:center; gap:8px;">
+        <div style="width:8px; height:8px; background:#10b981; border-radius:50%;"></div>
+        SQLite Active
       </div>
     </div>
   </aside>
@@ -1106,7 +1183,7 @@ function loadForecastingDataset(count){
   calc();
 }
 
-window.addEventListener('DOMContentLoaded',function(){
+window?.addEventListener('DOMContentLoaded',function(){
   buildSynthesizedData(2000);
   buildSim();
   buildOC();
@@ -1922,5 +1999,538 @@ function generateCopilotResponse(query){
   }
 }
 </script>
+
+<!-- ULTIMATE BUG FIX INJECTION -->
+<script id="ultimate-bug-fixes">
+  // 1. GLOBAL ACTIVITY LOGGER
+  function logGlobalActivity(title, desc, icon) {
+      try {
+          let acts = JSON.parse(localStorage.getItem('global_activity') || '[]');
+          acts.push({ title: title, desc: desc, icon: icon, date: Date.now() });
+          localStorage.setItem('global_activity', JSON.stringify(acts));
+      } catch(e) {}
+  }
+
+  // 2. TRACK LOGIN
+  if (!sessionStorage.getItem('session_active')) {
+      logGlobalActivity('System Login', 'User successfully authenticated and logged in.', '🔐');
+      sessionStorage.setItem('session_active', 'true');
+  }
+
+  // 3. TRACK LOGOUT & AUTO-REFRESH ON 'ADD' BUTTONS
+  document?.addEventListener('click', function(e) {
+      // Handle Logout Tracking
+      if(e.target.closest('#logoutBtn') || e.target.closest('.logout-item')) {
+          logGlobalActivity('System Logout', 'User securely signed out.', '🚪');
+      }
+      
+      // Handle Auto-Refresh for Add/Save buttons
+      let btn = e.target.closest('button');
+      if (btn) {
+          let txt = btn.innerText.toLowerCase();
+          if (txt.includes('add') || txt.includes('save') || txt.includes('submit')) {
+              // Wait 300ms for localStorage to save, then trigger update
+              setTimeout(() => {
+                  // If there is a "Show All" button, click it automatically
+                  let showAll = Array.from(document.querySelectorAll('button')).find(b => b.innerText.toLowerCase().includes('show'));
+                  if (showAll) {
+                      showAll.click();
+                  } else {
+                      // Otherwise, force a page reload to guarantee the new data appears immediately!
+                      window.location.reload();
+                  }
+              }, 400);
+          }
+      }
+  });
+</script>
+
+
+    <!-- AI COPILOT REMOVAL SCRIPT -->
+    <script>
+    document?.addEventListener('DOMContentLoaded', () => {
+        const walk = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null, false);
+        const nodes = [];
+        let node;
+        
+        // Hunt down the text for the Copilot option
+        while(node = walk.nextNode()) {
+            if(node.nodeValue.toLowerCase().includes('copilot')) {
+                nodes.push(node);
+            }
+        }
+        
+        nodes.forEach(n => {
+            let el = n.parentElement;
+            if(!el) return;
+            
+            // Find the button, card, or chat box holding it
+            let container = el.closest('.card, .widget, button, [class*="chat"], .copilot-box, a, li');
+            
+            if(container) {
+                // Safety feature: Make sure we don't accidentally hide the main simulation screen!
+                if(container.offsetWidth < window.innerWidth * 0.8) {
+                    container.style.display = 'none';
+                } else {
+                    // If it's in a giant container, just hide the specific text block
+                    el.style.display = 'none';
+                }
+            } else {
+                el.style.display = 'none';
+            }
+        });
+    });
+    </script>
+    
+
+    <!-- UNIVERSAL ACTIVITY TRACKER -->
+    <script>
+    if(!window.universalTrackerInstalled) {
+        window.universalTrackerInstalled = true;
+        
+        // Listen to every click on the page
+        document?.addEventListener('click', function(e) {
+            // Only track clicks on actual Buttons or Submit fields
+            let target = e.target.closest('button, input[type="submit"]');
+            
+            if(target) {
+                let actionText = (target.innerText || target.value || 'Clicked a button').trim();
+                
+                // Keep the log name clean and short
+                if(actionText.length > 30) actionText = 'Action Completed'; 
+                
+                let activity = {
+                    type: 'App Action: ' + actionText,
+                    timestamp: new Date().getTime()
+                };
+                
+                // Save it to the browser's global memory!
+                try {
+                    let history = JSON.parse(localStorage.getItem('global_activity') || '[]');
+                    history.push(activity);
+                    localStorage.setItem('global_activity', JSON.stringify(history));
+                } catch(err) {}
+            }
+        });
+    }
+    </script>
+
+
+
+
+
+
+<!-- POPUP ANTI-RELOAD LOCK -->
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // Stop the browser from accidentally reloading the page when you open a popup!
+    document.querySelectorAll('a, button, .btn').forEach(el => {
+        let text = el.textContent.toLowerCase();
+        
+        // Target all buttons that open popups (Add, New, Create)
+        if(text.includes('add') || text.includes('new') || text.includes('create')) {
+            
+            // If it's a link acting as a button, stop it from navigating/reloading
+            if(el.tagName === 'A') {
+                el.addEventListener('click', (e) => {
+                    let href = el.getAttribute('href');
+                    if(!href || href === '#' || href === '' || href.includes(window.location.pathname)) {
+                        e.preventDefault(); // Stop the reload!
+                    }
+                });
+            }
+            
+            // If it's a button inside a hidden form, force it to NOT be a submit button 
+            // (Unless it's the actual 'Create Goal' button inside the popup)
+            if(el.tagName === 'BUTTON') {
+                if(!text.includes('create goal')) { 
+                    el.setAttribute('type', 'button');
+                }
+            }
+        }
+    });
+});
+</script>
+
+
+<!-- IMMORTAL POPUP ENGINE -->
+<script>
+// 1. Brutally stop ALL forms from ever reloading the page (intercepts immediately)
+window.addEventListener('submit', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+}, true);
+
+document.addEventListener('DOMContentLoaded', () => {
+    let isPopupLocked = false;
+
+    // 2. Intercept clicks before the template's original scripts can run
+    document.addEventListener('click', (e) => {
+        let btn = e.target.closest('button, .btn, a');
+        
+        // When you click the button to OPEN the popup
+        if(btn && (btn.textContent.toLowerCase().includes('add ') || btn.textContent.toLowerCase().includes('new '))) {
+            
+            // Stop page reloads
+            if(btn.tagName === 'A' || btn.tagName === 'BUTTON') {
+                e.preventDefault();
+            }
+            
+            // Wait 0.1 seconds for the popup to animate in, then LOCK IT
+            setTimeout(() => {
+                let popups = document.querySelectorAll('.modal, [role="dialog"], [class*="overlay"], [class*="fixed"]');
+                popups.forEach(popup => {
+                    // Find the popup that just appeared
+                    let style = window.getComputedStyle(popup);
+                    if((style.position === 'fixed' || style.position === 'absolute') && style.display !== 'none') {
+                        isPopupLocked = true;
+                        
+                        // Force it to stay open using CSS !important
+                        popup.style.setProperty('display', 'flex', 'important');
+                        popup.style.setProperty('opacity', '1', 'important');
+                        popup.style.setProperty('visibility', 'visible', 'important');
+                        
+                        // Set up a guard: if any template script tries to hide it, instantly force it back open!
+                        const observer = new MutationObserver(() => {
+                            if(isPopupLocked) {
+                                popup.style.setProperty('display', 'flex', 'important');
+                                popup.style.setProperty('opacity', '1', 'important');
+                                popup.style.setProperty('visibility', 'visible', 'important');
+                            }
+                        });
+                        observer.observe(popup, { attributes: true, attributeFilter: ['style', 'class'] });
+                    }
+                });
+            }, 150);
+        }
+        
+        // Allow YOU to close it when you actually click "Create Goal" or the "X" button
+        if(btn && (btn.textContent.toLowerCase().includes('create') || btn.textContent.includes('✕') || btn.textContent.includes('X') || btn.innerHTML.includes('times'))) {
+            isPopupLocked = false; // Unlock it
+            
+            setTimeout(() => {
+                let popups = document.querySelectorAll('.modal, [role="dialog"], [class*="overlay"], [class*="fixed"]');
+                popups.forEach(popup => {
+                    popup.style.setProperty('display', 'none', 'important');
+                });
+            }, 100);
+        }
+    }, true); // The 'true' guarantees our script runs first!
+});
+</script>
+
+
+<!-- UNIVERSAL AUTO-SYNC ENGINE V3 (SILENT) -->
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    if(window.universalSyncEngineInstalled) return;
+    window.universalSyncEngineInstalled = true;
+    
+    if(window.location.pathname.toLowerCase().includes('habit')) return;
+
+    let path = window.location.pathname.toLowerCase();
+    let pageTitle = document.title.toLowerCase();
+    let storageKey = 'global_data';
+    
+    if(path.includes('income') || path.includes('expense') || pageTitle.includes('income')) storageKey = 'income_data';
+    else if(path.includes('saving') || pageTitle.includes('saving')) storageKey = 'savings_data';
+    else if(path.includes('study') || pageTitle.includes('study')) storageKey = 'study_data';
+    else if(path.includes('academic') || pageTitle.includes('academic')) storageKey = 'academics_data';
+    else if(path.includes('fitness') || pageTitle.includes('fitness')) storageKey = 'fitness_data';
+    else if(path.includes('goal') || pageTitle.includes('goal')) storageKey = 'goals_data';
+
+    document.addEventListener('click', (e) => {
+        let btn = e.target.closest('button, .btn, input[type="submit"]');
+        if(btn && (btn.textContent.toLowerCase().includes('add') || btn.textContent.toLowerCase().includes('save') || btn.textContent.toLowerCase().includes('create') || btn.value === 'Add')) {
+            
+            let container = btn.closest('div, section, form, header, .card');
+            if(!container && btn.parentElement) container = btn.parentElement.parentElement;
+            if(!container) return;
+
+            let inputs = container.querySelectorAll('input[type="text"], input[type="number"]');
+            let selects = container.querySelectorAll('select');
+            
+            if(inputs.length > 0 && inputs[0].value.trim() !== '') {
+                
+                let val1 = inputs[0].value.trim();
+                let val2 = inputs.length > 1 ? inputs[1].value.trim() : '';
+                if(!val2 && selects.length > 0) val2 = selects[0].options[selects[0].selectedIndex].text;
+
+                // Save to memory perfectly
+                let currentData = JSON.parse(localStorage.getItem(storageKey) || '[]');
+                currentData.push({ text: val1, extra: val2, date: Date.now() });
+                localStorage.setItem(storageKey, JSON.stringify(currentData));
+                
+                // Instantly alert the Dashboard!
+                window.dispatchEvent(new Event('storage'));
+
+                // Auto-update large money numbers if on Savings/Income pages
+                let numVal = parseFloat((val1 + val2).replace(/[^0-9.]/g, ''));
+                if(!isNaN(numVal) && numVal > 0) {
+                    document.querySelectorAll('h1, h2, h3').forEach(h => {
+                        if(h.textContent.includes('₹') || h.textContent.includes('$')) {
+                            let current = parseFloat(h.textContent.replace(/[^0-9.]/g, '')) || 0;
+                            let prefix = h.textContent.includes('₹') ? '₹' : '$';
+                            h.textContent = prefix + (current + numVal).toLocaleString();
+                        }
+                    });
+                }
+
+                // Clean the input box, BUT DO NOT DRAW ANY UGLY UI BOXES!
+                inputs.forEach(i => i.value = ''); 
+            }
+        }
+    });
+});
+</script>
+
+
+<!-- GLOBAL LOGOUT HANDLER -->
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    document.body.addEventListener('click', (e) => {
+        // Find if they clicked the logout button or an icon inside it
+        let target = e.target.closest('a, button, li, div, span');
+        
+        if (target && target.textContent && target.textContent.toLowerCase().includes('logout')) {
+            e.preventDefault(); // Stop it from doing nothing
+            
+            // 1. Record the logout event in your Activity Log
+            let logs = JSON.parse(localStorage.getItem('real_activity_logs') || '[]');
+            logs.push({ action: 'Logout', details: 'User securely signed out.', dateStr: new Date().toLocaleString() });
+            localStorage.setItem('real_activity_logs', JSON.stringify(logs));
+            
+            // 2. Clear session memory
+            localStorage.removeItem('user_authenticated');
+            localStorage.removeItem('current_user');
+            
+            // 3. Redirect to the Login screen!
+            window.location.href = 'login.html';
+        }
+    });
+});
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- UNIFIED MASTER SIDEBAR (ULTIMATE FIX) -->
+<style id="master-sidebar-css">
+/* Keep the exact space of the old sidebar so Dashboard layout DOES NOT MOVE, just make it invisible */
+nav.sidebar, aside.sidebar, #sidebar {
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    width: 260px !important;
+    min-width: 260px !important;
+}
+
+/* Master Sidebar Core Styles */
+#echo-master-sidebar {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 260px !important;
+    height: 100vh !important;
+    background: #0f172a !important; 
+    color: white !important;
+    overflow-y: auto !important;
+    z-index: 99999 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    box-shadow: 2px 0 10px rgba(0,0,0,0.1) !important;
+    font-family: system-ui, -apple-system, sans-serif !important;
+    border-right: 1px solid rgba(255,255,255,0.05) !important;
+}
+
+#echo-master-sidebar::-webkit-scrollbar { width: 4px; }
+#echo-master-sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
+
+#echo-master-sidebar .sidebar-header {
+    padding: 24px 20px !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+    border-bottom: 1px solid rgba(255,255,255,0.05) !important;
+    min-height: 80px !important;
+}
+
+#echo-master-sidebar .sidebar-logo {
+    width: 32px !important;
+    height: 32px !important;
+    background: linear-gradient(135deg, #10b981, #3b82f6) !important;
+    border-radius: 8px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 16px !important;
+    font-weight: bold !important;
+    flex-shrink: 0 !important;
+}
+
+#echo-master-sidebar .sidebar-title {
+    font-size: 17px !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.5px !important;
+    margin: 0 !important;
+    line-height: 1.2 !important;
+    color: white !important;
+}
+
+#echo-master-sidebar .sidebar-subtitle {
+    font-size: 10px !important;
+    color: #10b981 !important;
+    text-transform: uppercase !important;
+    font-weight: 700 !important;
+    letter-spacing: 1px !important;
+}
+
+#echo-master-sidebar .sidebar-menu {
+    padding: 15px 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 2px !important;
+    flex: 1 !important;
+}
+
+#echo-master-sidebar .menu-section {
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    color: #64748b !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1px !important;
+    padding: 15px 24px 6px !important;
+}
+
+#echo-master-sidebar .menu-item {
+    display: flex !important;
+    align-items: center !important;
+    gap: 14px !important;
+    padding: 12px 24px !important;
+    color: #cbd5e1 !important;
+    text-decoration: none !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    transition: all 0.2s ease !important;
+    border-left: 3px solid transparent !important;
+}
+
+#echo-master-sidebar .menu-item:hover {
+    background: rgba(255,255,255,0.03) !important;
+    color: white !important;
+}
+
+#echo-master-sidebar .menu-item.active {
+    background: rgba(16, 185, 129, 0.08) !important;
+    color: white !important;
+    border-left: 3px solid #10b981 !important;
+    font-weight: 600 !important;
+}
+
+#echo-master-sidebar .menu-icon {
+    font-size: 17px !important;
+    width: 24px !important;
+    text-align: center !important;
+    opacity: 0.7 !important;
+}
+
+#echo-master-sidebar .menu-item.active .menu-icon {
+    opacity: 1 !important;
+}
+
+#echo-master-sidebar .logout-container {
+    padding: 15px 20px !important;
+    border-top: 1px solid rgba(255,255,255,0.05) !important;
+    margin-top: auto !important;
+}
+
+#echo-master-sidebar .logout-btn {
+    display: flex !important;
+    align-items: center !important;
+    gap: 14px !important;
+    padding: 12px 15px !important;
+    color: #ef4444 !important;
+    text-decoration: none !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    border-radius: 8px !important;
+    background: rgba(239, 68, 68, 0.05) !important;
+    cursor: pointer !important;
+}
+
+#echo-master-sidebar .logout-btn:hover {
+    background: rgba(239, 68, 68, 0.15) !important;
+}
+</style>
+
+<script id="master-sidebar-js">
+document.addEventListener("DOMContentLoaded", function() {
+    if (document.getElementById('echo-master-sidebar')) return;
+
+    var menuStructure = [
+        { type: 'section', label: 'WORKSPACE' },
+        { type: 'link', label: 'Dashboard', icon: '🏠', url: 'dashboard.html' },
+        { type: 'link', label: 'Forecasting', icon: '📈', url: 'forecasting.html' },
+        { type: 'link', label: 'Simulation Engine (M3)', icon: '⚙️', url: 'simulation.html' },
+        { type: 'section', label: 'FINANCE' },
+        { type: 'link', label: 'Income & Expenses', icon: '💳', url: 'income.html' }, 
+        { type: 'link', label: 'Savings', icon: '💰', url: 'savings.html' },
+        { type: 'section', label: 'ACADEMICS & LIFESTYLE' },
+        { type: 'link', label: 'Study', icon: '⏱️', url: 'study.html' },
+        { type: 'link', label: 'Academics', icon: '📚', url: 'academics.html' },
+        { type: 'link', label: 'Habits', icon: '🔥', url: 'habits.html' },
+        { type: 'link', label: 'Fitness', icon: '🏋️', url: 'fitness.html' },
+        { type: 'link', label: 'Goals', icon: '🎯', url: 'goals.html' },
+        { type: 'section', label: 'SYSTEM' },
+        { type: 'link', label: 'Activity History', icon: '📋', url: 'activity.html' },
+        { type: 'link', label: 'Profile', icon: '👤', url: 'profile.html' }
+    ];
+
+    var currentPath = window.location.pathname.split('/').pop() || 'dashboard.html';
+    
+    var html = '<div class="sidebar-header"><div class="sidebar-logo">✦</div><div><h2 class="sidebar-title">Project Echo</h2><div class="sidebar-subtitle">DIGITAL TWIN</div></div></div><div class="sidebar-menu">';
+
+    menuStructure.forEach(function(item) {
+        if (item.type === 'section') {
+            html += '<div class="menu-section">' + item.label + '</div>';
+        } else {
+            var isActive = (currentPath === item.url) ? 'active' : '';
+            if (!isActive && currentPath === 'finance.html' && item.url === 'income.html') isActive = 'active';
+            if (!isActive && currentPath === 'financial.html' && item.url === 'income.html') isActive = 'active';
+            
+            html += '<a href="' + item.url + '" class="menu-item ' + isActive + '"><span class="menu-icon">' + item.icon + '</span><span>' + item.label + '</span></a>';
+        }
+    });
+
+    html += '</div><div class="logout-container"><a href="login.html" class="logout-btn" id="master-logout-btn"><span class="menu-icon">🚪</span><span>Logout</span></a></div>';
+
+    var sidebar = document.createElement('nav');
+    sidebar.id = 'echo-master-sidebar';
+    sidebar.innerHTML = html;
+    document.body.insertBefore(sidebar, document.body.firstChild);
+    
+    var logoutBtn = document.getElementById('master-logout-btn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', function() {
+            var logs = JSON.parse(localStorage.getItem('real_activity_logs') || '[]');
+            logs.push({ action: 'Logout', details: 'User signed out', dateStr: new Date().toLocaleString('en-IN'), timestamp: new Date().getTime(), type: 'logout' });
+            localStorage.setItem('real_activity_logs', JSON.stringify(logs));
+        });
+    }
+});
+</script>
+
 </body>
 </html>
