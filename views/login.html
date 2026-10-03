@@ -758,6 +758,42 @@ document.addEventListener("DOMContentLoaded", () => {
 })();
 </script>
 
+
+<!-- LOGIN-BUTTON-THEME-FIX -->
+<style>
+/* Match Sign In button with blue background theme */
+button[type="submit"],
+input[type="submit"],
+.btn-primary,
+.login-btn,
+form button {
+    background: linear-gradient(135deg, #1e3a8a, #3b82f6) !important;
+    border: none !important;
+    color: white !important;
+    border-radius: 10px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.5px !important;
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4) !important;
+    transition: all 0.3s ease !important;
+}
+button[type="submit"]:hover,
+input[type="submit"]:hover,
+.btn-primary:hover,
+.login-btn:hover,
+form button:hover {
+    background: linear-gradient(135deg, #1e40af, #60a5fa) !important;
+    box-shadow: 0 6px 20px rgba(59, 130, 246, 0.6) !important;
+    transform: translateY(-1px) !important;
+}
+/* Register link also blue */
+form a {
+    color: #3b82f6 !important;
+}
+form a:hover {
+    color: #60a5fa !important;
+}
+</style>
+
 </body>
 
 </html>

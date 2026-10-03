@@ -1187,5 +1187,145 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 </script>
 
+
+<!-- DASHBOARD-REALTIME-SYNC -->
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    function syncDashboard() {
+        // ---- INCOME SYNC ----
+        try {
+            var transactions = JSON.parse(localStorage.getItem('transactions') || '[]');
+            var totalIncome = 0;
+            var totalExpense = 0;
+            transactions.forEach(function(t) {
+                var amt = parseFloat(t.amount) || 0;
+                if (t.type === 'income' || t.category === 'income') {
+                    totalIncome += amt;
+                } else if (t.type === 'expense' || t.category === 'expense') {
+                    totalExpense += amt;
+                }
+            });
+            
+            // Also check for separate income/expense storage
+            if (totalIncome === 0) {
+                totalIncome = parseFloat(localStorage.getItem('totalIncome') || localStorage.getItem('total_income') || '0');
+            }
+            if (totalExpense === 0) {
+                totalExpense = parseFloat(localStorage.getItem('totalExpense') || localStorage.getItem('total_expense') || '0');
+            }
+            
+            // Update dashboard income display
+            var incomeEls = document.querySelectorAll('[class*="income"], [id*="income"], [data-type="income"]');
+            var allElements = document.querySelectorAll('h2, h3, .stat-value, .card-value, .metric-value, span, p');
+            
+            allElements.forEach(function(el) {
+                var parent = el.closest('.card, .stat-card, .metric-card, [class*="card"]');
+                if (!parent) return;
+                var parentText = parent.textContent.toLowerCase();
+                
+                if (parentText.includes('total income') || parentText.includes('income')) {
+                    if (el.textContent.match(/[₹$][\d,]+/) || el.textContent.match(/^\d[\d,]*$/)) {
+                        if (totalIncome > 0) {
+                            el.textContent = '₹' + totalIncome.toLocaleString('en-IN');
+                        }
+                    }
+                    // Update transaction count
+                    if (el.textContent.includes('transactions') || el.textContent.includes('recorded')) {
+                        el.textContent = transactions.length + ' transactions recorded';
+                    }
+                }
+            });
+        } catch(e) { console.log('Income sync:', e); }
+
+        // ---- HABITS SYNC ----
+        try {
+            var habits = JSON.parse(localStorage.getItem('habits') || '[]');
+            var activeHabits = habits.filter(function(h) { return h.active !== false; });
+            
+            var allEls2 = document.querySelectorAll('h2, h3, .stat-value, .card-value, span, p');
+            allEls2.forEach(function(el) {
+                var parent = el.closest('.card, .stat-card, .metric-card, [class*="card"]');
+                if (!parent) return;
+                var parentText = parent.textContent.toLowerCase();
+                
+                if (parentText.includes('active habits') || parentText.includes('habits')) {
+                    if (el.textContent.match(/^\d+$/) && activeHabits.length > 0) {
+                        el.textContent = activeHabits.length.toString();
+                    }
+                }
+            });
+        } catch(e) { console.log('Habits sync:', e); }
+
+        // ---- GOALS SYNC ----
+        try {
+            var goals = JSON.parse(localStorage.getItem('goals') || '[]');
+            var completedGoals = goals.filter(function(g) { 
+                return g.completed === true || g.status === 'completed' || g.progress >= 100; 
+            });
+            
+            var allEls3 = document.querySelectorAll('h2, h3, .stat-value, .card-value, span, p');
+            allEls3.forEach(function(el) {
+                var parent = el.closest('.card, .stat-card, .metric-card, [class*="card"]');
+                if (!parent) return;
+                var parentText = parent.textContent.toLowerCase();
+                
+                if (parentText.includes('goals completed') || parentText.includes('targets')) {
+                    if (el.textContent.match(/^\d+$/)) {
+                        if (goals.length > 0) {
+                            el.textContent = completedGoals.length.toString();
+                        }
+                    }
+                }
+            });
+            
+            // Update Goals Done in Lifestyle Meters
+            var meterEls = document.querySelectorAll('[class*="meter"], [class*="progress"], [class*="circle"]');
+            document.querySelectorAll('span, p, div').forEach(function(el) {
+                if (el.textContent.trim() === 'Goals Done') {
+                    var parent = el.closest('[class*="meter"], [class*="card"], div');
+                    if (parent) {
+                        var pctEl = parent.querySelector('[class*="percent"], [class*="value"]');
+                        if (pctEl && goals.length > 0) {
+                            var pct = Math.round((completedGoals.length / goals.length) * 100);
+                            pctEl.textContent = pct + '%';
+                        }
+                    }
+                }
+            });
+        } catch(e) { console.log('Goals sync:', e); }
+
+        // ---- SAVINGS SYNC ----
+        try {
+            var savings = JSON.parse(localStorage.getItem('savings') || localStorage.getItem('savingsData') || '[]');
+            var totalSavings = 0;
+            if (Array.isArray(savings)) {
+                savings.forEach(function(s) { totalSavings += parseFloat(s.amount) || 0; });
+            } else {
+                totalSavings = parseFloat(localStorage.getItem('totalSavings') || '0');
+            }
+        } catch(e) { console.log('Savings sync:', e); }
+
+        // ---- FITNESS SYNC ----
+        try {
+            var fitness = JSON.parse(localStorage.getItem('fitness') || localStorage.getItem('workouts') || '[]');
+            var totalWorkouts = fitness.length;
+        } catch(e) { console.log('Fitness sync:', e); }
+
+        console.log('✅ Dashboard synced with all pages!');
+    }
+
+    // Run sync on page load
+    syncDashboard();
+
+    // Auto-sync every 2 seconds (in case user switches tabs)
+    setInterval(syncDashboard, 2000);
+
+    // Also sync when page becomes visible again
+    document.addEventListener('visibilitychange', function() {
+        if (!document.hidden) syncDashboard();
+    });
+});
+</script>
+
 </body>
 </html>
