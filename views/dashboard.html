@@ -1509,110 +1509,329 @@ document.addEventListener("DOMContentLoaded", function() {
 </script>
 
 
-<!-- CHATBOT-LIVE-SENDER -->
+<!-- CHATBOT-LIVE-SENDER (FIXED - reads correct localStorage keys) -->
 <script>
 (function() {
-    // Gather ALL localStorage data into a readable context string
+    // Helper: get month name from date string
+    function getMonthName(dateStr) {
+        try {
+            var d = new Date(dateStr);
+            if (isNaN(d.getTime())) return null;
+            return d.toLocaleString('en-US', { month: 'long', year: 'numeric' });
+        } catch(e) { return null; }
+    }
+
+    // Gather ALL localStorage data using the CORRECT keys each page actually uses
     window.buildLiveContext = function() {
         var lines = [];
         
-        // Academics
+        // ========== ACADEMICS (actual key: academics_data) ==========
         try {
-            var academics = JSON.parse(localStorage.getItem('academics') || localStorage.getItem('subjects') || '[]');
+            var academics = JSON.parse(localStorage.getItem('academics_data') || '[]');
             if (Array.isArray(academics) && academics.length > 0) {
-                var subjectNames = academics.map(function(a) { return a.name || a.subject || a.title || (typeof a === 'string' ? a : JSON.stringify(a)); });
-                lines.push("- Academics: There are currently " + academics.length + " subjects: " + subjectNames.join(" and ") + ".");
+                lines.push("=== ACADEMICS ===");
+                lines.push("Total subjects: " + academics.length);
+                academics.forEach(function(a, i) {
+                    var name = a.name || a.subject || a.title || a.text || (typeof a === 'string' ? a : 'Subject ' + (i+1));
+                    var extra = a.grade || a.marks || a.score || a.extra || '';
+                    lines.push("  " + (i+1) + ". " + name + (extra ? " (" + extra + ")" : ""));
+                });
             }
         } catch(e) {}
         
-        // Income & Expenses
+        // ========== INCOME & EXPENSES (actual key: income_data) ==========
         try {
-            var transactions = JSON.parse(localStorage.getItem('transactions') || '[]');
-            var totalIncome = 0, totalExpense = 0;
-            var categories = {};
-            transactions.forEach(function(t) {
-                var amt = parseFloat(t.amount) || 0;
-                if (t.type === 'income') totalIncome += amt;
-                else { totalExpense += amt; var cat = t.category || 'Other'; categories[cat] = (categories[cat] || 0) + amt; }
-            });
-            if (totalIncome > 0) lines.push("- Total Income: Rs." + totalIncome.toLocaleString('en-IN'));
-            if (totalExpense > 0) lines.push("- Total Expenses: Rs." + totalExpense.toLocaleString('en-IN'));
-            if (Object.keys(categories).length > 0) {
-                var catStr = Object.entries(categories).map(function(e) { return e[0] + ": Rs." + e[1].toLocaleString('en-IN'); }).join(", ");
-                lines.push("- Expense Breakdown: " + catStr);
+            var incomeData = JSON.parse(localStorage.getItem('income_data') || '[]');
+            if (Array.isArray(incomeData) && incomeData.length > 0) {
+                lines.push("=== INCOME & EXPENSES ===");
+                lines.push("Total entries: " + incomeData.length);
+                var totalIncome = 0, totalExpense = 0;
+                var categories = {};
+                var monthlyExpenses = {};
+                var monthlyIncome = {};
+                incomeData.forEach(function(t) {
+                    var amtRaw = t.amount || t.extra || 0;
+                    var amt = parseFloat(typeof amtRaw === 'string' ? amtRaw.replace(/[^0-9.]/g, '') : amtRaw) || 0;
+                    var desc = t.desc || t.description || t.text || 'N/A';
+                    var cat = t.category || 'Other';
+                    var dateStr = t.date || '';
+                    var monthKey = getMonthName(dateStr) || 'Unknown';
+                    // If no explicit type is provided, but it was generic, default to expense for safety
+                    var type = t.type || 'expense';
+                    if (type === 'income') {
+                        totalIncome += amt;
+                        monthlyIncome[monthKey] = (monthlyIncome[monthKey] || 0) + amt;
+                    } else {
+                        totalExpense += amt;
+                        categories[cat] = (categories[cat] || 0) + amt;
+                        monthlyExpenses[monthKey] = (monthlyExpenses[monthKey] || 0) + amt;
+                    }
+                });
+                lines.push("Total Income: Rs." + totalIncome.toLocaleString('en-IN'));
+                lines.push("Total Expenses: Rs." + totalExpense.toLocaleString('en-IN'));
+                lines.push("Net Savings: Rs." + (totalIncome - totalExpense).toLocaleString('en-IN'));
+                if (Object.keys(categories).length > 0) {
+                    lines.push("Expense by Category:");
+                    Object.entries(categories).forEach(function(e) { lines.push("  - " + e[0] + ": Rs." + e[1].toLocaleString('en-IN')); });
+                }
+                if (Object.keys(monthlyExpenses).length > 0) {
+                    lines.push("Monthly Expenses:");
+                    Object.entries(monthlyExpenses).forEach(function(e) { lines.push("  - " + e[0] + ": Rs." + e[1].toLocaleString('en-IN')); });
+                }
+                if (Object.keys(monthlyIncome).length > 0) {
+                    lines.push("Monthly Income:");
+                    Object.entries(monthlyIncome).forEach(function(e) { lines.push("  - " + e[0] + ": Rs." + e[1].toLocaleString('en-IN')); });
+                }
+                // List all entries
+                lines.push("All Transactions:");
+                incomeData.forEach(function(t, i) {
+                    var amtRaw = t.amount || t.extra || 0;
+                    var amt = parseFloat(typeof amtRaw === 'string' ? amtRaw.replace(/[^0-9.]/g, '') : amtRaw) || 0;
+                    lines.push("  " + (i+1) + ". " + (t.type || 'expense') + " - " + (t.desc || t.text || 'N/A') + " - Rs." + amt + " - " + (t.category || 'N/A') + " - " + (t.date || 'N/A'));
+                });
             }
-            var savings = totalIncome - totalExpense;
-            if (totalIncome > 0) lines.push("- Net Savings: Rs." + savings.toLocaleString('en-IN') + " (" + Math.round((savings/totalIncome)*100) + "% savings rate)");
         } catch(e) {}
         
-        // Goals
+        // ========== GOALS (actual key: goals_data) ==========
         try {
-            var goals = JSON.parse(localStorage.getItem('goals') || '[]');
+            var goals = JSON.parse(localStorage.getItem('goals_data') || '[]');
             if (goals.length > 0) {
+                lines.push("=== GOALS ===");
+                lines.push("Total goals: " + goals.length);
                 var completed = goals.filter(function(g) { return g.completed || g.status === 'completed' || g.progress >= 100; });
-                var goalNames = goals.map(function(g) { return (g.name || g.title || 'Unnamed') + " (" + (g.progress || 0) + "%)"; });
-                lines.push("- Goals: " + goals.length + " total, " + completed.length + " completed. Goals: " + goalNames.join(", "));
+                lines.push("Completed: " + completed.length + ", In progress: " + (goals.length - completed.length));
+                goals.forEach(function(g, i) {
+                    var name = g.name || g.title || g.text || 'Goal ' + (i+1);
+                    var progress = g.progress || g.extra || 0;
+                    var status = g.completed ? 'Completed' : (g.status || 'In Progress');
+                    lines.push("  " + (i+1) + ". " + name + " - " + progress + (typeof progress === 'number' ? "%" : "") + " - " + status);
+                });
             }
         } catch(e) {}
         
-        // Habits
+        // ========== HABITS (actual key: habits_data) ==========
         try {
-            var habits = JSON.parse(localStorage.getItem('habits') || '[]');
+            var habits = JSON.parse(localStorage.getItem('habits_data') || '[]');
             if (habits.length > 0) {
-                var habitNames = habits.map(function(h) { return h.name || h.title || 'Unnamed'; });
-                var active = habits.filter(function(h) { return h.active !== false; });
-                lines.push("- Habits: " + habits.length + " total, " + active.length + " active. Habits: " + habitNames.join(", "));
+                lines.push("=== HABITS ===");
+                lines.push("Total habits: " + habits.length);
+                var doneToday = habits.filter(function(h) { return h.doneToday; });
+                lines.push("Completed today: " + doneToday.length + " out of " + habits.length);
+                habits.forEach(function(h, i) {
+                    var name = h.name || h.title || h.text || 'Habit ' + (i+1);
+                    var time = h.time || h.routine || h.extra || 'Anytime';
+                    var cat = h.category || 'General';
+                    var streak = h.streak || 0;
+                    var totalDone = h.totalDone || 0;
+                    var done = h.doneToday ? 'Yes' : 'No';
+                    lines.push("  " + (i+1) + ". " + name + " | Time: " + time + " | Category: " + cat + " | Streak: " + streak + " days | Total completions: " + totalDone + " | Done today: " + done);
+                });
             }
         } catch(e) {}
         
-        // Savings
+        // ========== SAVINGS (actual key: savings_data) ==========
         try {
-            var savingsData = JSON.parse(localStorage.getItem('savings') || localStorage.getItem('savingsData') || '[]');
+            var savingsData = JSON.parse(localStorage.getItem('savings_data') || '[]');
             if (Array.isArray(savingsData) && savingsData.length > 0) {
-                var totalSav = savingsData.reduce(function(s, item) { return s + (parseFloat(item.amount) || 0); }, 0);
-                lines.push("- Savings Goals: " + savingsData.length + " goals, Total saved: Rs." + totalSav.toLocaleString('en-IN'));
+                lines.push("=== SAVINGS ===");
+                lines.push("Total savings entries: " + savingsData.length);
+                var totalSav = savingsData.reduce(function(s, item) { 
+                    var amt = parseFloat(item.amount || item.saved || (typeof item.extra === 'string' ? item.extra.replace(/[^0-9.]/g, '') : item.extra)) || 0;
+                    return s + amt;
+                }, 0);
+                lines.push("Total saved amount: Rs." + totalSav.toLocaleString('en-IN'));
+                savingsData.forEach(function(s, i) {
+                    var name = s.name || s.title || s.goal || s.text || 'Savings ' + (i+1);
+                    var amtRaw = s.amount || s.saved || s.extra || 0;
+                    var amt = parseFloat(typeof amtRaw === 'string' ? amtRaw.replace(/[^0-9.]/g, '') : amtRaw) || 0;
+                    var target = parseFloat(s.target) || 0;
+                    lines.push("  " + (i+1) + ". " + name + " - Saved: Rs." + amt.toLocaleString('en-IN') + (target ? " (Target: Rs." + target.toLocaleString('en-IN') + ")" : ""));
+                });
             }
         } catch(e) {}
         
-        // Fitness
+        // ========== FITNESS (actual key: fitness_data) ==========
         try {
-            var workouts = JSON.parse(localStorage.getItem('fitness') || localStorage.getItem('workouts') || '[]');
+            var workouts = JSON.parse(localStorage.getItem('fitness_data') || '[]');
             if (workouts.length > 0) {
-                lines.push("- Fitness: " + workouts.length + " workouts logged");
+                lines.push("=== FITNESS ===");
+                lines.push("Total workouts logged: " + workouts.length);
+                workouts.forEach(function(w, i) {
+                    var name = w.name || w.exercise || w.type || w.text || 'Workout ' + (i+1);
+                    var dur = w.duration || w.minutes || w.time || '';
+                    var extra = w.sets || w.reps || w.extra || '';
+                    lines.push("  " + (i+1) + ". " + name + (dur ? " - " + dur + " min" : "") + (extra ? " (" + extra + ")" : ""));
+                });
             }
         } catch(e) {}
         
-        // Study
+        // ========== STUDY (actual key: study_data) ==========
         try {
-            var study = JSON.parse(localStorage.getItem('study') || localStorage.getItem('studySessions') || '[]');
+            var study = JSON.parse(localStorage.getItem('study_data') || '[]');
             if (study.length > 0) {
-                var totalMins = study.reduce(function(s, item) { return s + (parseFloat(item.duration || item.minutes) || 0); }, 0);
-                lines.push("- Study: " + study.length + " sessions, " + Math.round(totalMins/60*10)/10 + " hours total");
+                lines.push("=== STUDY ===");
+                lines.push("Total study sessions: " + study.length);
+                var totalMins = study.reduce(function(s, item) { 
+                    var amt = parseFloat(item.duration || item.minutes || item.time || (typeof item.extra === 'string' ? item.extra.replace(/[^0-9.]/g, '') : item.extra)) || 0;
+                    return s + amt; 
+                }, 0);
+                lines.push("Total study time: " + Math.round(totalMins/60*10)/10 + " hours (" + totalMins + " minutes)");
+                study.forEach(function(s, i) {
+                    var subj = s.subject || s.name || s.topic || s.text || 'Session ' + (i+1);
+                    var dur = s.duration || s.minutes || s.time || s.extra || 0;
+                    lines.push("  " + (i+1) + ". " + subj + " - " + dur + " minutes");
+                });
             }
         } catch(e) {}
         
-        // Activity
+        // ========== ACTIVITY LOGS ==========
         try {
             var logs = JSON.parse(localStorage.getItem('real_activity_logs') || '[]');
             if (logs.length > 0) {
-                var logins = logs.filter(function(l) { return l.type === 'login'; });
-                lines.push("- Activity: " + logs.length + " total activities, " + logins.length + " logins");
+                lines.push("=== ACTIVITY LOG ===");
+                lines.push("Total activity entries: " + logs.length);
+                var recent = logs.slice(-5);
+                recent.forEach(function(l) {
+                    lines.push("  - " + (l.action || l.type || 'Activity') + ": " + (l.details || l.desc || '') + " (" + (l.dateStr || '') + ")");
+                });
             }
         } catch(e) {}
-        
-        // Scan ALL localStorage for anything we might have missed
+
+        // ========== POMODORO SESSIONS ==========
         try {
+            var ps = localStorage.getItem('ps');
+            if (ps) {
+                lines.push("=== PRODUCTIVITY ===");
+                lines.push("Pomodoro sessions completed: " + ps);
+            }
+        } catch(e) {}
+
+        // ========== FINANCIAL FORECASTING (computed from dataset size) ==========
+        try {
+            var datasetSize = parseInt(localStorage.getItem('forecasting_dataset_size') || '2000');
+            var currentBalance = Math.round(12000 + (datasetSize * 6.4));
+            var volFactor = Math.min(1.0, Math.max(0, (datasetSize - 100) / 1900));
+            var monthlyGrowth = Math.round(750 + (datasetSize * 0.45));
+            
+            // Calculate projections for all timeframes
+            var proj6M = currentBalance + (monthlyGrowth * 6);
+            var proj1Y = currentBalance + (monthlyGrowth * 12);
+            var proj3Y = currentBalance + (monthlyGrowth * 36);
+            var proj5Y = currentBalance + (monthlyGrowth * 60);
+            
+            // Health score
+            var healthScore = Math.round(74.8 + (volFactor * 21.0));
+            if (healthScore > 100) healthScore = 100;
+            
+            // Daily savings
+            var dailySaving = Math.round(350 + (volFactor * 900));
+            
+            lines.push("=== FINANCIAL FORECASTING (AI Predicted) ===");
+            lines.push("Dataset size: " + datasetSize + " records");
+            lines.push("Current Balance: ₹" + currentBalance.toLocaleString('en-IN'));
+            lines.push("6-Month (6M) Projection: ₹" + proj6M.toLocaleString('en-IN'));
+            lines.push("1-Year (1Y) Projection: ₹" + proj1Y.toLocaleString('en-IN'));
+            lines.push("3-Year (3Y) Projection: ₹" + proj3Y.toLocaleString('en-IN'));
+            lines.push("5-Year (5Y) Projection: ₹" + proj5Y.toLocaleString('en-IN'));
+            lines.push("Composite Health Index: " + healthScore + "/100");
+            lines.push("Daily Savings Rate: ~₹" + dailySaving.toLocaleString('en-IN') + "/day");
+            lines.push("Monthly Growth Rate: ~₹" + monthlyGrowth.toLocaleString('en-IN') + "/month");
+        } catch(e) {}
+
+        // ========== SIMULATION ENGINE (Digital Twin - computed metrics) ==========
+        try {
+            var simDatasetSize = parseInt(localStorage.getItem('forecasting_dataset_size') || '2000');
+            var simVolFactor = Math.min(1.0, Math.max(0, (simDatasetSize - 100) / 1900));
+            
+            // Replicate simulation formulas from simulation.html
+            var simMonthlyInc = Math.round(42203 + ((simVolFactor > 0.5 ? 1 : -1) * 0.6 * Math.round((1 - simVolFactor) * 8200)));
+            var avgStudyHrs = +(2.4 + (simVolFactor * 2.6)).toFixed(1);
+            var weeklyStudy = +(avgStudyHrs * 7).toFixed(1);
+            var avgSleep = +(6.2 + (simVolFactor * 1.6)).toFixed(1);
+            var avgHabit = Math.min(99, Math.round(65 + (simVolFactor * 27)));
+            var avgStress = +(6.2 - (simVolFactor * 3.6)).toFixed(1);
+            
+            // Risk scores
+            var savRate = 20 + Math.round(simVolFactor * 15);
+            var sleepTax = Math.max(0, (7.5 - avgSleep) * 14);
+            var studyLoad = (weeklyStudy / 35.0) * 45;
+            var burnRisk = Math.max(12, Math.min(92, Math.round(studyLoad + sleepTax)));
+            var focusScore = Math.round(60 + simVolFactor * 30);
+            var examReadiness = Math.min(98, Math.round((avgStudyHrs / 5.5 * 50) + (focusScore / 100 * 50)));
+            
+            lines.push("=== SIMULATION ENGINE (Digital Twin) ===");
+            lines.push("Dataset: " + simDatasetSize + " synthesized records");
+            lines.push("Monthly Income (simulated): ₹" + simMonthlyInc.toLocaleString('en-IN'));
+            lines.push("Savings Rate: " + savRate + "%");
+            lines.push("Weekly Study Hours: " + weeklyStudy + " hrs/week");
+            lines.push("Average Sleep: " + avgSleep + " hrs/night");
+            lines.push("Habit Consistency: " + avgHabit + "%");
+            lines.push("Stress Level: " + avgStress + "/10");
+            lines.push("Burnout Risk: " + burnRisk + "%");
+            lines.push("Focus Score: " + focusScore + "%");
+            lines.push("Exam Readiness: " + examReadiness + "%");
+            lines.push("Productivity Index: " + Math.round(focusScore * 0.8 + (100 - burnRisk) * 0.2) + "/100");
+        } catch(e) {}
+        
+        // ========== SCAN ALL REMAINING localStorage KEYS ==========
+        try {
+            var knownKeys = ['academics_data','income_data','goals_data','habits_data','savings_data','fitness_data','study_data','real_activity_logs','global_activity','sav_activity','ps','last_login_time','total_login_count','session_active','user_authenticated','current_user','universalTrackerInstalled','universalSyncEngineInstalled'];
             for (var i = 0; i < localStorage.length; i++) {
                 var key = localStorage.key(i);
-                if (['academics','subjects','transactions','goals','habits','savings','savingsData','fitness','workouts','study','studySessions','real_activity_logs'].indexOf(key) === -1) {
+                if (knownKeys.indexOf(key) === -1 && !key.startsWith('_')) {
                     var val = localStorage.getItem(key);
-                    if (val && val.length < 200 && !key.startsWith('_')) {
-                        try { val = JSON.stringify(JSON.parse(val)); } catch(e2) {}
-                        lines.push("- " + key + ": " + val);
+                    if (val && val.length < 500) {
+                        try { 
+                            var parsed = JSON.parse(val);
+                            if (Array.isArray(parsed) && parsed.length > 0) {
+                                lines.push("=== " + key.toUpperCase().replace(/_/g, ' ') + " ===");
+                                lines.push("Entries: " + parsed.length);
+                                parsed.forEach(function(item, idx) {
+                                    if (typeof item === 'object') {
+                                        lines.push("  " + (idx+1) + ". " + JSON.stringify(item));
+                                    } else {
+                                        lines.push("  " + (idx+1) + ". " + item);
+                                    }
+                                });
+                            } else if (typeof parsed === 'object' && parsed !== null) {
+                                lines.push("- " + key + ": " + JSON.stringify(parsed));
+                            } else {
+                                lines.push("- " + key + ": " + val);
+                            }
+                        } catch(e2) {
+                            lines.push("- " + key + ": " + val);
+                        }
                     }
                 }
             }
         } catch(e) {}
+
+        // ========== LOGIN INFO ==========
+        try {
+            var loginTime = localStorage.getItem('last_login_time');
+            var loginCount = localStorage.getItem('total_login_count');
+            if (loginTime || loginCount) {
+                lines.push("=== LOGIN INFO ===");
+                if (loginTime) lines.push("Last login: " + loginTime);
+                if (loginCount) lines.push("Total logins: " + loginCount);
+            }
+        } catch(e) {}
+
+        // ========== PROJECT PAGES INFO ==========
+        lines.push("=== PROJECT PAGES ===");
+        lines.push("This project (Project Echo - AI Lifestyle Digital Twin) has the following pages:");
+        lines.push("1. Dashboard - Main overview with charts, stats, and Echo AI chatbot");
+        lines.push("2. Income & Expenses - Track income and expenses with categories and dates");
+        lines.push("3. Savings - Savings goals and tracking");
+        lines.push("4. Study - Study session logging with Pomodoro timer");
+        lines.push("5. Academics - Subject management and grades");
+        lines.push("6. Habits - Daily habit tracking with streaks (Morning/Afternoon/Evening/Anytime)");
+        lines.push("7. Fitness - Workout logging");
+        lines.push("8. Goals - Goal setting with progress tracking");
+        lines.push("9. Forecasting - ML-based predictions (Milestone 2)");
+        lines.push("10. Simulation Engine - Digital Twin simulation (Milestone 3)");
+        lines.push("11. Activity History - User activity log");
+        lines.push("12. Profile - User profile settings");
         
         return lines.length > 0 ? lines.join("\n") : "No data found in localStorage yet.";
     };

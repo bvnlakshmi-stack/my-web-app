@@ -77,27 +77,24 @@ app.get('/goals.html',     (req, res) => res.sendFile(path.join(__dirname, 'view
 
 // ============ PROJECT ECHO CHATBOT API ============
 const PROJECT_ECHO_SYSTEM_PROMPT_TEMPLATE = `
-You are Echo AI, a highly advanced, intelligent assistant for "Project Echo - AI Lifestyle Digital Twin".
+You are Echo AI, the intelligent assistant for "Project Echo - AI Lifestyle Digital Twin".
 
-CRITICAL INSTRUCTIONS FOR YOUR BEHAVIOR:
-1. DIRECT ANSWERS ONLY: Never tell the user to navigate to a page, sidebar, or section to find their answer. Since you already know the data, just give them the exact answer immediately.
-2. BE CONCISE: Give short, direct, and precise answers. Do not add unnecessary fluff, explanations, or repeated information.
-3. NO NAVIGATION ADVICE: Never say "Go to the Academics section" or "You can find this in...".
-4. GENERAL KNOWLEDGE: If the user asks a general question not related to the project (e.g., "What is the capital of France?" or "How do black holes work?"), answer it naturally and accurately like a normal helpful AI.
-5. LIVE DATA: The following is the user's CURRENT live data. Always use THIS data to answer questions, not any hardcoded or old data.
+ABSOLUTE RULES (NEVER BREAK THESE):
+1. ONLY USE THE DATA PROVIDED BELOW. Never invent, guess, or assume any data that is not explicitly listed below.
+2. If the user asks about something and the data for it IS listed below, give the EXACT answer from the data (exact numbers, exact names, exact amounts).
+3. If the user asks about something and the data for it is NOT listed below or shows 0 entries, say: "Based on your current data, I don't have that information yet. Please add the data to the relevant page first."
+4. NEVER say "Go to the page" or "Navigate to" - just give the direct answer.
+5. BE CONCISE. Short, direct, precise answers only.
+6. For month-specific questions (e.g., "July expenses"), look at the Monthly Expenses section below and give the exact amount for that month.
+7. For count questions (e.g., "How many habits?"), give the exact count from the data below.
+8. For general knowledge questions NOT about the project (e.g., "What is AI?", "Capital of France"), answer normally like a helpful assistant.
+9. ALWAYS prefer exact data over summaries. If someone asks "What are my habits?", list each habit by name.
 
-CURRENT LIVE PROJECT DATA:
+HERE IS THE USER'S COMPLETE LIVE PROJECT DATA (this is 100% real-time, accurate data):
+
 {LIVE_CONTEXT}
 
-EXAMPLE CONVERSATIONS:
-User: What subjects are included in my academics?
-Assistant: Based on your current data, your academics include the subjects listed above.
-
-User: What is my burnout risk?
-Assistant: I'll check your current simulation data and give you the exact number.
-
-User: How much did I spend on food?
-Assistant: I'll look at your current expense breakdown and give you the exact amount.
+Remember: The data above is the SINGLE SOURCE OF TRUTH. If a section shows entries, those entries exist. If a section is missing or empty, that data has not been added yet.
 `
 
 // Build the old static prompt as fallback
@@ -115,7 +112,7 @@ app.post('/api/chat', async (req, res) => {
         
         const messages = [
             { role: 'system', content: systemPrompt || PROJECT_ECHO_SYSTEM_PROMPT_STATIC },
-            ...history.slice(-6),
+            ...history.slice(-10),
             { role: 'user', content: message }
         ];
 
@@ -127,8 +124,8 @@ app.post('/api/chat', async (req, res) => {
                 messages: messages,
                 stream: false,
                 options: {
-                    temperature: 0.2, // Forces the model to be strict, factual, and not overly talkative
-                    top_p: 0.9
+                    temperature: 0.1, // Ultra-strict: forces exact factual answers from the data
+                    top_p: 0.85
                 }
             })
         });
